@@ -1,13 +1,14 @@
-using System.Collections.Generic;
+using Domain.Board;
 
 namespace Domain {
     public class Player {
-        private Board.Board Board { get; }
-        private List<Move> Moves { get; }
+        private string name { get; }
+        private ShipBoard ShipBoard { get; }
+        private MoveBoard MoveBoard { get; }
         
         public Player(uint boardSizeX, uint boardSizeY) {
-            Board = new Board.Board(boardSizeX, boardSizeY);
-            Moves = new List<Move>();
+            ShipBoard = new ShipBoard(boardSizeX, boardSizeY);
+            MoveBoard = new MoveBoard(boardSizeX, boardSizeY);
         }
     }
 }

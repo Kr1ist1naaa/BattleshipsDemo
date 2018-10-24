@@ -38,15 +38,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board\Board.cs" />
-    <Compile Include="Board\BoardSlot.cs" />
-    <Compile Include="Board\BoardSlotState.cs" />
+    <Compile Include="Board\MoveBoardState.cs" />
+    <Compile Include="Board\MoveBoard.cs" />
+    <Compile Include="Board\ShipBoard.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="Ship\Ship.cs" />
+    <Compile Include="Ship\ShipDirection.cs" />
     <Compile Include="Ship\ShipStatus.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
