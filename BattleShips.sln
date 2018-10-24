@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.csproj", "{07BA4FA8-753F-4468-8B1A-4D99D6207059}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initializers", "Initializers\Initializers.csproj", "{E15152FE-9156-451F-93B1-D8BC46DB043A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{07BA4FA8-753F-4468-8B1A-4D99D6207059}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07BA4FA8-753F-4468-8B1A-4D99D6207059}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07BA4FA8-753F-4468-8B1A-4D99D6207059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E15152FE-9156-451F-93B1-D8BC46DB043A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E15152FE-9156-451F-93B1-D8BC46DB043A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E15152FE-9156-451F-93B1-D8BC46DB043A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E15152FE-9156-451F-93B1-D8BC46DB043A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
