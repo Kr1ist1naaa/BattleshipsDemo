@@ -1,10 +1,10 @@
 using Domain;
 
 namespace Initializers {
-    public static class Rules {
+    public static class RuleInitializer {
         public static readonly Rule BoardSize, InitialShipCount;
         
-        static Rules() {
+        static RuleInitializer() {
             
         }
     }

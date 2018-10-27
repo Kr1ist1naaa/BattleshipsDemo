@@ -1,21 +1,36 @@
 namespace Domain.Ship {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Ship {
-        private uint SizeX { get; }
-        private uint SizeY { get; }
-        private ShipStatus[][] Status;
+        private string Title { get; }
+        private char Symbol { get; }
+        private ShipStatus[] StatusBlocks { get; }
+        public uint Size { get; }
 
-        public Ship(uint shipSizeX, uint shipSizeY) {
-            SizeX = shipSizeX;
-            SizeY = shipSizeY;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shipTitle"></param>
+        /// <param name="shipSymbol"></param>
+        /// <param name="shipSize"></param>
+        public Ship(string shipTitle, char shipSymbol, uint shipSize) {
+            StatusBlocks = new ShipStatus[shipSize];
+            Symbol = shipSymbol;
+            Title = shipTitle;
+            Size = shipSize;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public bool Hit(uint offset) {
+            if (StatusBlocks.Length <= offset) return false;
             
-            Status = new ShipStatus[SizeX][];
-            for (var i = 0; i < SizeX; i++) {
-                Status[i] = new ShipStatus[SizeY];
-                
-                for (var j = 0; j < SizeY; j++) {
-                    Status[i][j] = ShipStatus.Ok;
-                }
-            }
+            StatusBlocks[offset] = ShipStatus.Hit;
+            return true;
         }
     }
 }

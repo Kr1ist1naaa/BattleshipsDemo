@@ -2,15 +2,20 @@ namespace Domain.Board {
     public class MoveBoard {
         private uint SizeX {get;}
         private uint SizeY {get;}
-        private MoveBoardState[][] Slots { get; }
+        private MoveBoardState[][] Board { get; }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="boardSizeX"></param>
+        /// <param name="boardSizeY"></param>
         public MoveBoard(uint boardSizeX, uint boardSizeY) {
             SizeX = boardSizeX;
             SizeY = boardSizeY;
             
-            Slots = new MoveBoardState[SizeX][];
+            Board = new MoveBoardState[SizeX][];
             for (var i = 0; i < SizeX; i++) {
-                Slots[i] = new MoveBoardState[SizeY];
+                Board[i] = new MoveBoardState[SizeY];
             }
         }
     }
