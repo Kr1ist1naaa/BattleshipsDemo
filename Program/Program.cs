@@ -1,9 +1,9 @@
-﻿using MenuSystem;
+﻿using Domain;
 
 namespace Program {
     public static class Program {
         public static void Main(string[] args) {
-            var menu = new Menu();
+            new GameManager().Run();
         }
     }
 }
