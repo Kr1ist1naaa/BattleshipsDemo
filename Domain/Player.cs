@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Domain.Board;
-using Initializers;
 using MenuSystem;
 
 namespace Domain {
@@ -15,39 +14,6 @@ namespace Domain {
         public bool IsAlive = true;
 
         public Player(Menu menu, int boardSizeX, int boardSizeY, string playerName) {
-            CheckParams(boardSizeX, boardSizeY, playerName);
-
-            Name = playerName;
-            
-            _menu = menu;
-            _board = new GameBoard(_menu, boardSizeX, boardSizeY);
-            _ships = ShipInitializer.GenDefaultShipSet();
-            
-            _board.PlaceShips(_ships);
-        }
-
-        public void OutgoingAttack() {
-            var firstLoop = true;
-            
-            while (true) {
-                // Ask player for attack location
-                _menu.AskAttackCoords(out firstLoop, out var posX, out var posY);
-                
-                // Check if attack coords are valid
-                var isValidAttack = GameBoard.CheckValidAttackPos(TargetPlayer._board, posX, posY);
-                if (!isValidAttack) continue;
-
-                TargetPlayer.IncomingAttack(posX, posY);
-                break;
-            }
-        }
-
-        private void IncomingAttack(int posX, int posY) {
-            _board.IncomingAttack(posX, posY);
-            IsAlive = _board.CheckIfAlive();
-        }
-
-        private static void CheckParams(int boardSizeX, int boardSizeY, string playerName) {
             if (boardSizeX < 2) {
                 throw new ArgumentOutOfRangeException(nameof(boardSizeX));
             }
@@ -59,7 +25,40 @@ namespace Domain {
             if (string.IsNullOrEmpty(playerName)) {
                 throw new ArgumentOutOfRangeException(nameof(playerName));
             }
+
+            Name = playerName;
+            
+            _menu = menu;
+            _board = new GameBoard(_menu, boardSizeX, boardSizeY);
+            _ships = Ship.Ship.GenDefaultShipSet();
+            
+            Console.WriteLine($"    - player {playerName} is now placing their ships");
+            _board.PlaceShips(_ships);
         }
 
+        public Move OutgoingAttack() {
+            var firstLoop = true;
+            int posX, posY;
+            
+            while (true) {
+                // Ask player for attack location
+                firstLoop = _menu.AskAttackCoords(firstLoop, out posX, out posY);
+                
+                // Check if attack coords are valid
+                var isValidAttack = GameBoard.CheckValidAttackPos(TargetPlayer._board, posX, posY);
+                if (!isValidAttack) continue;
+
+                TargetPlayer.IncomingAttack(posX, posY);
+                break;
+            }
+            
+            // Create instance of Move with the details of the move
+            return new Move(this, TargetPlayer, posX, posY);
+        }
+
+        private void IncomingAttack(int posX, int posY) {
+            _board.IncomingAttack(posX, posY);
+            IsAlive = _board.CheckIfAlive();
+        }
     }
 }

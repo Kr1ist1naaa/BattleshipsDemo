@@ -43,14 +43,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{21897746-c0fa-4612-a0e6-c0e7ecdabb47}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj">
-      <Project>{8D5D6944-7BAE-4389-9592-E2E3007EB454}</Project>
-      <Name>MenuSystem</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

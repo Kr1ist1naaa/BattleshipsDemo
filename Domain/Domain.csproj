@@ -47,20 +47,12 @@
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rule.cs" />
     <Compile Include="Ship\Ship.cs" />
     <Compile Include="Ship\ShipDirection.cs" />
     <Compile Include="Ship\ShipStatus.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Initializers\Initializers.csproj">
-      <Project>{E15152FE-9156-451F-93B1-D8BC46DB043A}</Project>
-      <Name>Initializers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj">
-      <Project>{8D5D6944-7BAE-4389-9592-E2E3007EB454}</Project>
-      <Name>MenuSystem</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

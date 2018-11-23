@@ -7,7 +7,6 @@ namespace Domain {
         private readonly Menu _menu;
         
         private readonly List<Player> _players;
-        private readonly List<Rule> _rules;
         private readonly List<Move> _moves;
 
         private readonly int _boardSizeX;
@@ -18,7 +17,21 @@ namespace Domain {
         private int _turnCount;
 
         public Game(Menu menu, int gameNumber, int playerCount, int boardSizeX, int boardSizeY) {
-            CheckParams(gameNumber, playerCount, boardSizeX, boardSizeY);
+            if (boardSizeX < 2) {
+                throw new ArgumentOutOfRangeException(nameof(boardSizeX));
+            }
+            
+            if (boardSizeY < 2) {
+                throw new ArgumentOutOfRangeException(nameof(boardSizeY));
+            }
+
+            if (playerCount < 2) {
+                throw new ArgumentOutOfRangeException(nameof(playerCount));
+            }
+            
+            if (gameNumber < 0) {
+                throw new ArgumentOutOfRangeException(nameof(gameNumber));
+            }
 
             _menu = menu;
             _boardSizeX = boardSizeX;
@@ -28,12 +41,52 @@ namespace Domain {
 
             _players = new List<Player>();
             _moves = new List<Move>();
-            _rules = new List<Rule>();
 
             InitializePlayers();
         }
 
-        public void Run() {
+        private void InitializePlayers() {
+            Player lastPlayer = null, firstPlayer = null;
+            
+            Console.WriteLine($"Creating {_playerCount} players for game nr {_gameNumber}");
+            
+            for (var i = 0; i < _playerCount; i++) {
+                var firstLoop = true;
+            
+                while (true) {
+                    // Ask player for name
+                    firstLoop = _menu.AskPlayerName(firstLoop, i, out var name);
+                    
+                    // Check if name is valid
+                    var isValidName = !string.IsNullOrEmpty(name);
+                    if (!isValidName) continue;
+                    
+                    Console.WriteLine($"  - creating player {name} as player nr {i + 1}");
+
+                    // Create player
+                    var player = new Player(_menu, _boardSizeX, _boardSizeY, name);
+                    _players.Add(player);
+                    
+                    if (firstPlayer == null) {
+                        firstPlayer = player;
+                    } else {
+                        lastPlayer.TargetPlayer = player;
+                    }
+
+                    lastPlayer = player;
+                    
+                    break;
+                }
+            }
+
+            if (lastPlayer != null) {
+                lastPlayer.TargetPlayer = firstPlayer;
+            }
+
+            Console.WriteLine($"Finished creating {_playerCount} players for game nr {_gameNumber}");
+        }
+        
+        public void StartGame() {
             Player winner = null;
             
             while (true) {
@@ -43,7 +96,8 @@ namespace Domain {
                     var player = _players[i];
                     
                     Console.WriteLine($"Player {player.Name}'s turn to attack {player.TargetPlayer.Name}");
-                    player.OutgoingAttack();
+                    var move = player.OutgoingAttack();
+                    _moves.Add(move);
                     
                     // Check if target player is out of the game (all ships have been hit)
                     if (!player.TargetPlayer.IsAlive) {
@@ -80,47 +134,7 @@ namespace Domain {
                 }
             }
             
-            Console.WriteLine($"The winner is {winner.Name}!");
+            Console.WriteLine($"The winner of game {_gameNumber} is {winner.Name} after {_turnCount} turns!");
         }
-
-        private void InitializePlayers() {
-            for (var i = 0; i < _playerCount; i++) {
-                var firstLoop = true;
-            
-                while (true) {
-                    // Ask player for name
-                    _menu.AskPlayerName(out firstLoop, i, out var name);
-                
-                    // Check if name is valid
-                    var isValidName = !string.IsNullOrEmpty(name);
-                    if (!isValidName) continue;
-
-                    // Create player
-                    var player = new Player(_menu, _boardSizeX, _boardSizeY, name);
-                    _players.Add(player);
-                }
-            }
-            
-            Console.WriteLine($"Created {_playerCount} players for game nr {_gameNumber}");
-        }
-
-        private static void CheckParams(int gameNumber, int playerCount, int boardSizeX, int boardSizeY) {
-            if (boardSizeX < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSizeX));
-            }
-            
-            if (boardSizeY < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSizeY));
-            }
-
-            if (playerCount < 2) {
-                throw new ArgumentOutOfRangeException(nameof(playerCount));
-            }
-            
-            if (gameNumber < 0) {
-                throw new ArgumentOutOfRangeException(nameof(gameNumber));
-            }
-        }
-
     }
 }

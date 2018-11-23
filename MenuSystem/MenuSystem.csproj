@@ -43,10 +43,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{21897746-c0fa-4612-a0e6-c0e7ecdabb47}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
+
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
