@@ -9,20 +9,19 @@ namespace Domain {
         private readonly List<Player> _players;
         private readonly List<Move> _moves;
 
-        private readonly int _boardSizeX;
-        private readonly int _boardSizeY;
+        private readonly Pos _boardSize;
         private readonly int _playerCount;
         private readonly int _gameNumber;
 
         private int _turnCount;
 
-        public Game(Menu menu, int gameNumber, int playerCount, int boardSizeX, int boardSizeY) {
-            if (boardSizeX < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSizeX));
+        public Game(Menu menu, int gameNumber, int playerCount, Pos boardSize) {
+            if (boardSize.X < 2) {
+                throw new ArgumentOutOfRangeException(nameof(boardSize.X));
             }
             
-            if (boardSizeY < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSizeY));
+            if (boardSize.Y < 2) {
+                throw new ArgumentOutOfRangeException(nameof(boardSize.Y));
             }
 
             if (playerCount < 2) {
@@ -34,8 +33,7 @@ namespace Domain {
             }
 
             _menu = menu;
-            _boardSizeX = boardSizeX;
-            _boardSizeY = boardSizeY;
+            _boardSize = new Pos(boardSize);
             _playerCount = playerCount;
             _gameNumber = gameNumber;
 
@@ -48,7 +46,7 @@ namespace Domain {
         private void InitializePlayers() {
             Player lastPlayer = null, firstPlayer = null;
             
-            Console.WriteLine($"Creating {_playerCount} players for game nr {_gameNumber}");
+            Console.WriteLine($"- creating {_playerCount} players for game nr {_gameNumber}");
             
             for (var i = 0; i < _playerCount; i++) {
                 var firstLoop = true;
@@ -62,9 +60,11 @@ namespace Domain {
                     if (!isValidName) continue;
                     
                     Console.WriteLine($"  - creating player {name} as player nr {i + 1}");
-
-                    // Create player
-                    var player = new Player(_menu, _boardSizeX, _boardSizeY, name);
+                    var player = new Player(_menu, _boardSize, name, i + 1);
+                    
+                    Console.WriteLine($"    - player {name} is now placing their ships");
+                    player.PlaceShips();
+                    
                     _players.Add(player);
                     
                     if (firstPlayer == null) {
@@ -83,25 +83,27 @@ namespace Domain {
                 lastPlayer.TargetPlayer = firstPlayer;
             }
 
-            Console.WriteLine($"Finished creating {_playerCount} players for game nr {_gameNumber}");
+            Console.WriteLine($"- finished creating {_playerCount} players for game nr {_gameNumber}");
         }
         
         public void StartGame() {
             Player winner = null;
             
+            Console.WriteLine("- starting game");
+            
             while (true) {
-                Console.WriteLine($"Beginning of turn {_turnCount}");
+                Console.WriteLine($"  - beginning of turn {_turnCount}");
 
                 for (int i = 0; i < _playerCount; i++) {
                     var player = _players[i];
                     
-                    Console.WriteLine($"Player {player.Name}'s turn to attack {player.TargetPlayer.Name}");
-                    var move = player.OutgoingAttack();
+                    Console.WriteLine($"    - player {player.Name}'s turn to attack {player.TargetPlayer.Name}");
+                    var move = player.AttackTargetPlayer();
                     _moves.Add(move);
                     
                     // Check if target player is out of the game (all ships have been hit)
-                    if (!player.TargetPlayer.IsAlive) {
-                        Console.WriteLine($"{player.Name} knocked {player.TargetPlayer.Name} out of the game!");
+                    if (!player.TargetPlayer.CheckIsAlive()) {
+                        Console.WriteLine($"    - {player.Name} knocked {player.TargetPlayer.Name} out of the game!");
 
                         // Reset target player to target player's target player
                         var tmpPlayer = player.TargetPlayer;
@@ -115,16 +117,20 @@ namespace Domain {
                     }
                 }
                 
-                Console.WriteLine($"End of turn {++_turnCount}\n");
+                Console.WriteLine($"    - end of turn {++_turnCount}");
+
+                if (_turnCount > 100) {
+                    break;
+                }
                 
                 // Check if there's only one player left who is therefore the winner of the game
                 foreach (var player in _players) {
-                    if (winner != null && player.IsAlive) {
+                    if (winner != null && player.CheckIsAlive()) {
                         winner = null;
                         break;
                     }
                     
-                    if (player.IsAlive) {
+                    if (player.CheckIsAlive()) {
                         winner = player;
                     }
                 }
@@ -134,7 +140,7 @@ namespace Domain {
                 }
             }
             
-            Console.WriteLine($"The winner of game {_gameNumber} is {winner.Name} after {_turnCount} turns!");
+            Console.WriteLine($"- the winner of game {_gameNumber} is {winner?.Name} after {_turnCount} turns!");
         }
     }
 }

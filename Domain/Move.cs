@@ -1,13 +1,11 @@
 namespace Domain {
     public class Move {
-        private int _posX;
-        private int _posY;
-        private Player _fromPlayer;
-        private Player _toPlayer;    
+        private readonly Pos _pos;
+        private readonly Player _fromPlayer;
+        private readonly Player _toPlayer;
 
-        public Move(Player attackingPlayer, Player attackedPlayer, int moveLocationX, int moveLocationY) {
-            _posX = moveLocationX;
-            _posY = moveLocationY;
+        public Move(Player attackingPlayer, Player attackedPlayer, Pos pos) {
+            _pos = new Pos(pos);
             _fromPlayer = attackingPlayer;
             _toPlayer = attackedPlayer;
         }

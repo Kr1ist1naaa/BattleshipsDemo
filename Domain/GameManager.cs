@@ -17,14 +17,15 @@ namespace Domain {
 
             while (true) {
                 firstLoop = _menu.AskGameDetails(firstLoop, out var playerCount, out var boardSizeX, out var boardSizeY);
+                var boardSize = new Pos(boardSizeX, boardSizeY);
                 
                 // Check if user-provided params are valid
-                var isValidParams = checkValidParams(playerCount, boardSizeX, boardSizeY);
+                var isValidParams = checkValidParams(playerCount, boardSize);
                 if (!isValidParams) {
                     continue;
                 }
                 
-                var game = new Game(_menu, ++_currentGame, playerCount, boardSizeX, boardSizeY);
+                var game = new Game(_menu, ++_currentGame, playerCount, boardSize);
                 _games.Add(game);
                 
                 game.StartGame();
@@ -36,12 +37,12 @@ namespace Domain {
             }
         }
 
-        private static bool checkValidParams(int playerCount, int boardSizeX, int boardSizeY) {
-            if (boardSizeX < 2 || boardSizeX > 256) {
+        private static bool checkValidParams(int playerCount, Pos boardSize) {
+            if (boardSize.X < 2 || boardSize.X > 256) {
                 return false;
             }
             
-            if (boardSizeY < 2 || boardSizeY > 256) {
+            if (boardSize.Y < 2 || boardSize.Y > 256) {
                 return false;
             }
 

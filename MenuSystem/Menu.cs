@@ -2,14 +2,14 @@ using System;
 
 namespace MenuSystem {
     public class Menu {
-        private readonly Random _rnd = new Random(45665465);
+        private readonly Random _rnd = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
         
         public Menu() {
             
         }
 
         public bool AskAttackCoords(bool firstLoop, out int posX, out int posY) {
-            Console.WriteLine(firstLoop ? "Please enter attack pos" : "Please enter <<VALID>> attack pos!");
+            //Console.WriteLine(firstLoop ? "Please enter attack pos" : "Please enter <<VALID>> attack pos!");
             
             posX = _rnd.Next(0, 10);
             posY = _rnd.Next(0, 10);
@@ -17,12 +17,12 @@ namespace MenuSystem {
             return false;
         }
         
-        public bool AskShipPlacementPosition(bool firstLoop, out int posX, out int posY, out char direction) {
+        public bool AskShipPlacementPosition(bool firstLoop, out int posX, out int posY, out string direction) {
             //Console.WriteLine(firstLoop ? "Please enter ship pos" : "Please enter <<VALID>> ship pos!");
             
             posX = _rnd.Next(0, 10);
             posY = _rnd.Next(0, 10);
-            direction = _rnd.Next(0, 2) == 1 ? 'r' : 'd';
+            direction = _rnd.Next(0, 2) == 1 ? "right" : "down";
             
             return false;
         }
@@ -36,7 +36,7 @@ namespace MenuSystem {
         }
         
         public bool AskGameDetails(bool firstLoop, out int playerCount, out int boardSizeX, out int boardSizeY) {
-            Console.WriteLine(firstLoop ? "Please enter game details" : "Please enter <<VALID>> game details!");
+            //Console.WriteLine(firstLoop ? "Please enter game details" : "Please enter <<VALID>> game details!");
 
             playerCount = 2;
             boardSizeX = 10;

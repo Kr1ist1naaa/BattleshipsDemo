@@ -39,9 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board\BoardSlot.cs" />
-    <Compile Include="Board\BoardSlotState.cs" />
-    <Compile Include="Board\GameBoard.cs" />
+    <Compile Include="Pos.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Move.cs" />
