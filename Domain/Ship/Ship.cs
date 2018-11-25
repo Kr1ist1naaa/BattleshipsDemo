@@ -5,30 +5,25 @@ namespace Domain.Ship {
         public string Title { get; }
         public char Symbol { get; }
         public int Size { get; }
-
-        // Coordinate of top-left block
         public Pos ShipPos;
         public ShipDirection Direction;
         private ShipStatus[] _shipStatuses;
-
 
         public void SetLocation(Pos pos, ShipDirection direction) {
             Direction = direction;
             ShipPos = new Pos(pos);
         }
-        
-        
 
-        public bool IsIntersect(Pos newPos, int newSize, ShipDirection newDirection) {
+        public static bool CheckIfIntersect(Ship ship, Pos newPos, int newSize, ShipDirection newDirection) {
             // Ship hasn't been placed yet
-            if (ShipPos == null) {
+            if (ship.ShipPos == null) {
                 return false;
             }
-            
+
             // This is one retarded way of doing it, but hey, it works...
-            for (int i = 0; i < Size; i++) {
-                var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
-                var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
+            for (int i = 0; i < ship.Size; i++) {
+                var shipPosX = ship.ShipPos.X + (ship.Direction == ShipDirection.Right ? i : 0);
+                var shipPosY = ship.ShipPos.Y + (ship.Direction == ShipDirection.Right ? 0 : i);
 
                 for (int j = 0; j < newSize; j++) {
                     var newPosX = newPos.X + (newDirection == ShipDirection.Right ? j : 0);
@@ -42,18 +37,16 @@ namespace Domain.Ship {
 
             return false;
         }
-        
-        
 
-        public bool IsShipAtPos(Pos pos) {
+        public static bool IsShipAtPos(Ship ship, Pos pos) {
             // Ship hasn't been placed yet
-            if (ShipPos == null) {
+            if (ship.ShipPos == null) {
                 return false;
             }
-            
-            for (int i = 0; i < Size; i++) {
-                var shipBlockPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
-                var shipBlockPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
+
+            for (int i = 0; i < ship.Size; i++) {
+                var shipBlockPosX = ship.ShipPos.X + (ship.Direction == ShipDirection.Right ? i : 0);
+                var shipBlockPosY = ship.ShipPos.Y + (ship.Direction == ShipDirection.Right ? 0 : i);
 
                 if (shipBlockPosX == pos.X && shipBlockPosY == pos.Y) {
                     return true;
@@ -63,26 +56,26 @@ namespace Domain.Ship {
             return false;
         }
 
-        public bool CanAttackShipAtPos(Pos pos) {
+        public static bool CanAttackShipAtPos(Ship ship, Pos pos) {
             // If there is no ship block at those coords
-            if (!IsShipAtPos(pos)) {
+            if (!IsShipAtPos(ship, pos)) {
                 return false;
             }
 
             // Depending on the direction of the ship, check if the ship block at those local coords is okay
-            if (Direction == ShipDirection.Right) {
-                return _shipStatuses[pos.X - ShipPos.X] == ShipStatus.Ok;
+            if (ship.Direction == ShipDirection.Right) {
+                return ship._shipStatuses[pos.X - ship.ShipPos.X] == ShipStatus.Ok;
             } else {
-                return _shipStatuses[pos.Y - ShipPos.Y] == ShipStatus.Ok;
+                return ship._shipStatuses[pos.Y - ship.ShipPos.Y] == ShipStatus.Ok;
             }
         }
 
         public bool AttackShipAtPos(Pos pos) {
             // If there is no ship block at those coords or it has already been attacked
-            if (!CanAttackShipAtPos(pos)) {
+            if (!CanAttackShipAtPos(this, pos)) {
                 return false;
             }
-            
+
             // Depending on the direction of the ship, set the local status tracker to hit
             if (Direction == ShipDirection.Right) {
                 _shipStatuses[pos.X - ShipPos.X] = ShipStatus.Hit;
@@ -92,14 +85,9 @@ namespace Domain.Ship {
 
             return true;
         }
-        
-        
-        
-        
 
-
-        public bool IsDestroyed() {
-            foreach (var status in _shipStatuses) {
+        public static bool IsDestroyed(Ship ship) {
+            foreach (var status in ship._shipStatuses) {
                 if (status == ShipStatus.Ok) {
                     return false;
                 }
@@ -107,7 +95,6 @@ namespace Domain.Ship {
 
             return true;
         }
-
 
         private void CreateShipStatusBlocks() {
             _shipStatuses = new ShipStatus[Size];

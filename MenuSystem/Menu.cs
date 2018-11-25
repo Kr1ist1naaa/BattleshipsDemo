@@ -2,7 +2,7 @@ using System;
 
 namespace MenuSystem {
     public class Menu {
-        private readonly Random _rnd = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
+        private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
         
         public Menu() {
             
@@ -38,7 +38,7 @@ namespace MenuSystem {
         public bool AskGameDetails(bool firstLoop, out int playerCount, out int boardSizeX, out int boardSizeY) {
             //Console.WriteLine(firstLoop ? "Please enter game details" : "Please enter <<VALID>> game details!");
 
-            playerCount = 2;
+            playerCount = 4;
             boardSizeX = 10;
             boardSizeY = 10;
             

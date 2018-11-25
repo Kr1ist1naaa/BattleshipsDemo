@@ -12,7 +12,7 @@ namespace Domain {
             X = pos.X;
             Y = pos.Y;
         }
-        
+
         public override bool Equals(object obj) {
             if (obj == null) {
                 return false;
@@ -27,7 +27,7 @@ namespace Domain {
             if (X != other.X) {
                 return false;
             }
-            
+
             if (Y != other.Y) {
                 return false;
             }
