@@ -46,6 +46,7 @@ namespace Domain {
             }
 
             var firstLoop = true;
+            AttackResult attackResult;
             Pos pos;
 
             while (true) {
@@ -53,31 +54,25 @@ namespace Domain {
                 firstLoop = _menu.AskAttackCoords(firstLoop, out var posX, out var posY);
                 pos = new Pos(posX, posY);
 
-                // Check if attack coords are inside game board dimensions
-                var validAttackPos = CheckIfPosInBoard(target, pos);
-                if (!validAttackPos) {
-                    Console.WriteLine($"      - can't attack invalid location {pos.X}x {pos.Y}y");
-                    continue;
-                }
+                // If method returned non-null ship, attack it
+                attackResult = target.AttackAtPos(pos);
 
-                // Check if player has been attacked there before
-                validAttackPos = CheckIfDuplicateAttack(target, pos);
-                if (!validAttackPos) {
+                if (attackResult == AttackResult.InvalidAttack) {
+                    Console.WriteLine($"      - invalid attack at {pos.X}x {pos.Y}y");
+                    continue;
+                } 
+                
+                if (attackResult == AttackResult.DuplicateAttack) {
                     Console.WriteLine($"      - can't attack duplicate location {pos.X}x {pos.Y}y");
                     continue;
                 }
-
+                
                 Console.WriteLine($"      - attack at location {pos.X}x {pos.Y}y");
-
-                // If method returned non-null ship, attack it
-                GetValidShipOrNull(target, pos)?.AttackShipAtPos(pos);
-
-                target._movesAgainstThisPlayer.Add(pos);
+                
                 break;
             }
 
-            // Create instance of Move with the details of the move
-            return new Move(this, target, pos);
+            return new Move(this, target, pos, attackResult);
         }
 
         public void PlaceShips() {
@@ -114,31 +109,36 @@ namespace Domain {
             }
         }
 
-        private static bool CheckIfPosInBoard(Player player, Pos pos) {
+        private bool CheckIfPosInBoard(Pos pos) {
             // Out of bounds
-            if (pos.X < 0 || pos.X >= player._boardSize.X) return false;
-            if (pos.Y < 0 || pos.Y >= player._boardSize.Y) return false;
+            if (pos.X < 0 || pos.X >= _boardSize.X) return false;
+            if (pos.Y < 0 || pos.Y >= _boardSize.Y) return false;
 
             return true;
         }
 
-        private static bool CheckIfDuplicateAttack(Player player, Pos pos) {
-            // Player has already been attacked there
-            return !player._movesAgainstThisPlayer.Contains(pos);
-        }
-
-        private static Ship.Ship GetValidShipOrNull(Player targetPlayer, Pos pos) {
-            // Location is out of bounds
-            if (!CheckIfPosInBoard(targetPlayer, pos)) {
-                return null;
+        private AttackResult AttackAtPos(Pos pos) {
+            if (!CheckIfPosInBoard(pos)) {
+                return AttackResult.InvalidAttack;
             }
 
-            foreach (var ship in targetPlayer._ships) {
-                if (!Ship.Ship.IsShipAtPos(ship, pos)) {
-                    continue;
-                }
+            if (_movesAgainstThisPlayer.Contains(pos)) {
+                return AttackResult.DuplicateAttack;
+            }
 
-                if (Ship.Ship.CanAttackShipAtPos(ship, pos)) {
+            _movesAgainstThisPlayer.Add(pos);
+            
+            var ship = GetShipAtPosOrNull(pos);
+            if (ship == null) {
+                return AttackResult.Miss;
+            }
+
+            return ship.AttackAtPos(pos);
+        }
+        
+        private Ship.Ship GetShipAtPosOrNull(Pos pos) {
+            foreach (var ship in _ships) {
+                if (ship.IsAtPos(pos)) {
                     return ship;
                 }
             }
@@ -154,7 +154,7 @@ namespace Domain {
             );
 
             // Check if ship would be off the board
-            if (!CheckIfPosInBoard(this, maxPos)) {
+            if (!CheckIfPosInBoard(maxPos)) {
                 return false;
             }
 
@@ -176,7 +176,7 @@ namespace Domain {
 
             // Count each ship block individually, checking if there is at least one that's not hit
             foreach (var ship in _ships) {
-                if (!Ship.Ship.IsDestroyed(ship)) {
+                if (!ship.IsDestroyed()) {
                     return true;
                 }
             }

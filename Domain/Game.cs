@@ -85,28 +85,17 @@ namespace Domain {
                     }
                     
                     // Find next player in list that is alive
-                    Player targetPlayer = null;
-                    for (int j = 1; j < _playerCount; j++) {
-                        var tmpPlayer = _players[i + j - (i + j < _playerCount ? 0 : _playerCount)];
+                    var nextPlayer = FindNextPlayer(player);
 
-                        if (tmpPlayer.IsAlive()) {
-                            targetPlayer = tmpPlayer;
-                        }
-                    }
-
-                    // Should not run
-                    if (targetPlayer == null) {
-                        throw new NullReferenceException(nameof(targetPlayer));
-                    }
-
-                    Console.WriteLine($"    - player {player.Name}'s turn to attack {targetPlayer.Name}");
+                    Console.WriteLine($"    - player {player.Name}'s turn to attack {nextPlayer.Name}");
                     
-                    var move = player.AttackPlayer(targetPlayer);
+                    var move = player.AttackPlayer(nextPlayer);
+                    
                     _moves.Add(move);
                     
                     // Check if target player is out of the game (all ships have been destroyed)
-                    if (!targetPlayer.IsAlive()) {
-                        Console.WriteLine($"    - {player.Name} knocked {targetPlayer.Name} out of the game!");
+                    if (!nextPlayer.IsAlive()) {
+                        Console.WriteLine($"    - {player.Name} knocked {nextPlayer.Name} out of the game!");
                     }
                 }
 
@@ -132,6 +121,36 @@ namespace Domain {
             }
             
             Console.WriteLine($"- the winner of game {_gameNumber} is {winner.Name} after {_turnCount} turns!");
+        }
+
+        private Player FindNextPlayer(Player player) {
+            if (player == null) {
+                throw new NullReferenceException(nameof(player));
+            }
+            
+            Player nextPlayer = null;
+
+            for (int i = 0; i < _playerCount; i++) {
+                // Find current player's index
+                if (_players[i] != player) {
+                    continue;
+                }
+                
+                for (int j = 1; j < _playerCount; j++) {
+                    var tmpPlayer = _players[i + j - (i + j < _playerCount ? 0 : _playerCount)];
+
+                    if (tmpPlayer.IsAlive()) {
+                        nextPlayer = tmpPlayer;
+                    }
+                }
+            }
+
+            // Should not run
+            if (nextPlayer == null) {
+                throw new NullReferenceException(nameof(nextPlayer));
+            }
+
+            return nextPlayer;
         }
     }
 }
