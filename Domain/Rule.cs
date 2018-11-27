@@ -5,37 +5,37 @@ namespace Domain {
     public class Rule {
         public string RuleName;
         public int Value;
-        public bool Ask;
+        public bool AskOnInit;
 
         public static int GetRule(IEnumerable<Rule> rules, Rule baseRule) {
             return (from rule in rules where rule.RuleName == baseRule.RuleName select rule.Value).FirstOrDefault();
         }
 
-        public static readonly Rule BoardSize, PlayerCount, ShipCount, ShipsCanTouch;
+        public static readonly Rule BoardSize, PlayerCount, ShipCount, ShipPadding;
         
         static Rule() {
             BoardSize = new Rule {
                 RuleName = "boardsize",
                 Value = 10,
-                Ask = true
+                AskOnInit = true
             };
             
             PlayerCount = new Rule {
                 RuleName = "playercount",
                 Value = 2,
-                Ask = true
+                AskOnInit = true
             };
             
             ShipCount = new Rule {
                 RuleName = "shipcount",
                 Value = 5,
-                Ask = true
+                AskOnInit = true
             };
             
-            ShipsCanTouch = new Rule {
-                RuleName = "shipscantouch",
+            ShipPadding = new Rule {
+                RuleName = "shippadding",
                 Value = 0,
-                Ask = false
+                AskOnInit = false
             };
         }
         
@@ -44,14 +44,14 @@ namespace Domain {
                 new Rule(BoardSize),
                 new Rule(PlayerCount),
                 new Rule(ShipCount),
-                new Rule(ShipsCanTouch)
+                new Rule(ShipPadding)
             };
         }
         
-        public Rule(Rule rule) {
+        private Rule(Rule rule) {
             RuleName = rule.RuleName;
             Value = rule.Value;
-            Ask = rule.Ask;
+            AskOnInit = rule.AskOnInit;
         }
         
         private Rule() {}

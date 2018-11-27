@@ -31,12 +31,29 @@ namespace Domain.Ship {
             ShipPos = new Pos(pos);
         }
 
-        public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, bool canTouch) {
+        public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, int padding) {
             // Ship hasn't been placed yet
             if (ShipPos == null) {
                 return false;
             }
 
+            // This is one retarded way of doing it, but hey, it works...
+            for (int offset = 0; offset < newSize; offset++) {
+                var newPosOffsetX = newPos.X + (newDirection == ShipDirection.Right ? offset : 0);
+                var newPosOffsetY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : offset);
+
+                for (int i = 0; i < Size; i++) {
+                    var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
+                    var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
+                    
+                    if (shipPosX >= newPosOffsetX - padding && shipPosX <= newPosOffsetX + padding && 
+                        shipPosY >= newPosOffsetY - padding && shipPosY <= newPosOffsetY + padding) {
+                        return true;
+                    }
+                }
+            }
+            
+/*
             // This is one retarded way of doing it, but hey, it works...
             for (int i = 0; i < Size; i++) {
                 var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
@@ -57,7 +74,7 @@ namespace Domain.Ship {
                         }
                     }
                 }
-            }
+            }*/
 
             return false;
         }
@@ -125,7 +142,7 @@ namespace Domain.Ship {
             Battleship = new Ship("Battleship", 'B', 4);
             Submarine = new Ship("Submarine", 'S', 3);
             Cruiser = new Ship("Cruiser", 'c', 2);
-            Patrol = new Ship("Patrol", 'P', 1);
+            Patrol = new Ship("Patrol", 'p', 1);
         }
 
 

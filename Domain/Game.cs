@@ -31,7 +31,7 @@ namespace Domain {
                 
                 while (true) {
                     // If rule should be set elsewhere
-                    if (!rule.Ask) {
+                    if (!rule.AskOnInit) {
                         break;
                     }
                     
@@ -53,7 +53,7 @@ namespace Domain {
                             Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
                             continue;
                         }
-                    } else if (rule.RuleName == Rule.ShipsCanTouch.RuleName) {
+                    } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
                         if (rule.Value < 0 || rule.Value > 1) {
                             Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
                             continue;

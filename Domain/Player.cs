@@ -156,11 +156,11 @@ namespace Domain {
                 return false;
             }
             
-            var canTouch = Rule.GetRule(_rules, Rule.ShipsCanTouch) == 1;
+            var padding = Rule.GetRule(_rules, Rule.ShipPadding);
 
             // Check if any ships already exist at that location
             foreach (var ship in _ships) {
-                if (ship.CheckIfIntersect(pos, shipSize, direction, canTouch)) {
+                if (ship.CheckIfIntersect(pos, shipSize, direction, padding)) {
                     return false;
                 }
             }
