@@ -15,23 +15,30 @@ namespace Domain.Ship {
             ShipPos = new Pos(pos);
         }
 
-        public static bool CheckIfIntersect(Ship ship, Pos newPos, int newSize, ShipDirection newDirection) {
+        public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, bool ruleBoatsCanTouch) {
             // Ship hasn't been placed yet
-            if (ship.ShipPos == null) {
+            if (ShipPos == null) {
                 return false;
             }
 
             // This is one retarded way of doing it, but hey, it works...
-            for (int i = 0; i < ship.Size; i++) {
-                var shipPosX = ship.ShipPos.X + (ship.Direction == ShipDirection.Right ? i : 0);
-                var shipPosY = ship.ShipPos.Y + (ship.Direction == ShipDirection.Right ? 0 : i);
+            for (int i = 0; i < Size; i++) {
+                var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
+                var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
 
                 for (int j = 0; j < newSize; j++) {
                     var newPosX = newPos.X + (newDirection == ShipDirection.Right ? j : 0);
                     var newPosY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : j);
 
-                    if (shipPosX == newPosX && shipPosY == newPosY) {
-                        return true;
+                    if (ruleBoatsCanTouch) {
+                        if (shipPosX == newPosX && shipPosY == newPosY) {
+                            return true;
+                        }
+                    } else {
+                        if (newPosX > shipPosX - 2 && newPosX < shipPosX + 2 && 
+                            newPosY > shipPosY - 2 && newPosY < shipPosY + 2) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -95,7 +102,7 @@ namespace Domain.Ship {
             Carrier = new Ship("Carrier", 'C', 5);
             Battleship = new Ship("Battleship", 'B', 4);
             Submarine = new Ship("Submarine", 'S', 3);
-            Cruiser = new Ship("Cruiser", 'R', 2);
+            Cruiser = new Ship("Cruiser", 'c', 2);
             Patrol = new Ship("Patrol", 'P', 1);
         }
 

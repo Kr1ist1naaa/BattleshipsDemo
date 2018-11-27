@@ -2,8 +2,9 @@ using System;
 
 namespace MenuSystem {
     public class Menu {
-        private readonly Random _rnd = new Random(DateTime.Now.Millisecond);
-        
+        private static readonly Random _rnd = new Random();
+        private const int boardSize = 10;
+
         public Menu() {
             
         }
@@ -11,8 +12,8 @@ namespace MenuSystem {
         public bool AskAttackCoords(bool firstLoop, out int posX, out int posY) {
             //Console.WriteLine(firstLoop ? "Please enter attack pos" : "Please enter <<VALID>> attack pos!");
             
-            posX = _rnd.Next(0, 10);
-            posY = _rnd.Next(0, 10);
+            posX = _rnd.Next(0, boardSize);
+            posY = _rnd.Next(0, boardSize);
             
             return false;
         }
@@ -20,8 +21,8 @@ namespace MenuSystem {
         public bool AskShipPlacementPosition(bool firstLoop, out int posX, out int posY, out string direction) {
             //Console.WriteLine(firstLoop ? "Please enter ship pos" : "Please enter <<VALID>> ship pos!");
             
-            posX = _rnd.Next(0, 10);
-            posY = _rnd.Next(0, 10);
+            posX = _rnd.Next(0, boardSize);
+            posY = _rnd.Next(0, boardSize);
             direction = _rnd.Next(0, 2) == 1 ? "right" : "down";
             
             return false;
@@ -39,8 +40,8 @@ namespace MenuSystem {
             //Console.WriteLine(firstLoop ? "Please enter game details" : "Please enter <<VALID>> game details!");
 
             playerCount = 4;
-            boardSizeX = 10;
-            boardSizeY = 10;
+            boardSizeX = boardSize;
+            boardSizeY = boardSize;
             
             return false;
         }

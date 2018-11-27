@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Domain.Ship;
 using MenuSystem;
 
@@ -75,7 +77,7 @@ namespace Domain {
             return new Move(this, target, pos, attackResult);
         }
 
-        public void PlaceShips() {
+        public void PlaceShips(bool ruleBoatsCanTouch) {
             foreach (var ship in _ships) {
                 var firstLoop = true;
 
@@ -97,7 +99,7 @@ namespace Domain {
                     }
 
                     // Check if player has already attacked there
-                    var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction);
+                    var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction, ruleBoatsCanTouch);
                     if (!isValidPos) continue;
 
                     // Place the ship
@@ -146,21 +148,26 @@ namespace Domain {
             return null;
         }
 
-        private bool CheckIfValidPlacementPos(Pos pos, int shipSize, ShipDirection direction) {
+        private bool CheckIfValidPlacementPos(Pos pos, int shipSize, ShipDirection direction, bool ruleBoatsCanTouch) {
+            // Check if position is off board
+            if (!CheckIfPosInBoard(pos)) {
+                return false;
+            }
+            
             // Find ship's furthest point
             var maxPos = new Pos(
                 pos.X + (direction == ShipDirection.Right ? shipSize : 0),
                 pos.Y + (direction == ShipDirection.Right ? 0 : shipSize)
             );
 
-            // Check if ship would be off the board
+            // Check if max position is off board
             if (!CheckIfPosInBoard(maxPos)) {
                 return false;
             }
 
             // Check if any ships already exist at that location
             foreach (var ship in _ships) {
-                if (Ship.Ship.CheckIfIntersect(ship, pos, shipSize, direction)) {
+                if (ship.CheckIfIntersect(pos, shipSize, direction, ruleBoatsCanTouch)) {
                     return false;
                 }
             }
@@ -182,6 +189,57 @@ namespace Domain {
             }
 
             return _isAlive = false;
+        }
+        
+        
+
+        public void GenBoard() {
+            Console.WriteLine($"\n- player {Name}'s board:");
+            
+            // Generate horizontal border
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < _boardSize.X; i++) stringBuilder.Append("+-----");
+            stringBuilder.Append("+\n");
+            var border = stringBuilder.ToString();
+
+            for (int i = 0; i < _boardSize.Y; i++) {
+                Console.Write(border);
+
+                for (int j = 0; j < _boardSize.X; j++) {
+                    Console.Write("|  ");
+
+                    var pos = new Pos(i, j);
+                    var ship = GetShipAtPosOrNull(pos);
+
+                    if (ship == null) {
+                        if (_movesAgainstThisPlayer.Contains(pos)) {
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.Write(".");
+                            Console.ResetColor();
+                        } else {
+                            Console.Write(" ");
+                        }
+                    } else if (ship.IsDestroyed()) {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(ship.Symbol);
+                        Console.ResetColor();
+                    } else {
+                        if (_movesAgainstThisPlayer.Contains(pos)) {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(ship.Symbol);
+                            Console.ResetColor();
+                        } else {
+                            Console.Write(ship.Symbol);
+                        }
+                    }
+                    
+                    Console.Write("  ");
+                }
+                
+                Console.Write("|\n");
+            }
+            
+            Console.Write(border);
         }
     }
 }

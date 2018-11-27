@@ -12,6 +12,8 @@ namespace Domain {
         private readonly int _gameNumber;
         private int _turnCount;
 
+        private readonly bool _ruleBoatsCanTouch = false;
+
         public Game(Menu menu, int gameNumber, int playerCount, Pos boardSize) {
             if (boardSize.X < 2) {
                 throw new ArgumentOutOfRangeException(nameof(boardSize.X));
@@ -58,7 +60,7 @@ namespace Domain {
                     var player = new Player(_menu, _boardSize, name, i);
                     
                     Console.WriteLine($"    - player {name} is now placing their ships");
-                    player.PlaceShips();
+                    player.PlaceShips(_ruleBoatsCanTouch);
 
                     _players[i] = player;
                     break;
@@ -92,6 +94,8 @@ namespace Domain {
                     var move = player.AttackPlayer(nextPlayer);
                     
                     _moves.Add(move);
+
+                    player.GenBoard();
                     
                     // Check if target player is out of the game (all ships have been destroyed)
                     if (!nextPlayer.IsAlive()) {
