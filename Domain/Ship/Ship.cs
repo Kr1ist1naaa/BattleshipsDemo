@@ -3,19 +3,35 @@ using System.Collections.Generic;
 
 namespace Domain.Ship {
     public class Ship {
-        public string Title { get; }
-        public char Symbol { get; }
-        public int Size { get; }
+        public readonly string Title;
+        public readonly char Symbol;
+        public readonly int Size;
         public Pos ShipPos;
         public ShipDirection Direction;
         private ShipStatus[] _shipStatuses;
 
+        private Ship(Ship ship) {
+            Symbol = ship.Symbol;
+            Title = ship.Title;
+            Size = ship.Size;
+
+            CreateShipStatusBlocks();
+        }
+
+        public Ship(string shipTitle, char shipSymbol, int shipSize) {
+            Symbol = shipSymbol;
+            Title = shipTitle;
+            Size = shipSize;
+
+            CreateShipStatusBlocks();
+        }
+        
         public void SetLocation(Pos pos, ShipDirection direction) {
             Direction = direction;
             ShipPos = new Pos(pos);
         }
 
-        public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, bool ruleBoatsCanTouch) {
+        public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, bool canTouch) {
             // Ship hasn't been placed yet
             if (ShipPos == null) {
                 return false;
@@ -30,7 +46,7 @@ namespace Domain.Ship {
                     var newPosX = newPos.X + (newDirection == ShipDirection.Right ? j : 0);
                     var newPosY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : j);
 
-                    if (ruleBoatsCanTouch) {
+                    if (canTouch) {
                         if (shipPosX == newPosX && shipPosY == newPosY) {
                             return true;
                         }
@@ -98,6 +114,12 @@ namespace Domain.Ship {
             }
         }
 
+        
+        
+        
+        
+        private static readonly Ship Carrier, Battleship, Submarine, Cruiser, Patrol;
+        
         static Ship() {
             Carrier = new Ship("Carrier", 'C', 5);
             Battleship = new Ship("Battleship", 'B', 4);
@@ -106,25 +128,8 @@ namespace Domain.Ship {
             Patrol = new Ship("Patrol", 'P', 1);
         }
 
-        private Ship(Ship ship) {
-            Symbol = ship.Symbol;
-            Title = ship.Title;
-            Size = ship.Size;
 
-            CreateShipStatusBlocks();
-        }
-
-        public Ship(string shipTitle, char shipSymbol, int shipSize) {
-            Symbol = shipSymbol;
-            Title = shipTitle;
-            Size = shipSize;
-
-            CreateShipStatusBlocks();
-        }
-
-        private static readonly Ship Carrier, Battleship, Submarine, Cruiser, Patrol;
-
-        public static List<Ship> GenDefaultShipSet() {
+        public static List<Ship> GenDefaultShipSet(List<Rule> rules) {
             return new List<Ship> {
                 new Ship(Carrier),
                 new Ship(Battleship),

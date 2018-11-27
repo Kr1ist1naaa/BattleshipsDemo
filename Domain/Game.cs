@@ -1,51 +1,79 @@
 using System;
 using System.Collections.Generic;
-using MenuSystem;
 
 namespace Domain {
     public class Game {
         private readonly Menu _menu;
-        private readonly Player[] _players;
+        private readonly List<Player> _players;
+        private readonly List<Rule> _rules;
         private readonly List<Move> _moves;
-        private readonly Pos _boardSize;
-        private readonly int _playerCount;
         private readonly int _gameNumber;
         private int _turnCount;
 
-        private readonly bool _ruleBoatsCanTouch = false;
-
-        public Game(Menu menu, int gameNumber, int playerCount, Pos boardSize) {
-            if (boardSize.X < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSize.X));
-            }
-            
-            if (boardSize.Y < 2) {
-                throw new ArgumentOutOfRangeException(nameof(boardSize.Y));
-            }
-
-            if (playerCount < 2) {
-                throw new ArgumentOutOfRangeException(nameof(playerCount));
-            }
-            
-            if (gameNumber < 0) {
-                throw new ArgumentOutOfRangeException(nameof(gameNumber));
-            }
-
+        public Game(Menu menu, int gameNumber) {
             _menu = menu;
-            _boardSize = new Pos(boardSize);
-            _playerCount = playerCount;
             _gameNumber = gameNumber;
-
-            _players = new Player[_playerCount];
+            _rules = Rule.GenBaseRuleSet();
+            
+            InitializeRules();
+            
+            _players = new List<Player>();
             _moves = new List<Move>();
 
             InitializePlayers();
         }
 
-        private void InitializePlayers() {
-            Console.WriteLine($"- creating {_playerCount} players for game nr {_gameNumber}");
+        private void InitializeRules() {
+            Console.WriteLine($"- creating rules for game nr {_gameNumber}");
+
+            foreach (var rule in Rule.GenBaseRuleSet()) {
+                var firstLoop = true;
+                
+                while (true) {
+                    // If rule should be set elsewhere
+                    if (!rule.Ask) {
+                        break;
+                    }
+                    
+                    // Ask player for rule value
+                    firstLoop = _menu.AskBaseRule(firstLoop, rule);
+
+                    if (rule.RuleName == Rule.BoardSize.RuleName) {
+                        if (rule.Value < 2 || rule.Value > 128) {
+                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            continue;
+                        }
+                    } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
+                        if (rule.Value < 2 || rule.Value > 128) {
+                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                             continue;
+                        }
+                    } else if (rule.RuleName == Rule.ShipCount.RuleName) {
+                        if (rule.Value < 1 || rule.Value > 128) {
+                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            continue;
+                        }
+                    } else if (rule.RuleName == Rule.ShipsCanTouch.RuleName) {
+                        if (rule.Value < 0 || rule.Value > 1) {
+                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            continue;
+                        }
+                    }
+                    
+                    break;
+                }
+            }
             
-            for (var i = 0; i < _playerCount; i++) {
+            foreach (var rule in _rules) {
+                Console.WriteLine($"  - created rule {rule.RuleName} with value {rule.Value}");
+            }
+        }
+
+        private void InitializePlayers() {
+            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
+            Console.WriteLine($"- creating {playerCount} players for game nr {_gameNumber}");
+            
+            for (var i = 0; i < playerCount; i++) {
                 var firstLoop = true;
             
                 while (true) {
@@ -57,28 +85,28 @@ namespace Domain {
                     if (!isValidName) continue;
                     
                     Console.WriteLine($"  - creating player {name} as player nr {i}");
-                    var player = new Player(_menu, _boardSize, name, i);
+                    var player = new Player(_menu, _rules, name, i);
                     
                     Console.WriteLine($"    - player {name} is now placing their ships");
-                    player.PlaceShips(_ruleBoatsCanTouch);
+                    player.PlaceShips();
 
-                    _players[i] = player;
+                    _players.Add(player);
                     break;
                 }
             }
 
-            Console.WriteLine($"- finished creating {_playerCount} players for game nr {_gameNumber}");
+            Console.WriteLine($"- finished creating {playerCount} players for game nr {_gameNumber}");
         }
         
         public void StartGame() {
+            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
             Player winner = null;
-            
             Console.WriteLine("- starting game");
             
             while (true) {
                 Console.WriteLine($"  - beginning of turn {_turnCount}");
 
-                for (int i = 0; i < _playerCount; i++) {
+                for (int i = 0; i < playerCount; i++) {
                     var player = _players[i];
                     
                     // Loop until alive player is found
@@ -106,7 +134,7 @@ namespace Domain {
                 Console.WriteLine($"    - end of turn {++_turnCount}");
 
                 // Check if there is only one player left and therefore the winner of the game
-                for (int i = 0; i < _playerCount; i++) {
+                for (int i = 0; i < playerCount; i++) {
                     if (!_players[i].IsAlive()) {
                         continue;
                     }
@@ -132,16 +160,17 @@ namespace Domain {
                 throw new NullReferenceException(nameof(player));
             }
             
+            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
             Player nextPlayer = null;
 
-            for (int i = 0; i < _playerCount; i++) {
+            for (int i = 0; i < playerCount; i++) {
                 // Find current player's index
                 if (_players[i] != player) {
                     continue;
                 }
                 
-                for (int j = 1; j < _playerCount; j++) {
-                    var tmpPlayer = _players[i + j - (i + j < _playerCount ? 0 : _playerCount)];
+                for (int j = 1; j < playerCount; j++) {
+                    var tmpPlayer = _players[i + j - (i + j < playerCount ? 0 : playerCount)];
 
                     if (tmpPlayer.IsAlive()) {
                         nextPlayer = tmpPlayer;

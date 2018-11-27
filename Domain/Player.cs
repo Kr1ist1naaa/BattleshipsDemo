@@ -1,29 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Domain.Ship;
-using MenuSystem;
 
 namespace Domain {
     public class Player {
         private readonly Menu _menu;
         public readonly string Name;
-        public readonly int Number;
-        private readonly Pos _boardSize;
+        public readonly int PlayerNumber;
+
         private readonly HashSet<Pos> _movesAgainstThisPlayer;
+        private readonly List<Rule> _rules;
         private readonly List<Ship.Ship> _ships;
         private bool _isAlive = true;
 
-        public Player(Menu menu, Pos size, string playerName, int playerNumber) {
-            if (size.X < 2) {
-                throw new ArgumentOutOfRangeException(nameof(size.X));
-            }
-
-            if (size.Y < 2) {
-                throw new ArgumentOutOfRangeException(nameof(size.Y));
-            }
-
+        public Player(Menu menu, List<Rule> rules, string playerName, int playerNumber) {
             if (string.IsNullOrEmpty(playerName)) {
                 throw new ArgumentOutOfRangeException(nameof(playerName));
             }
@@ -32,14 +23,12 @@ namespace Domain {
                 throw new ArgumentOutOfRangeException(nameof(playerNumber));
             }
 
-            _ships = Ship.Ship.GenDefaultShipSet();
+            _ships = Ship.Ship.GenDefaultShipSet(_rules);
             _movesAgainstThisPlayer = new HashSet<Pos>();
             _menu = menu;
-
             Name = playerName;
-            Number = playerNumber;
-
-            _boardSize = new Pos(size);
+            PlayerNumber = playerNumber;
+            _rules = rules;
         }
 
         public Move AttackPlayer(Player target) {
@@ -77,7 +66,7 @@ namespace Domain {
             return new Move(this, target, pos, attackResult);
         }
 
-        public void PlaceShips(bool ruleBoatsCanTouch) {
+        public void PlaceShips() {
             foreach (var ship in _ships) {
                 var firstLoop = true;
 
@@ -99,7 +88,7 @@ namespace Domain {
                     }
 
                     // Check if player has already attacked there
-                    var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction, ruleBoatsCanTouch);
+                    var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction);
                     if (!isValidPos) continue;
 
                     // Place the ship
@@ -112,9 +101,11 @@ namespace Domain {
         }
 
         private bool CheckIfPosInBoard(Pos pos) {
+            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
+            
             // Out of bounds
-            if (pos.X < 0 || pos.X >= _boardSize.X) return false;
-            if (pos.Y < 0 || pos.Y >= _boardSize.Y) return false;
+            if (pos.X < 0 || pos.X >= boardSize) return false;
+            if (pos.Y < 0 || pos.Y >= boardSize) return false;
 
             return true;
         }
@@ -148,7 +139,7 @@ namespace Domain {
             return null;
         }
 
-        private bool CheckIfValidPlacementPos(Pos pos, int shipSize, ShipDirection direction, bool ruleBoatsCanTouch) {
+        private bool CheckIfValidPlacementPos(Pos pos, int shipSize, ShipDirection direction) {
             // Check if position is off board
             if (!CheckIfPosInBoard(pos)) {
                 return false;
@@ -164,10 +155,12 @@ namespace Domain {
             if (!CheckIfPosInBoard(maxPos)) {
                 return false;
             }
+            
+            var canTouch = Rule.GetRule(_rules, Rule.ShipsCanTouch) == 1;
 
             // Check if any ships already exist at that location
             foreach (var ship in _ships) {
-                if (ship.CheckIfIntersect(pos, shipSize, direction, ruleBoatsCanTouch)) {
+                if (ship.CheckIfIntersect(pos, shipSize, direction, canTouch)) {
                     return false;
                 }
             }
@@ -194,18 +187,20 @@ namespace Domain {
         
 
         public void GenBoard() {
+            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
             Console.WriteLine($"\n- player {Name}'s board:");
             
             // Generate horizontal border
             var stringBuilder = new StringBuilder();
-            for (int i = 0; i < _boardSize.X; i++) stringBuilder.Append("+-----");
+            for (int i = 0; i < boardSize; i++) 
+                stringBuilder.Append("+-----");
             stringBuilder.Append("+\n");
             var border = stringBuilder.ToString();
 
-            for (int i = 0; i < _boardSize.Y; i++) {
+            for (int i = 0; i < boardSize; i++) {
                 Console.Write(border);
 
-                for (int j = 0; j < _boardSize.X; j++) {
+                for (int j = 0; j < boardSize; j++) {
                     Console.Write("|  ");
 
                     var pos = new Pos(i, j);
