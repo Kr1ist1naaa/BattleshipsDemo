@@ -12,7 +12,6 @@ namespace Domain {
         private readonly HashSet<Pos> _movesAgainstThisPlayer;
         private readonly List<Rule> _rules;
         private readonly List<Ship.Ship> _ships;
-        private bool _isAlive = true;
 
         public Player(Menu menu, List<Rule> rules, string playerName, int playerNumber) {
             if (string.IsNullOrEmpty(playerName)) {
@@ -169,11 +168,6 @@ namespace Domain {
         }
 
         public bool IsAlive() {
-            // If flag is flipped return immediately instead of counting ship blocks
-            if (!_isAlive) {
-                return false;
-            }
-
             // Count each ship block individually, checking if there is at least one that's not hit
             foreach (var ship in _ships) {
                 if (!ship.IsDestroyed()) {
@@ -181,14 +175,13 @@ namespace Domain {
                 }
             }
 
-            return _isAlive = false;
+            return false;
         }
-        
-        
 
-        public void GenBoard() {
+        public IEnumerable<PrintCommand> GenPrivateBoard(bool isPrivate) {
             var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
-            Console.WriteLine($"\n- player {Name}'s board:");
+            
+            var commands = new List<PrintCommand>();
             
             // Generate horizontal border
             var stringBuilder = new StringBuilder();
@@ -198,43 +191,35 @@ namespace Domain {
             var border = stringBuilder.ToString();
 
             for (int i = 0; i < boardSize; i++) {
-                Console.Write(border);
+                commands.Add(new PrintCommand(border));
 
                 for (int j = 0; j < boardSize; j++) {
-                    Console.Write("|  ");
+                    commands.Add(new PrintCommand("|  "));
 
                     var pos = new Pos(i, j);
                     var ship = GetShipAtPosOrNull(pos);
 
                     if (ship == null) {
-                        if (_movesAgainstThisPlayer.Contains(pos)) {
-                            Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.Write(".");
-                            Console.ResetColor();
-                        } else {
-                            Console.Write(" ");
-                        }
+                        commands.Add(_movesAgainstThisPlayer.Contains(pos)
+                            ? new PrintCommand(".", ConsoleColor.Blue)
+                            : new PrintCommand(" "));
                     } else if (ship.IsDestroyed()) {
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.Write(ship.Symbol);
-                        Console.ResetColor();
+                        commands.Add(new PrintCommand(ship.Symbol.ToString(), ConsoleColor.Blue));
                     } else {
-                        if (_movesAgainstThisPlayer.Contains(pos)) {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write(ship.Symbol);
-                            Console.ResetColor();
-                        } else {
-                            Console.Write(ship.Symbol);
-                        }
+                        commands.Add(_movesAgainstThisPlayer.Contains(pos)
+                            ? new PrintCommand(ship.Symbol.ToString(), ConsoleColor.Red)
+                            : new PrintCommand(isPrivate ? " " : ship.Symbol.ToString()));
                     }
                     
-                    Console.Write("  ");
+                    commands.Add(new PrintCommand("  "));
                 }
                 
-                Console.Write("|\n");
+                commands.Add(new PrintCommand("|\n"));
             }
             
-            Console.Write(border);
+            commands.Add(new PrintCommand(border));
+
+            return commands;
         }
     }
 }

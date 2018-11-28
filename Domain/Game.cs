@@ -118,12 +118,13 @@ namespace Domain {
                     var nextPlayer = FindNextPlayer(player);
 
                     Console.WriteLine($"    - player {player.Name}'s turn to attack {nextPlayer.Name}");
-                    
+                                        
                     var move = player.AttackPlayer(nextPlayer);
                     
                     _moves.Add(move);
 
-                    player.GenBoard();
+                    Console.WriteLine($"\n- attacked player {nextPlayer.Name}'s board:");
+                    PrintCommand.Print(nextPlayer.GenPrivateBoard(true));
                     
                     // Check if target player is out of the game (all ships have been destroyed)
                     if (!nextPlayer.IsAlive()) {
