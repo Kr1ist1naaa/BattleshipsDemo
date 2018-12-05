@@ -3,43 +3,49 @@ using System;
 namespace Domain {
     public class Menu {
         private static readonly Random _rnd = new Random();
-        private const int boardSize = 10;
+        private static readonly int boardSize = 10;
 
-        public Menu() {
+        public void AskAttackCoords(out int posX, out int posY) {
+            Console.Write("    - x: ");
+            int.TryParse(Console.ReadLine(), out posX);
+
+            Console.Write("    - y: ");
+            int.TryParse(Console.ReadLine(), out posY);
+
+            //posX = _rnd.Next(0, boardSize);
+            //posY = _rnd.Next(0, boardSize);
         }
 
-        public bool AskAttackCoords(bool firstLoop, out int posX, out int posY) {
-            //Console.WriteLine(firstLoop ? "Please enter attack pos" : "Please enter <<VALID>> attack pos!");
+        public void AskShipPlacementPosition(out int posX, out int posY, out string direction) {
+            Console.Write("   - x: ");
+            //int.TryParse(Console.ReadLine(), out posX);
 
-            posX = _rnd.Next(0, boardSize);
-            posY = _rnd.Next(0, boardSize);
-
-            return false;
-        }
-
-        public bool AskShipPlacementPosition(bool firstLoop, out int posX, out int posY, out string direction) {
-            //Console.WriteLine(firstLoop ? "Please enter ship pos" : "Please enter <<VALID>> ship pos!");
+            Console.Write("   - y: ");
+            //int.TryParse(Console.ReadLine(), out posY);
+            
+            Console.Write("   - direction (right / down): ");
+            //direction = Console.ReadLine();
 
             posX = _rnd.Next(0, boardSize);
             posY = _rnd.Next(0, boardSize);
             direction = _rnd.Next(0, 2) == 1 ? "right" : "down";
-
-            return false;
         }
 
-        public bool AskPlayerName(bool firstLoop, int number, out string name) {
-            //Console.WriteLine(firstLoop ? "Please enter player name" : "Please enter <<VALID>> player name!");
-
+        public void AskPlayerName(int number, out string name) {
             name = $"Asd_{number}";
-
-            return false;
+            //name = Console.ReadLine();
         }
 
         public bool AskNewGame() {
             return false;
         }
 
-        public bool AskBaseRule(bool firstLoop, Rule rule) {
+        public void AskBaseRule(Rule rule) {
+            Console.Write($"  - {rule.RuleName}: ");
+            
+            //int.TryParse(Console.ReadLine(), out var val);
+            //rule.Value = val;
+            
             if (rule.RuleName == Rule.BoardSize.RuleName) {
                 rule.Value = 10;
             } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
@@ -49,8 +55,6 @@ namespace Domain {
             } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
                 rule.Value = 1;
             }
-
-            return false;
         }
     }
 }

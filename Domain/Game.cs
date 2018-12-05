@@ -14,21 +14,14 @@ namespace Domain {
             _menu = menu;
             _gameNumber = gameNumber;
             _rules = Rule.GenBaseRuleSet();
-            
-            InitializeRules();
-            
             _players = new List<Player>();
             _moves = new List<Move>();
-
-            InitializePlayers();
         }
-
-        private void InitializeRules() {
-            Console.WriteLine($"- creating rules for game nr {_gameNumber}");
+ 
+        public void InitializeRules() {
+            Console.WriteLine(" - please define rules:");
 
             foreach (var rule in Rule.GenBaseRuleSet()) {
-                var firstLoop = true;
-                
                 while (true) {
                     // If rule should be set elsewhere
                     if (!rule.AskOnInit) {
@@ -36,26 +29,26 @@ namespace Domain {
                     }
                     
                     // Ask player for rule value
-                    firstLoop = _menu.AskBaseRule(firstLoop, rule);
+                    _menu.AskBaseRule(rule);
 
                     if (rule.RuleName == Rule.BoardSize.RuleName) {
                         if (rule.Value < 2 || rule.Value > 128) {
-                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            Console.WriteLine("   - invalid value");
                             continue;
                         }
                     } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
                         if (rule.Value < 2 || rule.Value > 128) {
-                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            Console.WriteLine("   - invalid value");
                              continue;
                         }
                     } else if (rule.RuleName == Rule.ShipCount.RuleName) {
                         if (rule.Value < 1 || rule.Value > 128) {
-                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            Console.WriteLine("   - invalid value");
                             continue;
                         }
                     } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
                         if (rule.Value < 0 || rule.Value > 1) {
-                            Console.WriteLine($"  - invalid value {rule.Value} for rule {rule.RuleName}");
+                            Console.WriteLine("   - invalid value");
                             continue;
                         }
                     }
@@ -63,48 +56,49 @@ namespace Domain {
                     break;
                 }
             }
-            
-            foreach (var rule in _rules) {
-                Console.WriteLine($"  - created rule {rule.RuleName} with value {rule.Value}");
-            }
         }
 
-        private void InitializePlayers() {
+        public void InitializePlayers() {
             var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
-            Console.WriteLine($"- creating {playerCount} players for game nr {_gameNumber}");
+            Console.WriteLine(" - please define players:");
             
             for (var i = 0; i < playerCount; i++) {
-                var firstLoop = true;
-            
                 while (true) {
+                    Console.Write($"  - player {i}'s name: ");
+                    
                     // Ask player for name
-                    firstLoop = _menu.AskPlayerName(firstLoop, i, out var name);
+                    _menu.AskPlayerName(i, out var name);
                     
                     // Check if name is valid
                     var isValidName = !string.IsNullOrEmpty(name);
                     if (!isValidName) continue;
-                    
-                    Console.WriteLine($"  - creating player {name} as player nr {i}");
+
                     var player = new Player(_menu, _rules, name, i);
-                    
-                    Console.WriteLine($"    - player {name} is now placing their ships");
-                    player.PlaceShips();
 
                     _players.Add(player);
                     break;
                 }
             }
+        }
 
-            Console.WriteLine($"- finished creating {playerCount} players for game nr {_gameNumber}");
+        public void InitializeShips() {
+            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
+            
+            for (var i = 0; i < playerCount; i++) {
+                var player = _players[i];
+
+                Console.WriteLine($" - please place {player.Name}'s ships: ");
+                player.PlaceShips();
+            }
         }
         
         public void StartGame() {
             var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
             Player winner = null;
-            Console.WriteLine("- starting game");
+            Console.WriteLine(" - starting game");
             
             while (true) {
-                Console.WriteLine($"  - beginning of turn {_turnCount}");
+                Console.WriteLine($" - beginning of turn {_turnCount}");
 
                 for (int i = 0; i < playerCount; i++) {
                     var player = _players[i];
@@ -117,7 +111,7 @@ namespace Domain {
                     // Find next player in list that is alive
                     var nextPlayer = FindNextPlayer(player);
 
-                    Console.WriteLine($"    - player {player.Name}'s turn to attack {nextPlayer.Name}");
+                    Console.WriteLine($"  - player {player.Name}'s turn to attack {nextPlayer.Name}");
                                         
                     var move = player.AttackPlayer(nextPlayer);
                     
@@ -128,11 +122,9 @@ namespace Domain {
                     
                     // Check if target player is out of the game (all ships have been destroyed)
                     if (!nextPlayer.IsAlive()) {
-                        Console.WriteLine($"    - {player.Name} knocked {nextPlayer.Name} out of the game!");
+                        Console.WriteLine($"   - {player.Name} knocked {nextPlayer.Name} out of the game!");
                     }
                 }
-
-                Console.WriteLine($"    - end of turn {++_turnCount}");
 
                 // Check if there is only one player left and therefore the winner of the game
                 for (int i = 0; i < playerCount; i++) {
@@ -153,7 +145,7 @@ namespace Domain {
                 }
             }
             
-            Console.WriteLine($"- the winner of game {_gameNumber} is {winner.Name} after {_turnCount} turns!");
+            Console.WriteLine($"\nThe winner of game {_gameNumber} is {winner.Name} after {_turnCount} turns!");
         }
 
         private Player FindNextPlayer(Player player) {

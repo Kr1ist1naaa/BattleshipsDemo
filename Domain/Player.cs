@@ -35,13 +35,12 @@ namespace Domain {
                 throw new NullReferenceException(nameof(target));
             }
 
-            var firstLoop = true;
             AttackResult attackResult;
             Pos pos;
 
             while (true) {
                 // Ask player for attack location
-                firstLoop = _menu.AskAttackCoords(firstLoop, out var posX, out var posY);
+                _menu.AskAttackCoords(out var posX, out var posY);
                 pos = new Pos(posX, posY);
 
                 // If method returned non-null ship, attack it
@@ -67,33 +66,37 @@ namespace Domain {
 
         public void PlaceShips() {
             foreach (var ship in _ships) {
-                var firstLoop = true;
-
                 while (true) {
+                    Console.WriteLine($"  - {ship.Title} (size {ship.Size}):");
+                    
                     // Ask player for placement location
-                    firstLoop = _menu.AskShipPlacementPosition(firstLoop, out var posX, out var posY, out var dir);
+                    _menu.AskShipPlacementPosition(out var posX, out var posY, out var dir);
                     var pos = new Pos(posX, posY);
 
                     ShipDirection direction;
-                    switch (dir) {
+                    switch (dir.ToLower()) {
                         case "right":
+                        case "r":
                             direction = ShipDirection.Right;
                             break;
                         case "down":
+                        case "d":
                             direction = ShipDirection.Down;
                             break;
                         default:
+                            Console.WriteLine("    - invalid direction");
                             continue;
                     }
 
                     // Check if player has already attacked there
                     var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction);
-                    if (!isValidPos) continue;
+                    if (!isValidPos) {
+                        Console.WriteLine("    - invalid position!:");
+                        continue;
+                    }
 
                     // Place the ship
                     ship.SetLocation(pos, direction);
-
-                    Console.WriteLine($"        - placed a {ship.Title} at coords {pos.X}x {pos.Y}y, direction {dir}");
                     break;
                 }
             }
@@ -180,7 +183,6 @@ namespace Domain {
 
         public IEnumerable<PrintCommand> GenPrivateBoard(bool isPrivate) {
             var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
-            
             var commands = new List<PrintCommand>();
             
             // Generate horizontal border

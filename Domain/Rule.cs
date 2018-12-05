@@ -35,7 +35,7 @@ namespace Domain {
             ShipPadding = new Rule {
                 RuleName = "shippadding",
                 Value = 1,
-                AskOnInit = false
+                AskOnInit = true
             };
         }
         
