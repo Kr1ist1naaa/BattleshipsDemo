@@ -47,16 +47,14 @@ namespace Domain {
                 attackResult = target.AttackAtPos(pos);
 
                 if (attackResult == AttackResult.InvalidAttack) {
-                    Console.WriteLine($"      - invalid attack at {pos.X}x {pos.Y}y");
+                    Console.WriteLine($"- invalid attack at {pos.X}x {pos.Y}y");
                     continue;
                 } 
                 
                 if (attackResult == AttackResult.DuplicateAttack) {
-                    Console.WriteLine($"      - can't attack duplicate location {pos.X}x {pos.Y}y");
+                    Console.WriteLine($"- can't attack duplicate location {pos.X}x {pos.Y}y");
                     continue;
                 }
-                
-                Console.WriteLine($"      - attack at location {pos.X}x {pos.Y}y");
                 
                 break;
             }
@@ -67,8 +65,11 @@ namespace Domain {
         public void PlaceShips() {
             foreach (var ship in _ships) {
                 while (true) {
-                    Console.WriteLine($"  - {ship.Title} (size {ship.Size}):");
-                    
+                    Console.Clear();
+                    PrintCommand.Print(GenPrivateBoard(false));
+                    Console.WriteLine($"Please place {Name}'s ships: ");
+                    Console.WriteLine($"  - place {ship.Title} (size {ship.Size}):");
+
                     // Ask player for placement location
                     _menu.AskShipPlacementPosition(out var posX, out var posY, out var dir);
                     var pos = new Pos(posX, posY);
@@ -84,16 +85,18 @@ namespace Domain {
                             direction = ShipDirection.Down;
                             break;
                         default:
-                            Console.WriteLine("    - invalid direction");
+                            Console.WriteLine("  - invalid direction");
                             continue;
                     }
 
                     // Check if player has already attacked there
                     var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction);
                     if (!isValidPos) {
-                        Console.WriteLine("    - invalid position!:");
+                        Console.WriteLine("  - invalid position!:");
                         continue;
                     }
+                    
+                    Console.ReadKey(true);
 
                     // Place the ship
                     ship.SetLocation(pos, direction);
