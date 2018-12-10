@@ -66,7 +66,7 @@ namespace Domain {
             foreach (var ship in _ships) {
                 while (true) {
                     Console.Clear();
-                    PrintCommand.Print(GenPrivateBoard(false));
+                    PrintBoard(false);
                     Console.WriteLine($"Please place {Name}'s ships: ");
                     Console.WriteLine($"  - place {ship.Title} (size {ship.Size}):");
 
@@ -184,47 +184,50 @@ namespace Domain {
             return false;
         }
 
-        public IEnumerable<PrintCommand> GenPrivateBoard(bool isPrivate) {
+        public void PrintBoard(bool isPrivate) {
             var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
-            var commands = new List<PrintCommand>();
-            
+
             // Generate horizontal border
             var stringBuilder = new StringBuilder();
             for (int i = 0; i < boardSize; i++) 
                 stringBuilder.Append("+-----");
-            stringBuilder.Append("+\n");
+            stringBuilder.Append("+");
             var border = stringBuilder.ToString();
-
+            
             for (int i = 0; i < boardSize; i++) {
-                commands.Add(new PrintCommand(border));
+                Console.WriteLine(border);
 
                 for (int j = 0; j < boardSize; j++) {
-                    commands.Add(new PrintCommand("|  "));
+                    Console.Write("|  ");
 
                     var pos = new Pos(i, j);
                     var ship = GetShipAtPosOrNull(pos);
 
                     if (ship == null) {
-                        commands.Add(_movesAgainstThisPlayer.Contains(pos)
-                            ? new PrintCommand(".", ConsoleColor.Blue)
-                            : new PrintCommand(" "));
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(_movesAgainstThisPlayer.Contains(pos) ? "." : " ");
+                        Console.ResetColor();
                     } else if (ship.IsDestroyed()) {
-                        commands.Add(new PrintCommand(ship.Symbol.ToString(), ConsoleColor.Blue));
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(ship.Symbol.ToString());
+                        Console.ResetColor();
                     } else {
-                        commands.Add(_movesAgainstThisPlayer.Contains(pos)
-                            ? new PrintCommand(ship.Symbol.ToString(), ConsoleColor.Red)
-                            : new PrintCommand(isPrivate ? " " : ship.Symbol.ToString()));
+                        if (_movesAgainstThisPlayer.Contains(pos)) {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(ship.Symbol.ToString());
+                            Console.ResetColor();
+                        } else {
+                            Console.Write(isPrivate ? " " : ship.Symbol.ToString());
+                        }
                     }
                     
-                    commands.Add(new PrintCommand("  "));
+                    Console.Write("  ");
                 }
                 
-                commands.Add(new PrintCommand("|\n"));
+                Console.WriteLine("|");
             }
             
-            commands.Add(new PrintCommand(border));
-
-            return commands;
+            Console.WriteLine(border);
         }
     }
 }

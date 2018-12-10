@@ -3,16 +3,21 @@ using System.Collections.Generic;
 
 namespace Domain {
     public class Game {
+        private static int _gameNumber = -1;
+        
         private readonly Menu _menu;
         private readonly List<Player> _players;
         private readonly List<Rule> _rules;
         private readonly List<Move> _moves;
-        private readonly int _gameNumber;
         private int _turnCount;
 
-        public Game(Menu menu, int gameNumber) {
+        public Game(Menu menu) {
+            _gameNumber++;
+            
+            Console.WriteLine($"  - starting game nr {_gameNumber}...");
+            Console.ReadKey(true);
+            
             _menu = menu;
-            _gameNumber = gameNumber;
             _rules = Rule.GenBaseRuleSet();
             _players = new List<Player>();
             _moves = new List<Move>();
@@ -119,7 +124,7 @@ namespace Domain {
                     var nextPlayer = FindNextPlayer(player);
 
                     Console.Clear();
-                    PrintCommand.Print(nextPlayer.GenPrivateBoard(true));
+                    nextPlayer.PrintBoard(true);
                     Console.WriteLine($"Turn {_turnCount}: {player.Name} is attacking {nextPlayer.Name}");
                                         
                     var move = player.AttackPlayer(nextPlayer);
@@ -128,7 +133,7 @@ namespace Domain {
                     Console.ReadKey(true);
                     
                     Console.Clear();
-                    PrintCommand.Print(nextPlayer.GenPrivateBoard(true));
+                    nextPlayer.PrintBoard(true);
                     Console.WriteLine($"Turn {_turnCount}: {player.Name} is attacking {nextPlayer.Name}");
                     Console.WriteLine($"- attack at location {move.Pos.X}x {move.Pos.Y}y");
                     Console.WriteLine($"  - it was a {move.AttackResult.ToString()}");
