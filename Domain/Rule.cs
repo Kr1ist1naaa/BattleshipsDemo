@@ -11,31 +11,77 @@ namespace Domain {
             return (from rule in rules where rule.RuleName == baseRule.RuleName select rule.Value).FirstOrDefault();
         }
 
-        public static readonly Rule BoardSize, PlayerCount, ShipCount, ShipPadding;
+        public static readonly Rule BoardSize, PlayerCount, ShipPadding;
+        public static readonly Rule CarrierCount, BattleshipCount, SubmarineCount, CruiserCount, PatrolCount;
+        public static readonly Rule CarrierSize, BattleshipSize, SubmarineSize, CruiserSize, PatrolSize;
         
         static Rule() {
             BoardSize = new Rule {
-                RuleName = "boardsize",
+                RuleName = "default_size_board",
                 Value = 10,
                 AskOnInit = true
             };
-            
             PlayerCount = new Rule {
-                RuleName = "playercount",
+                RuleName = "default_count_players",
                 Value = 2,
                 AskOnInit = true
             };
-            
-            ShipCount = new Rule {
-                RuleName = "shipcount",
-                Value = 5,
+            ShipPadding = new Rule {
+                RuleName = "default_ship_padding",
+                Value = 1,
                 AskOnInit = true
             };
             
-            ShipPadding = new Rule {
-                RuleName = "shippadding",
+            CarrierSize = new Rule {
+                RuleName = "ship_size_carrier",
+                Value = 5,
+                AskOnInit = false
+            };
+            BattleshipSize = new Rule {
+                RuleName = "ship_size_battleship",
+                Value = 4,
+                AskOnInit = false
+            };
+            SubmarineSize = new Rule {
+                RuleName = "ship_size_submarine",
+                Value = 3,
+                AskOnInit = false
+            };
+            CruiserSize = new Rule {
+                RuleName = "ship_size_cruiser",
+                Value = 2,
+                AskOnInit = false
+            };
+            PatrolSize = new Rule {
+                RuleName = "ship_size_patrol",
                 Value = 1,
-                AskOnInit = true
+                AskOnInit = false
+            };
+            
+            CarrierCount = new Rule {
+                RuleName = "ship_count_carrier",
+                Value = 1,
+                AskOnInit = false
+            };
+            BattleshipCount = new Rule {
+                RuleName = "ship_count_battleship",
+                Value = 1,
+                AskOnInit = false
+            };
+            SubmarineCount = new Rule {
+                RuleName = "ship_count_submarine",
+                Value = 1,
+                AskOnInit = false
+            };
+            CruiserCount = new Rule {
+                RuleName = "ship_count_cruiser",
+                Value = 1,
+                AskOnInit = false
+            };
+            PatrolCount = new Rule {
+                RuleName = "ship_count_patrol",
+                Value = 1,
+                AskOnInit = false
             };
         }
         
@@ -43,8 +89,17 @@ namespace Domain {
             return new List<Rule> {
                 new Rule(BoardSize),
                 new Rule(PlayerCount),
-                new Rule(ShipCount),
-                new Rule(ShipPadding)
+                new Rule(ShipPadding),
+                new Rule(CarrierCount),
+                new Rule(BattleshipCount),
+                new Rule(SubmarineCount),
+                new Rule(CruiserCount),
+                new Rule(PatrolCount),
+                new Rule(CarrierSize),
+                new Rule(BattleshipSize),
+                new Rule(SubmarineSize),
+                new Rule(CruiserSize),
+                new Rule(PatrolSize)
             };
         }
         

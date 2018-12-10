@@ -47,11 +47,6 @@ namespace Domain {
                             Console.WriteLine("   - invalid value");
                              continue;
                         }
-                    } else if (rule.RuleName == Rule.ShipCount.RuleName) {
-                        if (rule.Value < 1 || rule.Value > 128) {
-                            Console.WriteLine("   - invalid value");
-                            continue;
-                        }
                     } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
                         if (rule.Value < 0 || rule.Value > 1) {
                             Console.WriteLine("   - invalid value");

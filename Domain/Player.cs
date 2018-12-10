@@ -11,7 +11,7 @@ namespace Domain {
 
         private readonly HashSet<Pos> _movesAgainstThisPlayer;
         private readonly List<Rule> _rules;
-        private readonly List<Ship.Ship> _ships;
+        private List<Ship.Ship> _ships;
 
         public Player(Menu menu, List<Rule> rules, string playerName, int playerNumber) {
             if (string.IsNullOrEmpty(playerName)) {
@@ -22,7 +22,6 @@ namespace Domain {
                 throw new ArgumentOutOfRangeException(nameof(playerNumber));
             }
 
-            _ships = Ship.Ship.GenDefaultShipSet(_rules);
             _movesAgainstThisPlayer = new HashSet<Pos>();
             _menu = menu;
             Name = playerName;
@@ -63,6 +62,9 @@ namespace Domain {
         }
 
         public void PlaceShips() {
+            // Generate a set of ships for the player based on the current rules
+            _ships = Ship.Ship.GenShipSet(_rules);
+            
             foreach (var ship in _ships) {
                 while (true) {
                     Console.Clear();

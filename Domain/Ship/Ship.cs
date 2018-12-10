@@ -10,18 +10,18 @@ namespace Domain.Ship {
         public ShipDirection Direction;
         private ShipStatus[] _shipStatuses;
 
-        private Ship(Ship ship) {
-            Symbol = ship.Symbol;
-            Title = ship.Title;
-            Size = ship.Size;
-
-            CreateShipStatusBlocks();
-        }
-
         public Ship(string shipTitle, char shipSymbol, int shipSize) {
             Symbol = shipSymbol;
             Title = shipTitle;
             Size = shipSize;
+
+            CreateShipStatusBlocks();
+        }
+        
+        private Ship(Ship ship, int size) {
+            Symbol = ship.Symbol;
+            Title = ship.Title;
+            Size = size;
 
             CreateShipStatusBlocks();
         }
@@ -52,29 +52,6 @@ namespace Domain.Ship {
                     }
                 }
             }
-            
-/*
-            // This is one retarded way of doing it, but hey, it works...
-            for (int i = 0; i < Size; i++) {
-                var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
-                var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
-
-                for (int j = 0; j < newSize; j++) {
-                    var newPosX = newPos.X + (newDirection == ShipDirection.Right ? j : 0);
-                    var newPosY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : j);
-
-                    if (canTouch) {
-                        if (shipPosX == newPosX && shipPosY == newPosY) {
-                            return true;
-                        }
-                    } else {
-                        if (newPosX > shipPosX - 2 && newPosX < shipPosX + 2 && 
-                            newPosY > shipPosY - 2 && newPosY < shipPosY + 2) {
-                            return true;
-                        }
-                    }
-                }
-            }*/
 
             return false;
         }
@@ -145,15 +122,27 @@ namespace Domain.Ship {
             Patrol = new Ship("Patrol", 'p', 1);
         }
 
+        public static List<Ship> GenShipSet(List<Rule> rules) {
+            var ships = new List<Ship>();
+            
+            // Create the number of ships defined by users
+            for (int i = 0; i < Rule.GetRule(rules, Rule.CarrierCount); i++) {
+                ships.Add(new Ship(Carrier, Rule.CarrierSize.Value));
+            }
+            for (int i = 0; i < Rule.GetRule(rules, Rule.BattleshipCount); i++) {
+                ships.Add(new Ship(Battleship, Rule.BattleshipSize.Value));
+            }
+            for (int i = 0; i < Rule.GetRule(rules, Rule.SubmarineCount); i++) {
+                ships.Add(new Ship(Submarine, Rule.SubmarineSize.Value));
+            }
+            for (int i = 0; i < Rule.GetRule(rules, Rule.CruiserCount); i++) {
+                ships.Add(new Ship(Cruiser, Rule.CruiserSize.Value));
+            }
+            for (int i = 0; i < Rule.GetRule(rules, Rule.PatrolCount); i++) {
+                ships.Add(new Ship(Patrol, Rule.PatrolSize.Value));
+            }
 
-        public static List<Ship> GenDefaultShipSet(List<Rule> rules) {
-            return new List<Ship> {
-                new Ship(Carrier),
-                new Ship(Battleship),
-                new Ship(Submarine),
-                new Ship(Cruiser),
-                new Ship(Patrol)
-            };
+            return ships;
         }
     }
 }

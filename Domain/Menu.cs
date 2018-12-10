@@ -69,8 +69,6 @@ namespace Domain {
                 rule.Value = boardSize;
             } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
                 rule.Value = 2;
-            } else if (rule.RuleName == Rule.ShipCount.RuleName) {
-                rule.Value = 5;
             } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
                 rule.Value = 0;
             }
