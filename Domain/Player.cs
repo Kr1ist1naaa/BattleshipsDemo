@@ -68,9 +68,8 @@ namespace Domain {
             foreach (var ship in _ships) {
                 while (true) {
                     Console.Clear();
-                    PrintBoard(false);
-                    Console.WriteLine($"Please place {Name}'s ships: ");
-                    Console.WriteLine($"  - place {ship.Title} (size {ship.Size}):");
+                    PrintBoard("Ship placement");
+                    Console.WriteLine($"- place {ship.Title} (size {ship.Size}):");
 
                     // Ask player for placement location
                     _menu.AskShipPlacementPosition(out var posX, out var posY, out var dir);
@@ -87,14 +86,14 @@ namespace Domain {
                             direction = ShipDirection.Down;
                             break;
                         default:
-                            Console.WriteLine("  - invalid direction");
+                            Console.WriteLine("- invalid direction");
                             continue;
                     }
 
                     // Check if player has already attacked there
                     var isValidPos = CheckIfValidPlacementPos(pos, ship.Size, direction);
                     if (!isValidPos) {
-                        Console.WriteLine("  - invalid position!:");
+                        Console.WriteLine("- invalid position");
                         continue;
                     }
                     
@@ -186,7 +185,7 @@ namespace Domain {
             return false;
         }
 
-        public void PrintBoard(bool isPrivate) {
+        public void PrintBoard(string title) {
             var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
 
             // Generate horizontal border
@@ -195,6 +194,9 @@ namespace Domain {
                 stringBuilder.Append("+-----");
             stringBuilder.Append("+");
             var border = stringBuilder.ToString();
+            
+            // Center and print title
+            Console.WriteLine(new string(' ', (border.Length - title.Length) / 2) + title);
             
             for (int i = 0; i < boardSize; i++) {
                 Console.WriteLine(border);
@@ -219,7 +221,7 @@ namespace Domain {
                             Console.Write(ship.Symbol.ToString());
                             Console.ResetColor();
                         } else {
-                            Console.Write(isPrivate ? " " : ship.Symbol.ToString());
+                            Console.Write(ship.Symbol.ToString());
                         }
                     }
                     
@@ -230,6 +232,93 @@ namespace Domain {
             }
             
             Console.WriteLine(border);
+        }
+
+        public void PrintTwoBoards(Player nextPlayer) {
+            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
+            const string gap = "     ";
+
+            // Generate horizontal border
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < boardSize; i++) 
+                stringBuilder.Append("+-----");
+            stringBuilder.Append("+");
+            var border = stringBuilder.ToString();
+
+            // Center and print "Your board:" and "Enemy's board:"
+            const string title1 = "Your board";
+            const string title2 = "Enemy's board";
+            var leftLeftPad = new string(' ', (border.Length - title1.Length) / 2);
+            var leftRightPad = new string(' ', border.Length - title1.Length - leftLeftPad.Length);
+            var rightRightPad = new string(' ', (border.Length - title2.Length) / 2);
+            var rightLeftPad = new string(' ', border.Length - title2.Length - rightRightPad.Length);
+            Console.WriteLine(leftLeftPad + title1 + leftRightPad + gap + rightRightPad + title2 + rightLeftPad);
+            
+            for (int i = 0; i < boardSize; i++) {
+                Console.WriteLine(border + gap + border);
+
+                // Your board horizontal line
+                for (int j = 0; j < boardSize; j++) {
+                    Console.Write("|  ");
+
+                    var pos = new Pos(i, j);
+                    var ship = GetShipAtPosOrNull(pos);
+
+                    if (ship == null) {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(_movesAgainstThisPlayer.Contains(pos) ? "." : " ");
+                        Console.ResetColor();
+                    } else if (ship.IsDestroyed()) {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(ship.Symbol.ToString());
+                        Console.ResetColor();
+                    } else {
+                        if (_movesAgainstThisPlayer.Contains(pos)) {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(ship.Symbol.ToString());
+                            Console.ResetColor();
+                        } else {
+                            Console.Write(ship.Symbol.ToString());
+                        }
+                    }
+                    
+                    Console.Write("  ");
+                }
+                
+                Console.Write("|" + gap);
+                
+                // Enemy board horizontal line
+                for (int j = 0; j < boardSize; j++) {
+                    Console.Write("|  ");
+
+                    var pos = new Pos(i, j);
+                    var ship = nextPlayer.GetShipAtPosOrNull(pos);
+
+                    if (ship == null) {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(nextPlayer._movesAgainstThisPlayer.Contains(pos) ? "." : " ");
+                        Console.ResetColor();
+                    } else if (ship.IsDestroyed()) {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write(ship.Symbol.ToString());
+                        Console.ResetColor();
+                    } else {
+                        if (nextPlayer._movesAgainstThisPlayer.Contains(pos)) {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(ship.Symbol.ToString());
+                            Console.ResetColor();
+                        } else {
+                            Console.Write(" ");
+                        }
+                    }
+                    
+                    Console.Write("  ");
+                }
+
+                Console.WriteLine("|");
+            }
+            
+            Console.WriteLine(border + gap + border);
         }
     }
 }

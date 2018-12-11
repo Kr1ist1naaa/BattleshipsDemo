@@ -69,7 +69,7 @@ namespace Domain {
             
             for (var i = 0; i < playerCount; i++) {
                 while (true) {
-                    Console.WriteLine($"  - player {i}'s : ");
+                    Console.WriteLine($"  - player {i}  : ");
                     
                     // Ask player for name
                     _menu.AskPlayerName(i, out var name);
@@ -93,6 +93,10 @@ namespace Domain {
 
             for (var i = 0; i < playerCount; i++) {
                 var player = _players[i];
+                
+                Console.Clear();
+                Console.WriteLine($"Please place {player.Name}'s ships...");
+                Console.ReadKey(true);
 
                 player.PlaceShips();
             }
@@ -115,11 +119,15 @@ namespace Domain {
                         continue;
                     }
                     
+                    Console.Clear();
+                    Console.WriteLine($"It is now {player.Name}'s turn");
+                    Console.ReadKey(true);
+                    
                     // Find next player in list that is alive
                     var nextPlayer = FindNextPlayer(player);
 
                     Console.Clear();
-                    nextPlayer.PrintBoard(true);
+                    player.PrintTwoBoards(nextPlayer);
                     Console.WriteLine($"Turn {_turnCount}: {player.Name} is attacking {nextPlayer.Name}");
                                         
                     var move = player.AttackPlayer(nextPlayer);
@@ -128,7 +136,7 @@ namespace Domain {
                     Console.ReadKey(true);
                     
                     Console.Clear();
-                    nextPlayer.PrintBoard(true);
+                    player.PrintTwoBoards(nextPlayer);
                     Console.WriteLine($"Turn {_turnCount}: {player.Name} is attacking {nextPlayer.Name}");
                     Console.WriteLine($"- attack at location {move.Pos.X}x {move.Pos.Y}y");
                     Console.WriteLine($"  - it was a {move.AttackResult.ToString()}");
@@ -159,6 +167,10 @@ namespace Domain {
                 if (winner != null) {
                     break;
                 }
+                
+                Console.Clear();
+                Console.WriteLine($"End of round {_turnCount}");
+                Console.ReadKey(true);
 
                 _turnCount++;
             }

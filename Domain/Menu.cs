@@ -23,17 +23,17 @@ namespace Domain {
             posY = _rnd.Next(0, boardSize);
             direction = _rnd.Next(0, 2) == 1 ? "right" : "down";
             
-            //Console.Write("    - x: ");
+            //Console.Write("  - x: ");
             //int.TryParse(Console.ReadLine(), out posX);
-            Console.WriteLine($"    - x: {posX}");
+            Console.WriteLine($"  - x: {posX}");
 
-            //Console.Write("    - y: ");
+            //Console.Write("  - y: ");
             //int.TryParse(Console.ReadLine(), out posY);
-            Console.WriteLine($"    - y: {posY}");
+            Console.WriteLine($"  - y: {posY}");
             
-            //Console.Write("    - direction (right / down): ");
+            //Console.Write("  - direction (right / down): ");
             //direction = Console.ReadLine();
-            Console.WriteLine($"    - direction (right / down): {direction}");
+            Console.WriteLine($"  - direction (right / down): {direction}");
         }
 
         public void AskPlayerName(int number, out string name) {

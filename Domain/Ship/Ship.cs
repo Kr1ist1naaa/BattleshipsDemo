@@ -6,8 +6,8 @@ namespace Domain.Ship {
         public readonly string Title;
         public readonly char Symbol;
         public readonly int Size;
-        public Pos ShipPos;
-        public ShipDirection Direction;
+        private Pos _shipPos;
+        private ShipDirection _direction;
         private ShipStatus[] _shipStatuses;
 
         public Ship(string shipTitle, char shipSymbol, int shipSize) {
@@ -27,13 +27,13 @@ namespace Domain.Ship {
         }
         
         public void SetLocation(Pos pos, ShipDirection direction) {
-            Direction = direction;
-            ShipPos = new Pos(pos);
+            _direction = direction;
+            _shipPos = new Pos(pos);
         }
 
         public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, int padding) {
             // Ship hasn't been placed yet
-            if (ShipPos == null) {
+            if (_shipPos == null) {
                 return false;
             }
 
@@ -43,8 +43,8 @@ namespace Domain.Ship {
                 var newPosOffsetY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : offset);
 
                 for (int i = 0; i < Size; i++) {
-                    var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
-                    var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
+                    var shipPosX = _shipPos.X + (_direction == ShipDirection.Right ? i : 0);
+                    var shipPosY = _shipPos.Y + (_direction == ShipDirection.Right ? 0 : i);
                     
                     if (shipPosX >= newPosOffsetX - padding && shipPosX <= newPosOffsetX + padding && 
                         shipPosY >= newPosOffsetY - padding && shipPosY <= newPosOffsetY + padding) {
@@ -58,13 +58,13 @@ namespace Domain.Ship {
 
         public bool IsAtPos(Pos pos) {
             // Ship hasn't been placed yet
-            if (ShipPos == null) {
+            if (_shipPos == null) {
                 return false;
             }
 
             for (int i = 0; i < Size; i++) {
-                var shipBlockPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
-                var shipBlockPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
+                var shipBlockPosX = _shipPos.X + (_direction == ShipDirection.Right ? i : 0);
+                var shipBlockPosY = _shipPos.Y + (_direction == ShipDirection.Right ? 0 : i);
 
                 if (shipBlockPosX == pos.X && shipBlockPosY == pos.Y) {
                     return true;
@@ -81,10 +81,10 @@ namespace Domain.Ship {
             }
             
             // Depending on the direction of the ship, set the local status tracker to hit
-            if (Direction == ShipDirection.Right) {
-                _shipStatuses[pos.X - ShipPos.X] = ShipStatus.Hit;
+            if (_direction == ShipDirection.Right) {
+                _shipStatuses[pos.X - _shipPos.X] = ShipStatus.Hit;
             } else {
-                _shipStatuses[pos.Y - ShipPos.Y] = ShipStatus.Hit;
+                _shipStatuses[pos.Y - _shipPos.Y] = ShipStatus.Hit;
             }
 
             return IsDestroyed() ? AttackResult.Sink : AttackResult.Hit;
@@ -126,20 +126,20 @@ namespace Domain.Ship {
             var ships = new List<Ship>();
             
             // Create the number of ships defined by users
-            for (int i = 0; i < Rule.GetRule(rules, Rule.CarrierCount); i++) {
-                ships.Add(new Ship(Carrier, Rule.CarrierSize.Value));
+            for (var i = 0; i < Rule.GetRule(rules, Rule.CarrierCount); i++) {
+                ships.Add(new Ship(Carrier, Rule.GetRule(rules, Rule.CarrierSize)));
             }
-            for (int i = 0; i < Rule.GetRule(rules, Rule.BattleshipCount); i++) {
-                ships.Add(new Ship(Battleship, Rule.BattleshipSize.Value));
+            for (var i = 0; i < Rule.GetRule(rules, Rule.BattleshipCount); i++) {
+                ships.Add(new Ship(Battleship, Rule.GetRule(rules, Rule.BattleshipSize)));
             }
-            for (int i = 0; i < Rule.GetRule(rules, Rule.SubmarineCount); i++) {
-                ships.Add(new Ship(Submarine, Rule.SubmarineSize.Value));
+            for (var i = 0; i < Rule.GetRule(rules, Rule.SubmarineCount); i++) {
+                ships.Add(new Ship(Submarine, Rule.GetRule(rules, Rule.SubmarineSize)));
             }
-            for (int i = 0; i < Rule.GetRule(rules, Rule.CruiserCount); i++) {
-                ships.Add(new Ship(Cruiser, Rule.CruiserSize.Value));
+            for (var i = 0; i < Rule.GetRule(rules, Rule.CruiserCount); i++) {
+                ships.Add(new Ship(Cruiser, Rule.GetRule(rules, Rule.CruiserSize)));
             }
-            for (int i = 0; i < Rule.GetRule(rules, Rule.PatrolCount); i++) {
-                ships.Add(new Ship(Patrol, Rule.PatrolSize.Value));
+            for (var i = 0; i < Rule.GetRule(rules, Rule.PatrolCount); i++) {
+                ships.Add(new Ship(Patrol, Rule.GetRule(rules, Rule.PatrolSize)));
             }
 
             return ships;
