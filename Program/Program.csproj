@@ -44,6 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj">
+      <Project>{8d5d6944-7bae-4389-9592-e2e3007eb454}</Project>
+      <Name>MenuSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Domain.Rule;
 
 namespace Domain {
     public class Game {
@@ -7,7 +8,6 @@ namespace Domain {
         
         private readonly Menu _menu;
         private readonly List<Player> _players;
-        private readonly List<Rule> _rules;
         private readonly List<Move> _moves;
         private int _turnCount;
 
@@ -18,56 +18,15 @@ namespace Domain {
             Console.ReadKey(true);
             
             _menu = menu;
-            _rules = Rule.GenBaseRuleSet();
             _players = new List<Player>();
             _moves = new List<Move>();
         }
- 
-        public void InitializeRules() {
-            Console.Clear();
-            Console.WriteLine($"Please define rules for game nr {_gameNumber}:");
-
-            foreach (var rule in _rules) {
-                while (true) {
-                    // If rule should be set elsewhere
-                    if (!rule.AskOnInit) {
-                        break;
-                    }
-                    
-                    // Ask player for rule value
-                    _menu.AskBaseRule(rule);
-
-                    if (rule.RuleName == Rule.BoardSize.RuleName) {
-                        if (rule.Value < 2 || rule.Value > 128) {
-                            Console.WriteLine("   - invalid value");
-                            continue;
-                        }
-                    } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
-                        if (rule.Value < 2 || rule.Value > 128) {
-                            Console.WriteLine("   - invalid value");
-                             continue;
-                        }
-                    } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
-                        if (rule.Value < 0 || rule.Value > 1) {
-                            Console.WriteLine("   - invalid value");
-                            continue;
-                        }
-                    }
-                    
-                    Console.ReadKey(true);
-                    
-                    break;
-                }
-            }
-        }
 
         public void InitializePlayers() {
-            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
-            
             Console.Clear();
             Console.WriteLine("Please create players:");
             
-            for (var i = 0; i < playerCount; i++) {
+            for (var i = 0; i < Rules.GetVal(RuleType.PlayerCount); i++) {
                 while (true) {
                     Console.WriteLine($"  - player {i}  : ");
                     
@@ -78,7 +37,7 @@ namespace Domain {
                     var isValidName = !string.IsNullOrEmpty(name);
                     if (!isValidName) continue;
 
-                    var player = new Player(_menu, _rules, name, i);
+                    var player = new Player(_menu, name, i);
 
                     _players.Add(player);
                     break;
@@ -89,9 +48,7 @@ namespace Domain {
         }
 
         public void InitializeShips() {
-            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
-
-            for (var i = 0; i < playerCount; i++) {
+            for (var i = 0; i < Rules.GetVal(RuleType.PlayerCount); i++) {
                 var player = _players[i];
                 
                 Console.Clear();
@@ -103,7 +60,7 @@ namespace Domain {
         }
         
         public void StartGame() {
-            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
+            var playerCount = Rules.GetVal(RuleType.PlayerCount);
             Player winner = null;
             
             Console.Clear();
@@ -185,7 +142,7 @@ namespace Domain {
                 throw new NullReferenceException(nameof(player));
             }
             
-            var playerCount = Rule.GetRule(_rules, Rule.PlayerCount);
+            var playerCount = Rules.GetVal(RuleType.PlayerCount);
             Player nextPlayer = null;
 
             for (int i = 0; i < playerCount; i++) {

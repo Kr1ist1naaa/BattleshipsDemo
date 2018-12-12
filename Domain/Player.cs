@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Domain.Rule;
 using Domain.Ship;
 
 namespace Domain {
@@ -10,10 +11,9 @@ namespace Domain {
         public readonly int PlayerNumber;
 
         private readonly HashSet<Pos> _movesAgainstThisPlayer;
-        private readonly List<Rule> _rules;
         private List<Ship.Ship> _ships;
 
-        public Player(Menu menu, List<Rule> rules, string playerName, int playerNumber) {
+        public Player(Menu menu, string playerName, int playerNumber) {
             if (string.IsNullOrEmpty(playerName)) {
                 throw new ArgumentOutOfRangeException(nameof(playerName));
             }
@@ -26,7 +26,6 @@ namespace Domain {
             _menu = menu;
             Name = playerName;
             PlayerNumber = playerNumber;
-            _rules = rules;
         }
 
         public Move AttackPlayer(Player target) {
@@ -63,7 +62,7 @@ namespace Domain {
 
         public void PlaceShips() {
             // Generate a set of ships for the player based on the current rules
-            _ships = Ship.Ship.GenShipSet(_rules);
+            _ships = Ship.Ship.GenShipSet();
             
             foreach (var ship in _ships) {
                 while (true) {
@@ -107,7 +106,7 @@ namespace Domain {
         }
 
         private bool CheckIfPosInBoard(Pos pos) {
-            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
+            var boardSize = Rules.GetVal(RuleType.BoardSize);
             
             // Out of bounds
             if (pos.X < 0 || pos.X >= boardSize) return false;
@@ -162,7 +161,7 @@ namespace Domain {
                 return false;
             }
             
-            var padding = Rule.GetRule(_rules, Rule.ShipPadding);
+            var padding = Rules.GetVal(RuleType.ShipPadding);
 
             // Check if any ships already exist at that location
             foreach (var ship in _ships) {
@@ -186,7 +185,7 @@ namespace Domain {
         }
 
         public void PrintBoard(string title) {
-            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
+            var boardSize = Rules.GetVal(RuleType.BoardSize);
 
             // Generate horizontal border
             var stringBuilder = new StringBuilder();
@@ -235,7 +234,7 @@ namespace Domain {
         }
 
         public void PrintTwoBoards(Player nextPlayer) {
-            var boardSize = Rule.GetRule(_rules, Rule.BoardSize);
+            var boardSize = Rules.GetVal(RuleType.BoardSize);
             const string gap = "     ";
 
             // Generate horizontal border

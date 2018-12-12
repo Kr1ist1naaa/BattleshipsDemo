@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Domain.Rule;
 
 namespace Domain.Ship {
     public class Ship {
@@ -122,24 +123,24 @@ namespace Domain.Ship {
             Patrol = new Ship("Patrol", 'p', 1);
         }
 
-        public static List<Ship> GenShipSet(List<Rule> rules) {
+        public static List<Ship> GenShipSet() {
             var ships = new List<Ship>();
             
-            // Create the number of ships defined by users
-            for (var i = 0; i < Rule.GetRule(rules, Rule.CarrierCount); i++) {
-                ships.Add(new Ship(Carrier, Rule.GetRule(rules, Rule.CarrierSize)));
+            // Create the ships defined by rules
+            for (var i = 0; i < Rules.GetVal(RuleType.CountCarrier); i++) {
+                ships.Add(new Ship(Carrier, Rules.GetVal(RuleType.SizeCarrier)));
             }
-            for (var i = 0; i < Rule.GetRule(rules, Rule.BattleshipCount); i++) {
-                ships.Add(new Ship(Battleship, Rule.GetRule(rules, Rule.BattleshipSize)));
+            for (var i = 0; i < Rules.GetVal(RuleType.CountBattleship); i++) {
+                ships.Add(new Ship(Battleship, Rules.GetVal(RuleType.SizeBattleship)));
             }
-            for (var i = 0; i < Rule.GetRule(rules, Rule.SubmarineCount); i++) {
-                ships.Add(new Ship(Submarine, Rule.GetRule(rules, Rule.SubmarineSize)));
+            for (var i = 0; i < Rules.GetVal(RuleType.CountSubmarine); i++) {
+                ships.Add(new Ship(Submarine, Rules.GetVal(RuleType.SizeSubmarine)));
             }
-            for (var i = 0; i < Rule.GetRule(rules, Rule.CruiserCount); i++) {
-                ships.Add(new Ship(Cruiser, Rule.GetRule(rules, Rule.CruiserSize)));
+            for (var i = 0; i < Rules.GetVal(RuleType.CountCruiser); i++) {
+                ships.Add(new Ship(Cruiser, Rules.GetVal(RuleType.SizeCruiser)));
             }
-            for (var i = 0; i < Rule.GetRule(rules, Rule.PatrolCount); i++) {
-                ships.Add(new Ship(Patrol, Rule.GetRule(rules, Rule.PatrolSize)));
+            for (var i = 0; i < Rules.GetVal(RuleType.CountPatrol); i++) {
+                ships.Add(new Ship(Patrol, Rules.GetVal(RuleType.SizePatrol)));
             }
 
             return ships;

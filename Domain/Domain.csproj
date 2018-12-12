@@ -46,13 +46,12 @@
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rule.cs" />
+    <Compile Include="Rule\BaseRule.cs" />
+    <Compile Include="Rule\Rules.cs" />
+    <Compile Include="Rule\RuleType.cs" />
     <Compile Include="Ship\Ship.cs" />
     <Compile Include="Ship\ShipDirection.cs" />
     <Compile Include="Ship\ShipStatus.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

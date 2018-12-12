@@ -44,40 +44,6 @@ namespace Domain {
             Console.WriteLine($"    - name: {name}");
         }
 
-        public bool AskNewGame() {
-            string newGame;
-            
-            while (true) {
-                Console.Clear();
-                Console.Write("Start a new game (y/n): ");
-                newGame = Console.ReadLine();
 
-                if (string.IsNullOrEmpty(newGame)) {
-                    continue;
-                }
-
-                if (newGame.Equals("y") || newGame.Equals("n")) {
-                    break;
-                }
-            }
-
-            return newGame == "y";
-        }
-
-        public void AskBaseRule(Rule rule) {
-            if (rule.RuleName == Rule.BoardSize.RuleName) {
-                rule.Value = boardSize;
-            } else if (rule.RuleName == Rule.PlayerCount.RuleName) {
-                rule.Value = 2;
-            } else if (rule.RuleName == Rule.ShipPadding.RuleName) {
-                rule.Value = 0;
-            }
-            
-            //Console.Write($"  - {rule.RuleName}: ");
-            Console.WriteLine($"  - {rule.RuleName}: {rule.Value}");
-
-            //int.TryParse(Console.ReadLine(), out var val);
-            //rule.Value = val;
-        }
     }
 }
