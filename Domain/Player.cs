@@ -11,7 +11,7 @@ namespace Domain {
         public readonly int PlayerNumber;
 
         private readonly HashSet<Pos> _movesAgainstThisPlayer;
-        private List<Ship.Ship> _ships;
+        private List<BaseShip> _ships;
 
         public Player(Menu menu, string playerName, int playerNumber) {
             if (string.IsNullOrEmpty(playerName)) {
@@ -62,7 +62,7 @@ namespace Domain {
 
         public void PlaceShips() {
             // Generate a set of ships for the player based on the current rules
-            _ships = Ship.Ship.GenShipSet();
+            _ships = Ships.GenShipSet();
             
             foreach (var ship in _ships) {
                 while (true) {
@@ -134,7 +134,7 @@ namespace Domain {
             return ship.AttackAtPos(pos);
         }
         
-        private Ship.Ship GetShipAtPosOrNull(Pos pos) {
+        private BaseShip GetShipAtPosOrNull(Pos pos) {
             foreach (var ship in _ships) {
                 if (ship.IsAtPos(pos)) {
                     return ship;

@@ -49,9 +49,11 @@
     <Compile Include="Rule\BaseRule.cs" />
     <Compile Include="Rule\Rules.cs" />
     <Compile Include="Rule\RuleType.cs" />
-    <Compile Include="Ship\Ship.cs" />
+    <Compile Include="Ship\BaseShip.cs" />
     <Compile Include="Ship\ShipDirection.cs" />
+    <Compile Include="Ship\Ships.cs" />
     <Compile Include="Ship\ShipStatus.cs" />
+    <Compile Include="Ship\ShipType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

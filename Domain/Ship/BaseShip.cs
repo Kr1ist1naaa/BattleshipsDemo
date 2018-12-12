@@ -1,31 +1,60 @@
 using System;
-using System.Collections.Generic;
 using Domain.Rule;
 
 namespace Domain.Ship {
-    public class Ship {
-        public readonly string Title;
-        public readonly char Symbol;
-        public readonly int Size;
+    public class BaseShip {
+        public ShipType Type;
+        public RuleType SizeRule;
+        public string Title;
+        public char Symbol;
+        public int Size;
+        
         private Pos _shipPos;
         private ShipDirection _direction;
         private ShipStatus[] _shipStatuses;
 
-        public Ship(string shipTitle, char shipSymbol, int shipSize) {
-            Symbol = shipSymbol;
-            Title = shipTitle;
-            Size = shipSize;
-
+        public BaseShip(BaseShip baseShip) {
+            SizeRule = baseShip.SizeRule;
+            Symbol = baseShip.Symbol;
+            Title = baseShip.Title;
+            Size = baseShip.Size;
+            Type = baseShip.Type;
+            
             CreateShipStatusBlocks();
         }
         
-        private Ship(Ship ship, int size) {
-            Symbol = ship.Symbol;
-            Title = ship.Title;
-            Size = size;
+        public BaseShip() {}
+        
+        public override bool Equals(object obj) {
+            if (obj == null) {
+                return false;
+            }
 
-            CreateShipStatusBlocks();
+            if (typeof(BaseShip) != obj.GetType()) {
+                return false;
+            }
+
+            var other = (BaseShip) obj;
+
+            if (Type != other.Type) {
+                return false;
+            }
+            
+            if (Symbol != other.Symbol) {
+                return false;
+            }
+
+            return true;
         }
+
+        public override int GetHashCode() {
+            var hash = 3;
+
+            if (Symbol != null) hash = 53 * hash + Symbol.GetHashCode();
+
+            return hash;
+        }
+        
         
         public void SetLocation(Pos pos, ShipDirection direction) {
             _direction = direction;
@@ -107,43 +136,6 @@ namespace Domain.Ship {
             for (int i = 0; i < Size; i++) {
                 _shipStatuses[i] = ShipStatus.Ok;
             }
-        }
-
-        
-        
-        
-        
-        private static readonly Ship Carrier, Battleship, Submarine, Cruiser, Patrol;
-        
-        static Ship() {
-            Carrier = new Ship("Carrier", 'C', 5);
-            Battleship = new Ship("Battleship", 'B', 4);
-            Submarine = new Ship("Submarine", 'S', 3);
-            Cruiser = new Ship("Cruiser", 'c', 2);
-            Patrol = new Ship("Patrol", 'p', 1);
-        }
-
-        public static List<Ship> GenShipSet() {
-            var ships = new List<Ship>();
-            
-            // Create the ships defined by rules
-            for (var i = 0; i < Rules.GetVal(RuleType.CountCarrier); i++) {
-                ships.Add(new Ship(Carrier, Rules.GetVal(RuleType.SizeCarrier)));
-            }
-            for (var i = 0; i < Rules.GetVal(RuleType.CountBattleship); i++) {
-                ships.Add(new Ship(Battleship, Rules.GetVal(RuleType.SizeBattleship)));
-            }
-            for (var i = 0; i < Rules.GetVal(RuleType.CountSubmarine); i++) {
-                ships.Add(new Ship(Submarine, Rules.GetVal(RuleType.SizeSubmarine)));
-            }
-            for (var i = 0; i < Rules.GetVal(RuleType.CountCruiser); i++) {
-                ships.Add(new Ship(Cruiser, Rules.GetVal(RuleType.SizeCruiser)));
-            }
-            for (var i = 0; i < Rules.GetVal(RuleType.CountPatrol); i++) {
-                ships.Add(new Ship(Patrol, Rules.GetVal(RuleType.SizePatrol)));
-            }
-
-            return ships;
         }
     }
 }
