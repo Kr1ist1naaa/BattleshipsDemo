@@ -26,7 +26,7 @@ namespace MenuSystem {
             
             MenuItems = new List<MenuItem> {
                 new MenuItem {
-                    Description = "Set default options",
+                    Description = "Reset to default",
                     RuleType = RuleType.ResetDefault,
                     Shortcut = "A"
                 },
@@ -64,6 +64,31 @@ namespace MenuSystem {
                     Description = Rules.GetRule(RuleType.CountPatrol).Description,
                     RuleType = RuleType.CountPatrol,
                     Shortcut = "H"
+                },
+                new MenuItem {
+                    Description = Rules.GetRule(RuleType.SizeCarrier).Description,
+                    RuleType = RuleType.SizeCarrier,
+                    Shortcut = "I"
+                },
+                new MenuItem {
+                    Description = Rules.GetRule(RuleType.SizeBattleship).Description,
+                    RuleType = RuleType.SizeBattleship,
+                    Shortcut = "J"
+                },
+                new MenuItem {
+                    Description = Rules.GetRule(RuleType.SizeSubmarine).Description,
+                    RuleType = RuleType.SizeSubmarine,
+                    Shortcut = "K"
+                },
+                new MenuItem {
+                    Description = Rules.GetRule(RuleType.SizeCruiser).Description,
+                    RuleType = RuleType.SizeCruiser,
+                    Shortcut = "L"
+                },
+                new MenuItem {
+                    Description = Rules.GetRule(RuleType.SizePatrol).Description,
+                    RuleType = RuleType.SizePatrol,
+                    Shortcut = "M"
                 }
             }
         };

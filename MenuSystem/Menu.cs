@@ -141,11 +141,13 @@ namespace MenuSystem {
             Console.Clear();
 
             var rule = Rules.GetRule(ruleType);
-            Console.WriteLine($"Min val is {rule.MinVal}, max is {rule.MaxVal}");
             
+            Console.WriteLine(rule.Description);
+            Console.WriteLine($"Current value is {rule.Value}");
+
             while (true) {
-                Console.WriteLine($"Changing option: {rule.RuleType} | Current value: {rule.Value}");
-                Console.WriteLine("Enter new value: ");
+                Console.WriteLine($"Enter new value between {rule.MinVal} and {rule.MaxVal}: ");
+                Console.Write("> ");
                 
                 var value = Console.ReadLine();
                 

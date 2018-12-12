@@ -6,91 +6,91 @@ namespace Domain.Rule {
         private static readonly HashSet<BaseRule> DefaultRuleSet = new HashSet<BaseRule> {
             new BaseRule {
                 RuleType = RuleType.BoardSize,
-                Description = "Size of board",
+                Description = "Set size of board",
                 Value = 10,
                 MinVal = 4,
                 MaxVal = 256
             },
             new BaseRule {
                 RuleType = RuleType.PlayerCount,
-                Description = "Player count",
+                Description = "Set player count",
                 Value = 2,
                 MinVal = 2,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.ShipPadding,
-                Description = "Amount of blocks to pad around ships",
+                Description = "Set ship padding",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 6
             },
             new BaseRule {
                 RuleType = RuleType.SizeCarrier,
-                Description = "Carrier size",
+                Description = "Set carrier size",
                 Value = 5,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.SizeBattleship,
-                Description = "Battleship size",
+                Description = "Set battleship size",
                 Value = 4,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.SizeSubmarine,
-                Description = "Submarine size",
+                Description = "Set submarine size",
                 Value = 3,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.SizeCruiser,
-                Description = "Cruiser size",
+                Description = "Set cruiser size",
                 Value = 2,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.SizePatrol,
-                Description = "Patrol size",
+                Description = "Set patrol size",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.CountCarrier,
-                Description = "Carrier count",
+                Description = "Set carrier count",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.CountBattleship,
-                Description = "Battleship count",
+                Description = "Set battleship count",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.CountSubmarine,
-                Description = "Submarine count",
+                Description = "Set submarine count",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.CountCruiser,
-                Description = "Cruiser count",
+                Description = "Set cruiser count",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
             },
             new BaseRule {
                 RuleType = RuleType.CountPatrol,
-                Description = "Patrol count",
+                Description = "Set patrol count",
                 Value = 1,
                 MinVal = 0,
                 MaxVal = 64
