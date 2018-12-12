@@ -9,21 +9,8 @@ namespace MenuSystem {
     public class Menu {
         public string Title { get; set; }
         public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
-
-        private MenuItem GoBackItem { get; set; } = new MenuItem {
-            Shortcut = "X",
-            Description = "Go back!"
-        };
-
-        private MenuItem QuitToMainItem { get; set; } = new MenuItem {
-            Shortcut = "Q",
-            Description = "Quit to main menu!"
-        };
-
+        public List<MenuType> MenuTypes { get; set; } = new List<MenuType>();
         public bool DisplayQuitToMainMenu { get; set; } = false;
-        public bool IsMainMenu { get; set; } = false;
-        public bool IsGameMenu { get; set; } = false;
-        public bool IsRulesMenu { get; set; } = false;
 
         private void PrintMenu() {
             var defaultMenuChoice = MenuItems.FirstOrDefault(m => m.IsDefaultChoice);
@@ -47,10 +34,10 @@ namespace MenuSystem {
 
             Console.WriteLine(sb.ToString());
 
-            Console.WriteLine(GoBackItem);
+            Console.WriteLine(Menus.GoBackItem);
 
             if (DisplayQuitToMainMenu) {
-                Console.WriteLine(QuitToMainItem);
+                Console.WriteLine(Menus.QuitToMainItem);
             }
 
             Console.Write(
@@ -69,11 +56,11 @@ namespace MenuSystem {
                 input = Console.ReadLine()?.ToUpper().Trim();
 
                 // shall we exit from this menu
-                if (input == GoBackItem.Shortcut) {
+                if (input == Menus.GoBackItem.Shortcut) {
                     break;
                 }
 
-                if (DisplayQuitToMainMenu && input == QuitToMainItem.Shortcut) {
+                if (DisplayQuitToMainMenu && input == Menus.QuitToMainItem.Shortcut) {
                     break; // jump out of the loop
                 }
 
@@ -87,19 +74,39 @@ namespace MenuSystem {
                     continue;
                 }
 
-                if (IsRulesMenu) {
-                    if (item.RuleType.Equals(RuleType.ResetDefault)) {
-                        Rules.ResetDefault();
-                    } else {
-                        OptionChangingFromMenu(item.RuleType);
-                    }
+                // User chose to set a rule value
+                if (MenuTypes[0] == MenuType.RulesMenu  && item.RuleType != null) {
+                    ChangeRuleValue(item.RuleType);
 
-                    Console.WriteLine("Option changed");
+                    Console.WriteLine("Rule changed");
                     Console.ReadKey(true);
                     continue;
                 }
 
-                if (IsGameMenu) {
+                // User chose to rest rules 
+                if (MenuTypes[0] == MenuType.RulesMenu && item.ActionToExecute != null) {
+                    item.ActionToExecute();
+                    
+                    switch (MenuTypes[1]) {
+                        case MenuType.MainRulesMenu:
+                            Console.WriteLine("All rules set to default");
+                            break;
+                        case MenuType.GeneralRulesMenu:
+                            Console.WriteLine("General rules set to default");
+                            break;
+                        case MenuType.ShipCountRulesMenu:
+                            Console.WriteLine("Ship count rules set to default");
+                            break;
+                        case MenuType.ShipSizeRulesMenu:
+                            Console.WriteLine("Ship size rules set to default");
+                            break;
+                    }
+                    
+                    Console.ReadKey(true);
+                    continue;
+                }
+                
+                if (MenuTypes[0] == MenuType.GameMenu) {
                     if (item.Shortcut.Equals("A")) {
                         //Game.FullGame();
                         continue;
@@ -122,22 +129,20 @@ namespace MenuSystem {
                 var chosenCommand = item.CommandToExecute();
                 input = chosenCommand;
 
-                if (IsMainMenu == false && chosenCommand == QuitToMainItem.Shortcut) {
+                if (MenuTypes[0] != MenuType.MainMenu && chosenCommand == Menus.QuitToMainItem.Shortcut) {
                     break;
                 }
 
-                if (chosenCommand != GoBackItem.Shortcut && chosenCommand != QuitToMainItem.Shortcut) {
+                if (chosenCommand != Menus.GoBackItem.Shortcut && chosenCommand != Menus.QuitToMainItem.Shortcut) {
                     Console.ReadKey(true);
                 }
 
-            } while (done != true);
-
+            } while (done == false);
 
             return input;
         }
 
-
-        private static void OptionChangingFromMenu(RuleType ruleType) {
+        private static void ChangeRuleValue(RuleType? ruleType) {
             Console.Clear();
 
             var rule = Rules.GetRule(ruleType);

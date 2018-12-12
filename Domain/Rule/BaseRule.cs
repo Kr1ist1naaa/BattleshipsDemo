@@ -2,8 +2,7 @@
 namespace Domain.Rule {
     public class BaseRule {
         public string Description;
-        public int Value;
-        public int MinVal, MaxVal;
+        public int Value, MinVal, MaxVal;
         public RuleType RuleType;
         
         public override bool Equals(object obj) {

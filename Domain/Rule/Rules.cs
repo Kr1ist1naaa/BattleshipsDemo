@@ -100,19 +100,65 @@ namespace Domain.Rule {
 
         static Rules() {
             // Create a set of base rules upon initialization 
-            ResetDefault();
+            ResetAllToDefault();
         }
 
-        public static void ResetDefault() {
-            RuleSet.Clear();
-            
-            // Recreate base rules based on the default rule set
+        private static void ResetRules(ICollection<RuleType> rules) {
+            // Go through all default rules
             foreach (var rule in DefaultRuleSet) {
-                RuleSet.Add(new BaseRule(rule));
+                // If the default rule matches the current one, replace it
+                if (rules.Contains(rule.RuleType)) {
+                    RuleSet.Remove(rule);
+                    RuleSet.Add(new BaseRule(rule));
+                }
             }
         }
         
-        public static bool ChangeRule(RuleType type, int ruleValue) {
+        public static void ResetAllToDefault() {
+            var removeRules = new HashSet<RuleType>();
+            
+            foreach (var rule in DefaultRuleSet) {
+                removeRules.Add(rule.RuleType);
+            }
+
+            ResetRules(removeRules);
+        }
+        
+        public static void ResetGeneralToDefault() {
+            var removeRules = new HashSet<RuleType> {
+                RuleType.BoardSize,
+                RuleType.ShipPadding,
+                RuleType.PlayerCount
+            };
+
+            ResetRules(removeRules);
+        }
+        
+        public static void ResetShipSizesToDefault() {
+            var removeRules = new HashSet<RuleType> {
+                RuleType.SizeCarrier,
+                RuleType.SizeBattleship,
+                RuleType.SizeSubmarine,
+                RuleType.SizeCruiser,
+                RuleType.SizePatrol
+            };
+
+            ResetRules(removeRules);
+        }
+        
+        public static void ResetShipCountsToDefault() {
+            var removeRules = new HashSet<RuleType> {
+                RuleType.CountCarrier,
+                RuleType.CountBattleship,
+                RuleType.CountSubmarine,
+                RuleType.CountCruiser,
+                RuleType.CountPatrol
+            };
+
+            ResetRules(removeRules);
+        }
+
+        public static bool ChangeRule(RuleType? type, int ruleValue) {
             var baseRule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
 
             if (baseRule == null) {
@@ -127,11 +173,11 @@ namespace Domain.Rule {
             return true;
         }
 
-        public static int GetVal(RuleType type) {
+        public static int GetVal(RuleType? type) {
             return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type)).Value;
         }
         
-        public static BaseRule GetRule(RuleType type) {
+        public static BaseRule GetRule(RuleType? type) {
             return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
         }
     }
