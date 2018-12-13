@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{21897746-C0FA-4612-A0E6-C0E7ECDABB47}</ProjectGuid>
+    <ProjectGuid>{C59C7BD6-5285-4193-B719-985C840E9F79}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Domain</RootNamespace>
-    <AssemblyName>Domain</AssemblyName>
+    <RootNamespace>GameSystem</RootNamespace>
+    <AssemblyName>GameSystem</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,19 +38,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttackResult.cs" />
-    <Compile Include="Pos.cs" />
-    <Compile Include="Move.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rule\BaseRule.cs" />
-    <Compile Include="Rule\Rules.cs" />
-    <Compile Include="Rule\RuleType.cs" />
-    <Compile Include="Ship\BaseShip.cs" />
-    <Compile Include="Ship\ShipDirection.cs" />
-    <Compile Include="Ship\Ships.cs" />
-    <Compile Include="Ship\ShipStatus.cs" />
-    <Compile Include="Ship\ShipType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BoardUI\BoardUI.csproj">
+      <Project>{a9656108-0ce1-4055-b4d5-8ffb78a0d94f}</Project>
+      <Name>BoardUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{21897746-c0fa-4612-a0e6-c0e7ecdabb47}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Domain;
 using Domain.Rule;
+using Game = GameSystem.Game;
 
 namespace MenuSystem {
     public class Menu {
@@ -106,16 +106,10 @@ namespace MenuSystem {
                     continue;
                 }
                 
+                // New/load game
                 if (MenuTypes[0] == MenuType.GameMenu) {
-                    if (item.Shortcut.Equals("A")) {
-                        //Game.FullGame();
-                        continue;
-                    }
-
-                    if (item.Shortcut.Equals("B")) {
-                        //Game.SelectGameAndStart();
-                        continue;
-                    }
+                    item.ActionToExecute?.Invoke();
+                    continue;
                 }
 
                 // execute the command specified in the menu item

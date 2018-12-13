@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Domain.Rule;
+using GameSystem;
 
 namespace MenuSystem {
     public static class Menus {
@@ -137,11 +138,13 @@ namespace MenuSystem {
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     IsDefaultChoice = true,
-                    Description = "Start Game",
+                    Description = "New Game",
+                    ActionToExecute = Game.NewGame,
                     Shortcut = "A"
                 },
                 new MenuItem {
-                    Description = "Select Save & Start Game",
+                    Description = "Load game",
+                    ActionToExecute = Game.LoadGame,
                     Shortcut = "B"
                 }
             }
@@ -153,12 +156,12 @@ namespace MenuSystem {
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     IsDefaultChoice = true,
-                    Description = "Game",
+                    Description = "Start/load game",
                     Shortcut = "A",
                     CommandToExecute = GameMenu.RunMenu
                 },
                 new MenuItem {
-                    Description = "Rules",
+                    Description = "Change rules",
                     Shortcut = "B",
                     CommandToExecute = RulesMenu.RunMenu
                 }
