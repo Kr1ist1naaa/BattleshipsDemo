@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardUI", "BoardUI\BoardUI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameSystem", "GameSystem\GameSystem.csproj", "{C59C7BD6-5285-4193-B719-985C840E9F79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveSystem", "SaveSystem\SaveSystem.csproj", "{6D4EDB78-6AFD-4E3C-BEBA-CC192E94BBD2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{C59C7BD6-5285-4193-B719-985C840E9F79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C59C7BD6-5285-4193-B719-985C840E9F79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C59C7BD6-5285-4193-B719-985C840E9F79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D4EDB78-6AFD-4E3C-BEBA-CC192E94BBD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D4EDB78-6AFD-4E3C-BEBA-CC192E94BBD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D4EDB78-6AFD-4E3C-BEBA-CC192E94BBD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D4EDB78-6AFD-4E3C-BEBA-CC192E94BBD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

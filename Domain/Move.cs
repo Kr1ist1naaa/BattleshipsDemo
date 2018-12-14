@@ -1,15 +1,17 @@
 namespace Domain {
     public class Move {
-        public readonly Pos Pos;
-        private readonly Player _fromPlayer;
-        private readonly Player _toPlayer;
-        public readonly AttackResult AttackResult;
+        public Pos Pos;
+        public Player FromPlayer;
+        public Player ToPlayer;
+        public AttackResult AttackResult;
 
         public Move(Player attackingPlayer, Player attackedPlayer, Pos pos, AttackResult attackResult) {
             Pos = new Pos(pos);
-            _fromPlayer = attackingPlayer;
-            _toPlayer = attackedPlayer;
+            FromPlayer = attackingPlayer;
+            ToPlayer = attackedPlayer;
             AttackResult = attackResult;
         }
+        
+        public Move () {}
     }
 }

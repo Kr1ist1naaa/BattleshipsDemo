@@ -18,7 +18,7 @@ namespace BoardUI {
                 for (int j = 0; j < boardSize; j++) {
                     Console.Write("|  ");
 
-                    var pos = new Pos(i, j);
+                    var pos = new Pos(j, i);
                     var ship = player.GetShipAtPosOrNull(pos);
 
                     if (ship == null) {

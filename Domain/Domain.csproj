@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttackResult.cs" />
+    <Compile Include="BaseGame.cs" />
     <Compile Include="Pos.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />

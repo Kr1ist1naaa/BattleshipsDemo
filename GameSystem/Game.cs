@@ -45,7 +45,8 @@ namespace GameSystem {
                 return;
             }
             
-            GameLoop(players);
+            var game = new BaseGame(players);
+            GameLoop(game);
         }
 
         private static bool AskYesNoQuestion(string question) {
@@ -204,17 +205,13 @@ namespace GameSystem {
             }
         }
 
-        private static void GameLoop(IReadOnlyList<Player> players) {
-            Player winner = null;
-            var moves = new List<Move>();
-            var turnCount = 0;
-
+        private static void GameLoop(BaseGame game) {
             Console.Clear();
             Console.WriteLine("Starting game...");
             Console.ReadKey(true);
 
             while (true) {
-                foreach (var player in players) {
+                foreach (var player in game.Players) {
                     // Loop until first alive player is found
                     if (!player.IsAlive()) {
                         continue;
@@ -225,15 +222,15 @@ namespace GameSystem {
                     Console.ReadKey(true);
 
                     // Find next player in list that is alive
-                    var nextPlayer = FindNextPlayer(players, player);
+                    var nextPlayer = FindNextPlayer(game.Players, player);
 
                     Console.Clear();
 
                     BoardGen.GenTwoBoards(player, nextPlayer);
-                    Console.WriteLine($"Turn {turnCount}: {player.Name} is attacking {nextPlayer.Name}");
+                    Console.WriteLine($"Turn {game.TurnCount}: {player.Name} is attacking {nextPlayer.Name}");
 
                     var move = Attack(player, nextPlayer);
-                    moves.Add(move);
+                    game.Moves.Add(move);
                     
                     Console.WriteLine($"It was a {move.AttackResult}...");
                     Console.ReadKey(true);
@@ -247,32 +244,32 @@ namespace GameSystem {
                 }
 
                 // Check if there is only one player left and therefore the winner of the game
-                foreach (var player in players) {
+                foreach (var player in game.Players) {
                     if (!player.IsAlive()) {
                         continue;
                     }
 
-                    if (winner == null) {
-                        winner = player;
+                    if (game.Winner == null) {
+                        game.Winner = player;
                     } else {
-                        winner = null;
+                        game.Winner = null;
                         break;
                     }
                 }
 
-                if (winner != null) {
+                if (game.Winner != null) {
                     break;
                 }
 
                 Console.Clear();
-                Console.WriteLine($"End of round {turnCount}");
+                Console.WriteLine($"End of round {game.TurnCount}");
                 Console.ReadKey(true);
 
-                turnCount++;
+                game.TurnCount++;
             }
 
             Console.Clear();
-            Console.WriteLine($"The winner of the game is {winner.Name} after {turnCount} turns!");
+            Console.WriteLine($"The winner of the game is {game.Winner.Name} after {game.TurnCount} turns!");
             Console.ReadKey(true);
         }
 

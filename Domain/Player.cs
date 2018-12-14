@@ -4,21 +4,23 @@ using Domain.Ship;
 
 namespace Domain {
     public class Player {
-        public readonly string Name;
-        public readonly HashSet<Pos> MovesAgainstThisPlayer;
-        public readonly List<BaseShip> Ships;
+        public string Name;
+        public HashSet<Pos> MovesAgainstThisPlayer;
+        public List<BaseShip> Ships;
+
+        public Player() { }
 
         public Player(string playerName) {
             MovesAgainstThisPlayer = new HashSet<Pos>();
             Name = playerName;
-            
+
             // Generate a set of ships for the player based on the current rules
             Ships = Ship.Ships.GenShipSet();
         }
 
         private static bool CheckIfPosInBoard(Pos pos) {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
-            
+
             // Out of bounds
             if (pos.X < 0 || pos.X >= boardSize) return false;
             if (pos.Y < 0 || pos.Y >= boardSize) return false;
@@ -36,7 +38,7 @@ namespace Domain {
             }
 
             MovesAgainstThisPlayer.Add(pos);
-            
+
             var ship = GetShipAtPosOrNull(pos);
             if (ship == null) {
                 return AttackResult.Miss;
@@ -44,7 +46,7 @@ namespace Domain {
 
             return ship.AttackAtPos(pos);
         }
-        
+
         public BaseShip GetShipAtPosOrNull(Pos pos) {
             foreach (var ship in Ships) {
                 if (ship.IsAtPos(pos)) {
@@ -60,7 +62,7 @@ namespace Domain {
             if (!CheckIfPosInBoard(pos)) {
                 return false;
             }
-            
+
             // Find ship's furthest point
             var maxPos = new Pos(
                 pos.X + (direction == ShipDirection.Right ? shipSize : 0),
@@ -71,7 +73,7 @@ namespace Domain {
             if (!CheckIfPosInBoard(maxPos)) {
                 return false;
             }
-            
+
             var padding = Rules.GetVal(RuleType.ShipPadding);
 
             // Check if any ships already exist at that location

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Domain.Rule;
 
 namespace Domain.Ship {
@@ -9,9 +10,9 @@ namespace Domain.Ship {
         public char Symbol;
         public int Size;
         
-        private Pos _shipPos;
-        private ShipDirection _direction;
-        private ShipStatus[] _shipStatuses;
+        public Pos ShipPos;
+        public ShipDirection Direction;
+        public ShipStatus[] ShipStatuses;
 
         public BaseShip(BaseShip baseShip) {
             SizeRule = baseShip.SizeRule;
@@ -57,13 +58,13 @@ namespace Domain.Ship {
         
         
         public void SetLocation(Pos pos, ShipDirection direction) {
-            _direction = direction;
-            _shipPos = new Pos(pos);
+            Direction = direction;
+            ShipPos = new Pos(pos);
         }
 
         public bool CheckIfIntersect(Pos newPos, int newSize, ShipDirection newDirection, int padding) {
             // Ship hasn't been placed yet
-            if (_shipPos == null) {
+            if (ShipPos == null) {
                 return false;
             }
 
@@ -73,8 +74,8 @@ namespace Domain.Ship {
                 var newPosOffsetY = newPos.Y + (newDirection == ShipDirection.Right ? 0 : offset);
 
                 for (int i = 0; i < Size; i++) {
-                    var shipPosX = _shipPos.X + (_direction == ShipDirection.Right ? i : 0);
-                    var shipPosY = _shipPos.Y + (_direction == ShipDirection.Right ? 0 : i);
+                    var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
+                    var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
                     
                     if (shipPosX >= newPosOffsetX - padding && shipPosX <= newPosOffsetX + padding && 
                         shipPosY >= newPosOffsetY - padding && shipPosY <= newPosOffsetY + padding) {
@@ -88,13 +89,13 @@ namespace Domain.Ship {
 
         public bool IsAtPos(Pos pos) {
             // Ship hasn't been placed yet
-            if (_shipPos == null) {
+            if (ShipPos == null) {
                 return false;
             }
 
             for (int i = 0; i < Size; i++) {
-                var shipBlockPosX = _shipPos.X + (_direction == ShipDirection.Right ? i : 0);
-                var shipBlockPosY = _shipPos.Y + (_direction == ShipDirection.Right ? 0 : i);
+                var shipBlockPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
+                var shipBlockPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
 
                 if (shipBlockPosX == pos.X && shipBlockPosY == pos.Y) {
                     return true;
@@ -111,30 +112,24 @@ namespace Domain.Ship {
             }
             
             // Depending on the direction of the ship, set the local status tracker to hit
-            if (_direction == ShipDirection.Right) {
-                _shipStatuses[pos.X - _shipPos.X] = ShipStatus.Hit;
+            if (Direction == ShipDirection.Right) {
+                ShipStatuses[pos.X - ShipPos.X] = ShipStatus.Hit;
             } else {
-                _shipStatuses[pos.Y - _shipPos.Y] = ShipStatus.Hit;
+                ShipStatuses[pos.Y - ShipPos.Y] = ShipStatus.Hit;
             }
 
             return IsDestroyed() ? AttackResult.Sink : AttackResult.Hit;
         }
 
         public bool IsDestroyed() {
-            foreach (var status in _shipStatuses) {
-                if (status == ShipStatus.Ok) {
-                    return false;
-                }
-            }
-
-            return true;
+            return ShipStatuses.All(status => status != ShipStatus.Ok);
         }
 
         private void CreateShipStatusBlocks() {
-            _shipStatuses = new ShipStatus[Size];
+            ShipStatuses = new ShipStatus[Size];
 
             for (int i = 0; i < Size; i++) {
-                _shipStatuses[i] = ShipStatus.Ok;
+                ShipStatuses[i] = ShipStatus.Ok;
             }
         }
     }
