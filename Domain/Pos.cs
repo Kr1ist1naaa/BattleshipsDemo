@@ -10,11 +10,6 @@ namespace Domain {
             Y = y;
         }
 
-        public Pos(int? x, int? y) {
-            X = (int) x;
-            Y = (int) y;
-        }
-
         public Pos(Pos pos) {
             X = pos.X;
             Y = pos.Y;

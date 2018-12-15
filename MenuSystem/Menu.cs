@@ -15,15 +15,20 @@ namespace MenuSystem {
             var defaultMenuChoice = MenuItems.FirstOrDefault(m => m.IsDefaultChoice);
 
             Console.Clear();
-            Console.WriteLine($"=========={Title}==========");
+            
+            Console.Write("========== ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(Title);
+            Console.ResetColor();
+            Console.WriteLine(" ==========");
+            
             var titleCharCount = Title.Length;
             var sb = new StringBuilder();
-            sb.Insert(0, "=", titleCharCount + 20);
+            sb.Insert(0, "=", titleCharCount + 22);
 
             foreach (var menuItem in MenuItems) {
                 if (menuItem.IsDefaultChoice) {
-                    Console.ForegroundColor =
-                        ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(menuItem);
                     Console.ResetColor();
                 } else {
@@ -45,81 +50,111 @@ namespace MenuSystem {
         }
 
         public string RunMenu() {
-            bool done;
             string input;
-            
-            do {
-                done = false;
+            MenuItem item;
 
+            while (true) {
                 PrintMenu();
                 input = Console.ReadLine()?.ToUpper().Trim();
 
-                // shall we exit from this menu
+                // Quit menu
                 if (input == Menus.GoBackItem.Shortcut) {
                     break;
                 }
+                
+                // Current menu is the rule value input menu
+                if (MenuTypes.Contains(MenuType.RuleIntInput)) {
+                    // This menu only has one option which will contain the type of rule the user is asked to provide a
+                    // value for
+                    item = MenuItems.First();
 
-                if (DisplayQuitToMainMenu && input == Menus.QuitToMainItem.Shortcut) {
-                    break; // jump out of the loop
+                    // Attempt to parse input as int
+                    if (string.IsNullOrEmpty(input) || !int.TryParse(input, out var value)) {
+                        Console.WriteLine("Value not an integer!");
+                        Console.ReadKey(true);
+                        continue;
+                    }
+                    
+                    if (!Rules.ChangeRule(item.RuleTypeToChange, value)) {
+                        Console.WriteLine("Value not in range!");
+                        Console.ReadKey(true);
+                        continue;
+                    }
+
+                    Console.WriteLine("Rule value changed!");
+                    Console.ReadKey(true);
+                    break;
                 }
 
-                var item = string.IsNullOrWhiteSpace(input)
+                // Load user-specified or default menuitem
+                item = string.IsNullOrWhiteSpace(input)
                     ? MenuItems.FirstOrDefault(m => m.IsDefaultChoice)
                     : MenuItems.FirstOrDefault(m => m.Shortcut == input);
 
+                // The menuitem was null
                 if (item == null) {
-                    Console.WriteLine("Not found in the list of commands!");
+                    Console.WriteLine("Unknown input!");
                     Console.ReadKey(true);
                     continue;
                 }
 
-                // User chose to set a rule value
-                if (MenuTypes[0] == MenuType.RulesMenu  && item.RuleType != null) {
-                    ChangeRuleValue(item.RuleType);
-
-                    Console.WriteLine("Rule changed");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                // User chose to rest rules 
-                if (MenuTypes[0] == MenuType.RulesMenu && item.ActionToExecute != null) {
-                    item.ActionToExecute();
-                    
-                    switch (MenuTypes[1]) {
-                        case MenuType.MainRulesMenu:
-                            Console.WriteLine("All rules set to default");
-                            break;
-                        case MenuType.GeneralRulesMenu:
-                            Console.WriteLine("General rules set to default");
-                            break;
-                        case MenuType.ShipCountRulesMenu:
-                            Console.WriteLine("Ship count rules set to default");
-                            break;
-                        case MenuType.ShipSizeRulesMenu:
-                            Console.WriteLine("Ship size rules set to default");
-                            break;
+                // Current menu is the game menu
+                if (MenuTypes.Contains(MenuType.GameMenu)) {
+                    // Current menu is game loading menu
+                    if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
+                        // Load the game from the database and continue it
+                        GameSystem.GameSystem.LoadGame((int) item.GameId);
+                        continue;
                     }
-                    
-                    Console.ReadKey(true);
-                    continue;
+
+                    // Current menu is game deleting menu
+                    if (MenuTypes.Contains(MenuType.DeleteGameMenu) && item.GameId != null) {
+                        // Delete the game from the database
+                        GameSystem.GameSystem.DeleteGame((int) item.GameId);
+                        continue;
+                    }
                 }
-                
-                // New/load game
-                if (MenuTypes[0] == MenuType.GameMenu) {
-                    item.ActionToExecute?.Invoke();
-                    continue;
+
+                // Current menu is the rules menu
+                if (MenuTypes.Contains(MenuType.RulesMenu)) {
+                    // Current item has an action
+                    if (item.ActionToExecute != null) {
+                        item.ActionToExecute();
+
+                        // If current menu item was for resetting some rules, show a confirmation that indeed, the rules
+                        // have been set to default values
+                        if (item.IsResetRules) {
+                            Console.WriteLine("Rules set to default...");
+                            Console.ReadKey(true);
+                        }
+                        
+                        continue;
+                    }
+
+                    // Current menu is the main rules menu
+                    if (item.RuleTypeToChange != null) {
+                        DynamicMenus.CreateRunChangeRuleValueMenu(item.RuleTypeToChange);
+                        continue;
+                    }
+                }
+
+                if (item.ActionToExecute != null) {
+                    item.ActionToExecute.Invoke();
+
+                    if (item.MenuToRun == null) {
+                        continue;
+                    }
                 }
 
                 // execute the command specified in the menu item
-                if (item.CommandToExecute == null) {
+                if (item.MenuToRun == null) {
                     Console.WriteLine(input + " has no command assigned to it!");
                     Console.ReadKey(true);
-                    continue; // jump back to the start of loop
+                    continue;
                 }
 
                 // everything should be ok now, lets run it!
-                var chosenCommand = item.CommandToExecute();
+                var chosenCommand = item.MenuToRun();
                 input = chosenCommand;
 
                 if (MenuTypes[0] != MenuType.MainMenu && chosenCommand == Menus.QuitToMainItem.Shortcut) {
@@ -129,38 +164,9 @@ namespace MenuSystem {
                 if (chosenCommand != Menus.GoBackItem.Shortcut && chosenCommand != Menus.QuitToMainItem.Shortcut) {
                     Console.ReadKey(true);
                 }
-
-            } while (done == false);
+            }
 
             return input;
-        }
-
-        private static void ChangeRuleValue(RuleType? ruleType) {
-            Console.Clear();
-
-            var rule = Rules.GetRule(ruleType);
-            
-            Console.WriteLine(rule.Description);
-            Console.WriteLine($"Current value is {rule.Value}");
-
-            while (true) {
-                Console.WriteLine($"Enter new value between {rule.MinVal} and {rule.MaxVal}: ");
-                Console.Write("> ");
-                
-                var value = Console.ReadLine();
-                
-                if (!int.TryParse(value, out var newValue)) {
-                    Console.WriteLine("Try again.\n");
-                    continue;
-                }
-
-                if (!Rules.ChangeRule(ruleType, newValue)) {
-                    Console.WriteLine("Try again.\n");
-                    continue;
-                }
-
-                break;
-            }
         }
     }
 }

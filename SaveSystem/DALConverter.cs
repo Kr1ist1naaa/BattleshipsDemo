@@ -17,6 +17,11 @@ namespace SaveSystem {
             dalGame.Players = ConvertPlayers(dalGame, domainGame.Players);
             dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, domainGame.Moves);
 
+            // Use same id if game was already saved
+            if (domainGame.GameId != null) {
+                dalGame.Id = (int)domainGame.GameId;
+            }
+
             return dalGame;
         }
 

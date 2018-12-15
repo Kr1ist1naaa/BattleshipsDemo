@@ -9,70 +9,36 @@ using SaveSystem;
 
 namespace GameSystem {
     public static class GameSystem {
-        public static void LoadGame() {
+        public static void LoadGame(int gameId) {
             Console.Clear();
-            Console.WriteLine("Loading game list...");
-
-            var saves = GameSaver.GetSaveGameList();
+            Console.WriteLine("Loading game...");
             
-            Console.Clear();
-            Console.WriteLine("Saves:");
-            
-            var indexMappings = new Dictionary<int, int>();
-            var counter = 1;
-            
-            foreach (var save in saves) {
-                Console.Write("  - [");
-                
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write($"{counter}");
-                Console.ResetColor();
-                
-                Console.WriteLine($"] {save[2]} (turn {save[1],3})");
-                
-                int.TryParse(save[0], out var saveId);
-                indexMappings.Add(counter, saveId);
-                
-                counter++;
-            }
+            var game = GameSaver.Load(gameId);
 
-            int? gameIndex;
-            
-            while (true) {
-                gameIndex = AskNumericInputOrCancel("Enter game number to load: ");
-                if (gameIndex == null) {
-                    return;
-                }
-
-                if (indexMappings.ContainsKey((int) gameIndex)) {
-                    break;
-                }
-
-                Console.WriteLine("  - Invalid game number");
-            }
-
-            var game = GameSaver.Load(indexMappings[(int)gameIndex]);
-            
             Console.Clear();
             Console.WriteLine("Game loaded!");
             Console.ReadKey(true);
-            
+
             GameLoop(game);
         }
 
-        private static void ReplayGame() {
-            // todo: this
+        public static void DeleteGame(int gameId) {
+            Console.Clear();
+            Console.WriteLine("Deleting game...");
+            
+            GameSaver.Delete(gameId);
+
+            Console.Clear();
+            Console.WriteLine("Game deleted!");
+            Console.ReadKey(true);
         }
 
         public static void NewGame() {
             Console.Clear();
-            Console.WriteLine("Welcome to Battleships - the classical battle ship game!\n");
-
-            Console.WriteLine("The active rules are:");
-            foreach (var rule in Rules.RuleSet) {
-                Console.WriteLine($"  - {rule.RuleType}: {rule.Value}");
-            }
-
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Welcome to Battleships - the classical battle ship game!");
+            Console.ResetColor();
+            
             if (!AskYesNoQuestion("\nContinue and create players (y/n): ")) {
                 Console.WriteLine("Stopping game...");
                 Console.ReadKey(true);
@@ -95,7 +61,7 @@ namespace GameSystem {
                 Console.ReadKey(true);
                 return;
             }
-            
+
             Console.Clear();
             Console.WriteLine("Starting game...");
             Console.ReadKey(true);
@@ -103,61 +69,9 @@ namespace GameSystem {
             var game = new Domain.Game(players);
             GameLoop(game);
         }
-
-        private static bool AskYesNoQuestion(string question) {
-            bool? input = null;
-
-            while (true) {
-                Console.Write(question);
-
-                switch (Console.ReadLine()?.ToLower().Trim()) {
-                    case "":
-                    case "y":
-                    case "yes":
-                        input = true;
-                        break;
-                    case "n":
-                    case "no":
-                        input = false;
-                        break;
-                }
-
-                if (input == null) {
-                    Console.WriteLine("Unknown input...");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                break;
-            }
-
-            return (bool) input;
-        }
-
-        private static int? AskNumericInputOrCancel(string question, int indent = 2) {
-            while (true) {
-                Console.Write(question);
-
-                var input = Console.ReadLine()?.ToLower().Trim();
-                
-                switch (input) {
-                    case "x":
-                    case "q":
-                    case "quit":
-                    case "exit":
-                        return null;
-                }
-                
-                if (!int.TryParse(input, out var newValue)) {
-                    Console.Write(new string(' ', indent));
-                    Console.WriteLine("- Invalid input!");
-                    continue;
-                }
-
-                return newValue;
-            }
-        }
         
+
+
         private static List<Player> InitializePlayers() {
             var playerCount = Rules.GetVal(RuleType.PlayerCount);
             var players = new List<Player>();
@@ -191,36 +105,6 @@ namespace GameSystem {
             }
 
             return players;
-        }
-
-        private static bool AutoPlaceShips(Player player) {
-            const int tryAmount = 64;
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
-            var random = new Random();
-
-            foreach (var ship in player.Ships) {
-                var placementCount = 0;
-
-                // Attempt to place ship at X different locations
-                while (placementCount < tryAmount) {
-                    var pos = new Pos(random.Next(0, boardSize), random.Next(0, boardSize));
-                    var dir = random.Next(0, 2) == 1 ? ShipDirection.Right : ShipDirection.Down;
-
-                    if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
-                        placementCount++;
-                        continue;
-                    }
-
-                    ship.SetLocation(pos, dir);
-                    break;
-                }
-
-                if (placementCount >= tryAmount) {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private static void InitializeShips(IEnumerable<Player> players) {
@@ -284,7 +168,39 @@ namespace GameSystem {
             }
         }
 
-        private static void GameLoop(Domain.Game game) {
+        private static bool AutoPlaceShips(Player player) {
+            const int tryAmount = 64;
+            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var random = new Random();
+
+            foreach (var ship in player.Ships) {
+                var placementCount = 0;
+
+                // Attempt to place ship at X different locations
+                while (placementCount < tryAmount) {
+                    var pos = new Pos(random.Next(0, boardSize), random.Next(0, boardSize));
+                    var dir = random.Next(0, 2) == 1 ? ShipDirection.Right : ShipDirection.Down;
+
+                    if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
+                        placementCount++;
+                        continue;
+                    }
+
+                    ship.SetLocation(pos, dir);
+                    break;
+                }
+
+                if (placementCount >= tryAmount) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        
+        
+        private static void GameLoop(Game game) {
             while (true) {
                 // Do the attacks
                 foreach (var player in game.Players) {
@@ -341,7 +257,7 @@ namespace GameSystem {
                 Console.WriteLine($"End of round {game.TurnCount}");
                 if (!AskYesNoQuestion("Continue with game (y/n): ")) {
                     Console.Clear();
-            
+
                     if (AskYesNoQuestion("Save game (y/n): ")) {
                         if (game.GameId == null) {
                             GameSaver.Save(game);
@@ -398,15 +314,8 @@ namespace GameSystem {
             Pos pos;
 
             while (true) {
-                var posX = AskNumericInputOrCancel("  - x: ", 4);
-                if (posX == null) {
-                    return null;
-                }
-                
-                var posY = AskNumericInputOrCancel("  - y: ", 4);
-                if (posY == null) {
-                    return null;
-                }
+                var posX = AskNumericInput("  - x: ", 4);
+                var posY = AskNumericInput("  - y: ", 4);
 
                 pos = new Pos(posX, posY);
                 result = targetPlayer.AttackAtPos(pos);
@@ -425,6 +334,77 @@ namespace GameSystem {
             }
 
             return new Move(player, targetPlayer, pos, result);
+        }
+
+
+        
+        private static bool AskYesNoQuestion(string question) {
+            bool? input = null;
+
+            while (true) {
+                Console.Write(question);
+
+                switch (Console.ReadLine()?.ToLower().Trim()) {
+                    case "":
+                    case "y":
+                    case "yes":
+                        input = true;
+                        break;
+                    case "n":
+                    case "no":
+                        input = false;
+                        break;
+                }
+
+                if (input == null) {
+                    Console.WriteLine("Unknown input...");
+                    Console.ReadKey(true);
+                    continue;
+                }
+
+                break;
+            }
+
+            return (bool) input;
+        }
+
+        private static int? AskNumericInputOrCancel(string question, int indent = 2) {
+            while (true) {
+                Console.Write(question);
+
+                var input = Console.ReadLine()?.ToLower().Trim();
+
+                switch (input) {
+                    case "x":
+                    case "q":
+                    case "quit":
+                    case "exit":
+                        return null;
+                }
+
+                if (!int.TryParse(input, out var newValue)) {
+                    Console.Write(new string(' ', indent));
+                    Console.WriteLine("- Invalid input!");
+                    continue;
+                }
+
+                return newValue;
+            }
+        }
+
+        private static int AskNumericInput(string question, int indent = 2) {
+            while (true) {
+                Console.Write(question);
+
+                var input = Console.ReadLine()?.ToLower().Trim();
+                if (string.IsNullOrEmpty(input) || !int.TryParse(input, out var newValue)) {
+                    Console.Write(new string(' ', indent));
+                    Console.WriteLine("- Invalid input!");
+                    continue;
+                }
+
+                return newValue;
+            }
         }
     }
 }

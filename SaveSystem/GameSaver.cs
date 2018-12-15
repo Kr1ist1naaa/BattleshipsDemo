@@ -32,22 +32,11 @@ namespace SaveSystem {
             return domainGame;
         }
 
-        public static bool DeleteSaveGame(int index) {
-            DAL.Game save;
-
-            // Find game by index, assign to var and check if it returned null
-            if ((save = Ctx.Games.Find(index)) == null) {
-                return false;
-            }
-
-            // Check if game entry was successfully removed
-            if (Ctx.Games.Remove(save) != null) {
-                return false;
-            }
-
+        public static void Delete(int gameId) {
+            var save = Ctx.Games.Find(gameId);
+            
+            Ctx.Games.Remove(save);
             Ctx.SaveChanges();
-
-            return true;
         }
 
         public static void OverwriteSave(Game domainGame) {
@@ -55,7 +44,7 @@ namespace SaveSystem {
                 return;
             }
 
-            DeleteSaveGame((int) domainGame.GameId);
+            Delete((int) domainGame.GameId);
             Save(domainGame);
         }
 
