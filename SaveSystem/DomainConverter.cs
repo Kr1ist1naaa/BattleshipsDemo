@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace SaveSystem {
     public static class DomainConverter {
         public static List<Domain.Player> GetAndConvertPlayers(DAL.AppDbContext ctx, int gameId) {

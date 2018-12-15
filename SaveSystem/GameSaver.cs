@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DAL;
 using Domain;
+using Domain.DomainRule;
 using Game = Domain.Game;
 
 namespace SaveSystem {
@@ -18,9 +19,11 @@ namespace SaveSystem {
         public static Game Load(int gameId) {
             var dalGame = Ctx.Games.Find(gameId);
 
+            // Build game-dependant objects
             var domainPlayers = DomainConverter.GetAndConvertPlayers(Ctx, gameId);
             var domainMoves = DomainConverter.GetAndConvertMoves(Ctx, gameId, domainPlayers);
 
+            // Build game
             var domainGame = new Game {
                 Winner = domainPlayers.FirstOrDefault(player => player.Name.Equals(dalGame.Winner)),
                 TurnCount = dalGame.TurnCount,
@@ -28,6 +31,13 @@ namespace SaveSystem {
                 Players = domainPlayers,
                 GameId = dalGame.Id
             };
+            
+            // Load rules into static context
+            Rules.ResetAllToDefault();
+            var dalRules = Ctx.Rules.Where(rule => rule.Game.Id == gameId);
+            foreach (var dalRule in dalRules) {
+                Rules.ChangeRule((RuleType) dalRule.RuleType, dalRule.Value);
+            }
 
             return domainGame;
         }

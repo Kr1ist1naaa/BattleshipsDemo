@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Domain.DomainRule;
 
 namespace SaveSystem {
     public static class DalConverter {
@@ -11,9 +12,12 @@ namespace SaveSystem {
                 Winner = domainGame.Winner?.Name,
                 TurnCount = domainGame.TurnCount,
                 Moves = null,
-                Players = null
+                Players = null,
+                Rules = null
             };
 
+            // Because we need to point to the game
+            dalGame.Rules = ConvertRules(dalGame);
             dalGame.Players = ConvertPlayers(dalGame, domainGame.Players);
             dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, domainGame.Moves);
 
@@ -127,6 +131,22 @@ namespace SaveSystem {
             }
 
             return dalMoves;
+        }
+        
+        private static HashSet<DAL.Rule> ConvertRules(DAL.Game game) {
+            var dalRules = new HashSet<DAL.Rule>();
+
+            foreach (var domainRule in Rules.RuleSet) {
+                var dalRule = new DAL.Rule {
+                    Game = game,
+                    RuleType = (int) domainRule.RuleType,
+                    Value = domainRule.Value
+                };
+
+                dalRules.Add(dalRule);
+            }
+
+            return dalRules;
         }
     }
 }

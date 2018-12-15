@@ -7,7 +7,7 @@ namespace DAL {
         public string Date { get; set; }
         
         public List<Move> Moves { get; set; }
-        public List<Rule> Rules { get; set; }
+        public HashSet<Rule> Rules { get; set; }
         public List<Player> Players { get; set; }
         
         public string Winner { get; set; }
