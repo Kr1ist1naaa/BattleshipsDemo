@@ -21,7 +21,7 @@ namespace GameSystem {
             foreach (var rule in Rules.RuleSet) {
                 Console.WriteLine($"  - {rule.RuleType}: {rule.Value}");
             }
-            
+
             if (!AskYesNoQuestion("\nContinue and create players (y/n): ")) {
                 Console.WriteLine("Stopping game...");
                 Console.ReadKey(true);
@@ -35,16 +35,16 @@ namespace GameSystem {
                 Console.ReadKey(true);
                 return;
             }
-            
+
             InitializeShips(players);
-            
+
             Console.Clear();
             if (!AskYesNoQuestion("Continue and start game (y/n): ")) {
                 Console.WriteLine("Stopping game...");
                 Console.ReadKey(true);
                 return;
             }
-            
+
             var game = new BaseGame(players);
             GameLoop(game);
         }
@@ -54,7 +54,7 @@ namespace GameSystem {
 
             while (true) {
                 Console.Write(question);
-                
+
                 switch (Console.ReadLine()?.ToLower().Trim()) {
                     case "":
                     case "y":
@@ -68,7 +68,7 @@ namespace GameSystem {
                 }
 
                 if (input == null) {
-                    Console.WriteLine("Unknown command...");
+                    Console.WriteLine("Unknown input...");
                     Console.ReadKey(true);
                     continue;
                 }
@@ -98,7 +98,7 @@ namespace GameSystem {
                         Console.WriteLine("    - Invalid name!");
                         continue;
                     }
-                    
+
                     // Check name availability
                     if (players.FirstOrDefault(m => m.Name.Equals(name)) != null) {
                         Console.WriteLine("    - Duplicate name!");
@@ -126,7 +126,7 @@ namespace GameSystem {
                 while (placementCount < tryAmount) {
                     var pos = new Pos(random.Next(0, boardSize), random.Next(0, boardSize));
                     var dir = random.Next(0, 2) == 1 ? ShipDirection.Right : ShipDirection.Down;
-                
+
                     if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
                         placementCount++;
                         continue;
@@ -147,7 +147,7 @@ namespace GameSystem {
         private static void InitializeShips(IEnumerable<Player> players) {
             foreach (var player in players) {
                 Console.Clear();
-                
+
                 if (AskYesNoQuestion($"Auto place {player.Name}'s ships (y/n): ")) {
                     if (AutoPlaceShips(player)) {
                         BoardGen.GenSingleBoard(player, $"{player.Name}'s board");
@@ -155,7 +155,7 @@ namespace GameSystem {
                         Console.ReadKey(true);
                         continue;
                     }
-                    
+
                     Console.WriteLine("Could not automatically place ships...");
                     Console.ReadKey(true);
                 }
@@ -211,6 +211,7 @@ namespace GameSystem {
             Console.ReadKey(true);
 
             while (true) {
+                // Do the attacks
                 foreach (var player in game.Players) {
                     // Loop until first alive player is found
                     if (!player.IsAlive()) {
@@ -231,7 +232,7 @@ namespace GameSystem {
 
                     var move = Attack(player, nextPlayer);
                     game.Moves.Add(move);
-                    
+
                     Console.WriteLine($"It was a {move.AttackResult}...");
                     Console.ReadKey(true);
 
@@ -263,14 +264,26 @@ namespace GameSystem {
 
                 Console.Clear();
                 Console.WriteLine($"End of round {game.TurnCount}");
-                Console.ReadKey(true);
+                if (!AskYesNoQuestion("Continue with game (y/n): ")) {
+                    Console.Clear();
+            
+                    if (AskYesNoQuestion("Save game (y/n): ")) {
+                        SaveSystem.GameSaver.OverwriteSave(0, game);
+                        Console.Clear();
+                        Console.WriteLine("Game saved...");
+                        Console.ReadKey(true);
+                        break;
+                    }
+                }
 
                 game.TurnCount++;
             }
 
-            Console.Clear();
-            Console.WriteLine($"The winner of the game is {game.Winner.Name} after {game.TurnCount} turns!");
-            Console.ReadKey(true);
+            if (game.Winner != null) {
+                Console.Clear();
+                Console.WriteLine($"The winner of the game is {game.Winner.Name} after {game.TurnCount} turns!");
+                Console.ReadKey(true);
+            }
         }
 
         private static Player FindNextPlayer(IReadOnlyList<Player> players, Player player) {

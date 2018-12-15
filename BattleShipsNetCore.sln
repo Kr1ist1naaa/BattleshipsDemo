@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.csproj", "{B7603554-FB57-4915-A458-372D62A6D630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{EE097574-301A-44E7-80C0-4D95E3BF30B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardUI", "BoardUI\BoardUI.csproj", "{CAD73B60-1DBF-4921-B0EA-059522113D72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{578544A4-DE05-4D4D-82DA-81543B064335}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveSystem", "SaveSystem\SaveSystem.csproj", "{C79E010E-9599-42A6-A18A-2D02FE11E0CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameSystem", "GameSystem\GameSystem.csproj", "{D8CB79F8-B91F-43D4-AFB5-3630728D0324}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		|Any CPU = |Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7603554-FB57-4915-A458-372D62A6D630}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7603554-FB57-4915-A458-372D62A6D630}.|Any CPU.Build.0 = Debug|Any CPU
+		{EE097574-301A-44E7-80C0-4D95E3BF30B9}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE097574-301A-44E7-80C0-4D95E3BF30B9}.|Any CPU.Build.0 = Debug|Any CPU
+		{CAD73B60-1DBF-4921-B0EA-059522113D72}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD73B60-1DBF-4921-B0EA-059522113D72}.|Any CPU.Build.0 = Debug|Any CPU
+		{578544A4-DE05-4D4D-82DA-81543B064335}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{578544A4-DE05-4D4D-82DA-81543B064335}.|Any CPU.Build.0 = Debug|Any CPU
+		{C79E010E-9599-42A6-A18A-2D02FE11E0CC}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{C79E010E-9599-42A6-A18A-2D02FE11E0CC}.|Any CPU.Build.0 = Debug|Any CPU
+		{D8CB79F8-B91F-43D4-AFB5-3630728D0324}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8CB79F8-B91F-43D4-AFB5-3630728D0324}.|Any CPU.Build.0 = Debug|Any CPU
+		{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}.|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

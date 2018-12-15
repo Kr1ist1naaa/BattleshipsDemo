@@ -1,6 +1,6 @@
 ﻿namespace Program {
-    public static class Program {
-        public static void Main() {
+    class Program {
+        static void Main(string[] args) {
             MenuSystem.Menus.MainMenu.RunMenu();
         }
     }
