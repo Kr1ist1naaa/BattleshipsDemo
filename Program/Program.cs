@@ -15,7 +15,7 @@ namespace Program {
             Console.WriteLine("Welcome to Battleships - the classical battle ship game!");
             Console.ResetColor();
             
-            Console.Write("\nPress any key to continue...");
+            Console.WriteLine("\nPress any key to start...");
             Console.ReadKey(true);
             
             // Run

@@ -192,41 +192,42 @@ namespace MenuSystem {
                 MenuItems = new List<MenuItem> {
                     new MenuItem {
                         Description = o,
-                        Shortcut = "Y",
+                        Shortcut = "1",
                         IsDefaultChoice = true
                     }
                 }
             };
 
-            return menu.RunMenu().Equals("Y");
+            return menu.RunMenu().ToUpper().Equals("1");
         }
 
-        public static bool? YesOrNoOrQuit(string title, string o1, string o2) {
+        public static bool? YesOrNoOrQuit(string title, string o1, string o2, bool clear) {
             var menu = new Menu {
                 Title = title,
                 DisableGoBackItem = true,
                 DisplayQuitToMainMenu = true,
+                ClearConsole = clear,
                 MenuTypes = new List<MenuType> {MenuType.Input, MenuType.YesNoInput},
                 MenuItems = new List<MenuItem> {
                     new MenuItem {
                         Description = o1,
-                        Shortcut = "Y",
+                        Shortcut = "1",
                         IsDefaultChoice = true
                     },
                     new MenuItem {
                         Description = o2,
-                        Shortcut = "N"
+                        Shortcut = "2"
                     }
                 }
             };
 
-            var input = menu.RunMenu();
+            var input = menu.RunMenu().ToUpper();
 
-            if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
+            if (input.Equals(Menus.QuitToMainItem.Shortcut)) {
                 return null;
             }
 
-            return input.Equals("Y");
+            return input.Equals("1");
         }
 
         public static void LoadGame() {

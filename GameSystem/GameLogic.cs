@@ -9,7 +9,7 @@ using SaveSystem;
 
 namespace GameSystem {
     public static class GameLogic {
-        public static Func<string, string, string, bool?> YesNoQuitMenu { get; set; }
+        public static Func<string, string, string, bool, bool?> YesNoQuitMenu { get; set; }
         public static Func<string, string, bool> YesOrQuitMenu { get; set; }
         public static Func<string, string, string> NameMenu { get; set; }
         public static Func<Player, Player, int[]> AttackCoordMenu { get; set; }
@@ -73,6 +73,9 @@ namespace GameSystem {
 
         private static void AskSaveGame(Game game) {
             if (YesOrQuitMenu("Game menu", "Save game")) {
+                Console.Clear();
+                Console.WriteLine("Saving game...");
+                
                 if (game.GameId == null) {
                     GameSaver.Save(game);
                 } else {
@@ -80,7 +83,7 @@ namespace GameSystem {
                 }
 
                 Console.Clear();
-                Console.WriteLine("Game saved...");
+                Console.WriteLine("Game saved!");
                 Console.ReadKey(true);
             }
         }
@@ -131,7 +134,7 @@ namespace GameSystem {
                     var t = $"Creating {player.Name}'s ships";
                     const string o1 = "Automatically place ships";
                     const string o2 = "Manually place ships";
-                    var autoPlaceShips = YesNoQuitMenu(t, o1, o2);
+                    var autoPlaceShips = YesNoQuitMenu(t, o1, o2, true);
 
                     // Player requested to quit to main menu
                     if (autoPlaceShips == null) {
@@ -141,7 +144,7 @@ namespace GameSystem {
                     if ((bool) autoPlaceShips) {
                         if (!AutoPlaceShips(player)) {
                             player.ResetShips();
-                            Console.Write("Could not place ships...");
+                            Console.WriteLine("Could not place ships...");
                             Console.ReadKey(true);
                         }
                     } else {
@@ -172,18 +175,17 @@ namespace GameSystem {
                     
                     Console.Clear();
                     BoardGen.GenSingleBoard(player, $"{player.Name}'s board");
-                    Console.WriteLine("\nAll ships placed!");
-                    Console.ReadKey(true);
+                    Console.WriteLine();
 
                     // Ask to re-place the ships
-                    var replaceShips = YesNoQuitMenu("Ship menu", "Accept positions", "Redo placement");
+                    var accept = YesNoQuitMenu("Ship menu", "Accept positions", "Redo placement",false);
 
                     // Player requested to quit to main menu
-                    if (replaceShips == null) {
+                    if (accept == null) {
                         return false;
                     }
 
-                    if ((bool) replaceShips) {
+                    if (!(bool) accept) {
                         player.ResetShips();
                         continue;
                     }
@@ -331,7 +333,7 @@ namespace GameSystem {
                     return null;
                 }
 
-                var pos = new Pos(input[0], input[1]);
+                var pos = new Pos(input[1], input[0]);
                 var result = nextPlayer.AttackAtPos(pos);
 
                 if (result == AttackResult.InvalidAttack) {

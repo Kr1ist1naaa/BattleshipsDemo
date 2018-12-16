@@ -56,13 +56,12 @@ namespace MenuSystem {
         }
 
         public string RunMenu() {
-            string rawInput, input;
-            MenuItem item;
+            string input;
 
             while (true) {
                 PrintMenu();
                 
-                rawInput = Console.ReadLine()?.Trim();
+                var rawInput = Console.ReadLine()?.Trim();
                 input = rawInput?.ToUpper();
                 
                 // Quit to main menu
@@ -77,11 +76,16 @@ namespace MenuSystem {
                 
                 // Current menu contains no shortcuts and is only for inputting a value
                 if (MenuTypes.Contains(MenuType.Input)) {
-                    return rawInput;
+                    if (MenuTypes.Contains(MenuType.ShipCoordInput) ||
+                        MenuTypes.Contains(MenuType.RuleIntInput) ||
+                        MenuTypes.Contains(MenuType.NameInput) ||
+                        MenuTypes.Contains(MenuType.CoordInput)) {
+                        return rawInput;
+                    }
                 }
 
                 // Load user-specified or default menuitem
-                item = string.IsNullOrWhiteSpace(input) || string.IsNullOrEmpty(input)
+                var item = string.IsNullOrWhiteSpace(input) || string.IsNullOrEmpty(input)
                     ? MenuItems.FirstOrDefault(m => m.IsDefaultChoice)
                     : MenuItems.FirstOrDefault(m => m.Shortcut == input);
 
