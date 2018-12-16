@@ -10,14 +10,16 @@ namespace MenuSystem {
         public List<MenuItem> MenuItems { get; set; }
         public List<MenuType> MenuTypes { get; set; }
         public bool DisplayQuitToMainMenu { get; set; }
+        public bool DisableGoBackItem { get; set; }
+        public bool ClearConsole { get; set; } = true;
 
         private void PrintMenu() {
-            var defaultMenuChoice = MenuItems.FirstOrDefault(m => m.IsDefaultChoice);
+            if (ClearConsole) {
+                Console.Clear();
+            }
 
-            Console.Clear();
-            
             Console.Write("========== ");
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(Title);
             Console.ResetColor();
             Console.WriteLine(" ==========");
@@ -38,15 +40,19 @@ namespace MenuSystem {
 
             Console.WriteLine(sb.ToString());
 
-            Console.WriteLine(Menus.GoBackItem);
+            if (!DisableGoBackItem) {
+                if (MenuTypes.Contains(MenuType.MainMenu)) {
+                    Console.WriteLine(Menus.ExitProgramItem);
+                } else {
+                    Console.WriteLine(Menus.GoBackItem);
+                }
+            }
 
             if (DisplayQuitToMainMenu) {
                 Console.WriteLine(Menus.QuitToMainItem);
             }
 
-            Console.Write(
-                defaultMenuChoice == null ? "> " : "[" + defaultMenuChoice.Shortcut + "]> "
-            );
+            Console.Write("> ");
         }
 
         public string RunMenu() {
@@ -58,18 +64,19 @@ namespace MenuSystem {
                 
                 rawInput = Console.ReadLine()?.Trim();
                 input = rawInput?.ToUpper();
+                
+                // Quit to main menu
+                if (DisplayQuitToMainMenu && input == Menus.QuitToMainItem.Shortcut) {
+                    break;
+                }
 
-                // Quit menu
-                if (input == Menus.GoBackItem.Shortcut) {
+                // Go back
+                if (!DisableGoBackItem && input == Menus.GoBackItem.Shortcut) {
                     break;
                 }
                 
                 // Current menu contains no shortcuts and is only for inputting a value
                 if (MenuTypes.Contains(MenuType.Input)) {
-                    // This menu only has one option which will contain the 
-                    // type of rule the user is asked to provide a value for
-                    item = MenuItems.First();
-                    
                     // Current menu is the rule value input menu
                     if (MenuTypes.Contains(MenuType.IntInput)) {
                         // Attempt to parse input as int
@@ -84,7 +91,7 @@ namespace MenuSystem {
                     }
                     
                     // Current menu is a string input menu
-                    if (MenuTypes.Contains(MenuType.StringInput)) {
+                    if (MenuTypes.Contains(MenuType.NameInput)) {
                         // Attempt to parse input
                         if (string.IsNullOrEmpty(input)) {
                             Console.WriteLine("Invalid input!");
@@ -102,10 +109,22 @@ namespace MenuSystem {
                         // Return the entered string
                         return rawInput;
                     }
+                    
+                    // Current menu is a coordinate input menu
+                    if (MenuTypes.Contains(MenuType.CoordInput)) {
+                        // Return the entered string
+                        return input;
+                    }
+
+                    // Current menu is for placing ships
+                    if (MenuTypes.Contains(MenuType.ShipCoordInput)) {
+                        // Return the entered location string
+                        return rawInput;
+                    }
                 }
 
                 // Load user-specified or default menuitem
-                item = string.IsNullOrWhiteSpace(input)
+                item = string.IsNullOrWhiteSpace(input) || string.IsNullOrEmpty(input)
                     ? MenuItems.FirstOrDefault(m => m.IsDefaultChoice)
                     : MenuItems.FirstOrDefault(m => m.Shortcut == input);
 
@@ -115,13 +134,20 @@ namespace MenuSystem {
                     Console.ReadKey(true);
                     continue;
                 }
+                
+                // Again the input but this time the user can actually cancel and go back
+                if (MenuTypes.Contains(MenuType.Input)) {
+                    if (MenuTypes.Contains(MenuType.YesNoInput)) {
+                        return item.Shortcut;
+                    }
+                }
 
                 // Current menu is the game menu
                 if (MenuTypes.Contains(MenuType.GameMenu)) {
                     // Current menu is game loading menu
                     if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
                         // Load the game from the database and continue it
-                        GameSystem.GameSystem.LoadGame((int) item.GameId);
+                        GameSystem.GameLogic.LoadGame((int) item.GameId);
                         
                         // Return the GoBackItem shortcut to exit the game loading menu
                         return Menus.GoBackItem.Shortcut;
@@ -130,7 +156,7 @@ namespace MenuSystem {
                     // Current menu is game deleting menu
                     if (MenuTypes.Contains(MenuType.DeleteGameMenu) && item.GameId != null) {
                         // Delete the game from the database
-                        GameSystem.GameSystem.DeleteGame((int) item.GameId);
+                        GameSystem.GameLogic.DeleteGame((int) item.GameId);
                         
                         // Return the GoBackItem shortcut to exit the game deletion menu
                         return Menus.GoBackItem.Shortcut;

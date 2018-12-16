@@ -21,6 +21,20 @@ namespace DAL {
             }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) { }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            // Define some db field restrictions
+            modelBuilder.Entity<Player>()
+                .Property(p => p.Name)
+                .HasMaxLength(32);
+            modelBuilder.Entity<Ship>()
+                .Property(p => p.Title)
+                .HasMaxLength(32);
+            modelBuilder.Entity<Ship>()
+                .Property(p => p.Symbol)
+                .HasMaxLength(1);
+            modelBuilder.Entity<Ship>()
+                .Property(p => p.Direction)
+                .HasMaxLength(1);
+        }
     }
 }

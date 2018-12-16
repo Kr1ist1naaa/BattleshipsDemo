@@ -148,7 +148,7 @@ namespace MenuSystem {
                 new MenuItem {
                     IsDefaultChoice = true,
                     Description = "Start game",
-                    ActionToExecute = GameSystem.GameSystem.NewGame,
+                    ActionToExecute = GameLogic.NewGame,
                     Shortcut = "A"
                 },
                 new MenuItem {
@@ -191,6 +191,11 @@ namespace MenuSystem {
         public static readonly MenuItem QuitToMainItem = new MenuItem {
             Shortcut = "Q",
             Description = "Quit to main menu!"
+        };
+        
+        public static readonly MenuItem ExitProgramItem = new MenuItem {
+            Shortcut = "X",
+            Description = "Exit program!"
         };
     }
 }

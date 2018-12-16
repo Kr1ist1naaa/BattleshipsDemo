@@ -15,6 +15,10 @@ namespace Domain {
             Name = playerName;
 
             // Generate a set of ships for the player based on the current rules
+            ResetShips();
+        }
+
+        public void ResetShips() {
             Ships = Ship.Ships.GenShipSet();
         }
 

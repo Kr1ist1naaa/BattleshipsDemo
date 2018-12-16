@@ -86,7 +86,8 @@ namespace DAL.Migrations
 
                     b.Property<int?>("GameId");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(32);
 
                     b.HasKey("Id");
 
@@ -118,7 +119,8 @@ namespace DAL.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Direction");
+                    b.Property<int>("Direction")
+                        .HasMaxLength(1);
 
                     b.Property<int?>("PlayerId");
 
@@ -126,9 +128,11 @@ namespace DAL.Migrations
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 1)));
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 1)))
+                        .HasMaxLength(1);
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .HasMaxLength(32);
 
                     b.Property<int>("X");
 

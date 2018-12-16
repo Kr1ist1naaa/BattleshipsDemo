@@ -35,7 +35,9 @@ namespace BoardUI {
                             Console.Write(ship.Symbol.ToString());
                             Console.ResetColor();
                         } else {
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
                             Console.Write(ship.Symbol.ToString());
+                            Console.ResetColor();
                         }
                     }
 
@@ -81,7 +83,9 @@ namespace BoardUI {
                             Console.Write(ship.Symbol.ToString());
                             Console.ResetColor();
                         } else {
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
                             Console.Write(ship.Symbol.ToString());
+                            Console.ResetColor();
                         }
                     }
 
