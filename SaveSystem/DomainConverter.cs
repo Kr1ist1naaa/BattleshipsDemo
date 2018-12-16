@@ -46,7 +46,7 @@ namespace SaveSystem {
                     Symbol = dalShip.Symbol,
                     Size = dalShip.Size,
                     Direction = (Domain.Ship.ShipDirection) dalShip.Direction,
-                    ShipStatuses = GetAndConvertShipStatus(ctx, playerId),
+                    ShipStatuses = GetAndConvertShipStatus(ctx, dalShip.Id),
                     ShipPos = new Domain.Pos {
                         X = dalShip.X,
                         Y = dalShip.Y

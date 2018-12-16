@@ -5,7 +5,7 @@ using SaveSystem;
 
 namespace MenuSystem {
     public static class DynamicMenus {
-        public static void CreateRunLoadGameMenu() {
+        public static void LoadGame() {
             var menu = new Menu {
                 Title = "Load game",
                 MenuTypes = new List<MenuType> {MenuType.GameMenu, MenuType.LoadGameMenu},
@@ -41,7 +41,7 @@ namespace MenuSystem {
             menu.RunMenu();
         }
         
-        public static void CreateRunDeleteGameMenu() {
+        public static void DeleteGame() {
             var menu = new Menu {
                 Title = "Delete game",
                 MenuTypes = new List<MenuType> {MenuType.GameMenu, MenuType.DeleteGameMenu},
@@ -77,12 +77,12 @@ namespace MenuSystem {
             menu.RunMenu();
         }
         
-        public static void CreateRunChangeRuleValueMenu(RuleType? ruleType) {
+        public static void ChangeRuleValue(RuleType? ruleType) {
             var rule = Rules.GetRule(ruleType);
             
             var menu = new Menu {
                 Title = "Change rule",
-                MenuTypes = new List<MenuType> {MenuType.RuleIntInput},
+                MenuTypes = new List<MenuType> {MenuType.Input, MenuType.IntInput},
                 MenuItems = new List<MenuItem> {
                     new MenuItem {
                         Description = $"Enter a value between {rule.MinVal} and {rule.MaxVal}",
@@ -91,7 +91,42 @@ namespace MenuSystem {
                 }
             };
 
-            menu.RunMenu();
+            while (true) {
+                // Run menu, ask user for integer input
+                var input = menu.RunMenu();
+                
+                // User entered exit shortcut
+                if (input.ToUpper() == Menus.GoBackItem.Shortcut) {
+                    return;
+                }
+                
+                // This menu is guaranteed to return an integer-like string
+                var value = int.Parse(input);
+                
+                if (!Rules.ChangeRule(ruleType, value)) {
+                    Console.WriteLine("Value not in range!");
+                    Console.ReadKey(true);
+                    continue;
+                }
+                
+                Console.WriteLine("Rule value changed!");
+                Console.ReadKey(true);
+                break;
+            }
+        }
+
+        public static string AskPlayername(int playerNr) {
+            var menu = new Menu {
+                Title = "Create players",
+                MenuTypes = new List<MenuType> {MenuType.Input, MenuType.StringInput},
+                MenuItems = new List<MenuItem> {
+                    new MenuItem {
+                        Description = $"Enter a name for player {playerNr}"
+                    }
+                }
+            };
+
+            return menu.RunMenu();
         }
         
         public static void PrintAllRules() {

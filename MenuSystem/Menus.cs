@@ -140,12 +140,10 @@ namespace MenuSystem {
                 }
             }
         };
-        
-        
-        
+
         private static readonly Menu NewGameMenu = new Menu {
             Title = "Creating new game",
-            MenuTypes = new List<MenuType> {MenuType.GameMenu},
+            MenuTypes = new List<MenuType> {MenuType.GameMenu, MenuType.NewGameMenu},
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     IsDefaultChoice = true,
@@ -174,12 +172,12 @@ namespace MenuSystem {
                 },
                 new MenuItem {
                     Description = "Load save",
-                    ActionToExecute = DynamicMenus.CreateRunLoadGameMenu,
+                    ActionToExecute = DynamicMenus.LoadGame,
                     Shortcut = "B"
                 },
                 new MenuItem {
                     Description = "Delete save",
-                    ActionToExecute = DynamicMenus.CreateRunDeleteGameMenu, 
+                    ActionToExecute = DynamicMenus.DeleteGame, 
                     Shortcut = "C"
                 }
             }

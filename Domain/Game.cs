@@ -6,7 +6,6 @@ namespace Domain {
         public Player Winner;
         public List<Move> Moves;
         public List<Player> Players;
-        public HashSet<Rule> Rules;
         public int TurnCount;
         public int? GameId = null;
 

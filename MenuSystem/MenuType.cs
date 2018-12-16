@@ -2,9 +2,10 @@ namespace MenuSystem {
     public enum MenuType {
         MainMenu, 
         GameMenu, 
-            LoadGameMenu, DeleteGameMenu,
+            NewGameMenu, LoadGameMenu, DeleteGameMenu,
         RulesMenu,
             MainRulesMenu, GeneralRulesMenu, ShipSizeRulesMenu, ShipCountRulesMenu,
-        RuleIntInput
+        Input,
+            IntInput, StringInput
     }
 }

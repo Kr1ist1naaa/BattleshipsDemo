@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Domain.DomainRule;
+using System.Text.RegularExpressions;
 
 namespace MenuSystem {
     public class Menu {
         public string Title { get; set; }
-        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
-        public List<MenuType> MenuTypes { get; set; } = new List<MenuType>();
-        public bool DisplayQuitToMainMenu { get; set; } = false;
+        public List<MenuItem> MenuItems { get; set; }
+        public List<MenuType> MenuTypes { get; set; }
+        public bool DisplayQuitToMainMenu { get; set; }
 
         private void PrintMenu() {
             var defaultMenuChoice = MenuItems.FirstOrDefault(m => m.IsDefaultChoice);
@@ -50,40 +50,58 @@ namespace MenuSystem {
         }
 
         public string RunMenu() {
-            string input;
+            string rawInput, input;
             MenuItem item;
 
             while (true) {
                 PrintMenu();
-                input = Console.ReadLine()?.ToUpper().Trim();
+                
+                rawInput = Console.ReadLine()?.Trim();
+                input = rawInput?.ToUpper();
 
                 // Quit menu
                 if (input == Menus.GoBackItem.Shortcut) {
                     break;
                 }
                 
-                // Current menu is the rule value input menu
-                if (MenuTypes.Contains(MenuType.RuleIntInput)) {
-                    // This menu only has one option which will contain the type of rule the user is asked to provide a
-                    // value for
+                // Current menu contains no shortcuts and is only for inputting a value
+                if (MenuTypes.Contains(MenuType.Input)) {
+                    // This menu only has one option which will contain the 
+                    // type of rule the user is asked to provide a value for
                     item = MenuItems.First();
-
-                    // Attempt to parse input as int
-                    if (string.IsNullOrEmpty(input) || !int.TryParse(input, out var value)) {
-                        Console.WriteLine("Value not an integer!");
-                        Console.ReadKey(true);
-                        continue;
+                    
+                    // Current menu is the rule value input menu
+                    if (MenuTypes.Contains(MenuType.IntInput)) {
+                        // Attempt to parse input as int
+                        if (string.IsNullOrEmpty(rawInput) || !int.TryParse(rawInput, out var value)) {
+                            Console.WriteLine("Value not an integer!");
+                            Console.ReadKey(true);
+                            continue;
+                        }
+                        
+                        // Return the entered valid integer
+                        return value.ToString();
                     }
                     
-                    if (!Rules.ChangeRule(item.RuleTypeToChange, value)) {
-                        Console.WriteLine("Value not in range!");
-                        Console.ReadKey(true);
-                        continue;
-                    }
+                    // Current menu is a string input menu
+                    if (MenuTypes.Contains(MenuType.StringInput)) {
+                        // Attempt to parse input
+                        if (string.IsNullOrEmpty(input)) {
+                            Console.WriteLine("Invalid input!");
+                            Console.ReadKey(true);
+                            continue;
+                        }
+                        
+                        // Would normally be const / static readonly
+                        if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(rawInput)) {
+                            Console.WriteLine("Invalid non-alphanumeric characters!");
+                            Console.ReadKey(true);
+                            continue;
+                        }
 
-                    Console.WriteLine("Rule value changed!");
-                    Console.ReadKey(true);
-                    break;
+                        // Return the entered string
+                        return rawInput;
+                    }
                 }
 
                 // Load user-specified or default menuitem
@@ -104,14 +122,29 @@ namespace MenuSystem {
                     if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
                         // Load the game from the database and continue it
                         GameSystem.GameSystem.LoadGame((int) item.GameId);
-                        continue;
+                        
+                        // Return the GoBackItem shortcut to exit the game loading menu
+                        return Menus.GoBackItem.Shortcut;
                     }
 
                     // Current menu is game deleting menu
                     if (MenuTypes.Contains(MenuType.DeleteGameMenu) && item.GameId != null) {
                         // Delete the game from the database
                         GameSystem.GameSystem.DeleteGame((int) item.GameId);
-                        continue;
+                        
+                        // Return the GoBackItem shortcut to exit the game deletion menu
+                        return Menus.GoBackItem.Shortcut;
+                    }
+                    
+                    // Current menu is new game menu
+                    if (MenuTypes.Contains(MenuType.NewGameMenu)) {
+                        // Start new game
+                        if (item.ActionToExecute != null) {
+                            item.ActionToExecute();
+
+                            // Return the GoBackItem shortcut to exit the menu
+                            return Menus.GoBackItem.Shortcut;
+                        }
                     }
                 }
 
@@ -133,13 +166,13 @@ namespace MenuSystem {
 
                     // Current menu is the main rules menu
                     if (item.RuleTypeToChange != null) {
-                        DynamicMenus.CreateRunChangeRuleValueMenu(item.RuleTypeToChange);
+                        DynamicMenus.ChangeRuleValue(item.RuleTypeToChange);
                         continue;
                     }
                 }
 
                 if (item.ActionToExecute != null) {
-                    item.ActionToExecute.Invoke();
+                    item.ActionToExecute();
 
                     if (item.MenuToRun == null) {
                         continue;
@@ -154,14 +187,13 @@ namespace MenuSystem {
                 }
 
                 // everything should be ok now, lets run it!
-                var chosenCommand = item.MenuToRun();
-                input = chosenCommand;
+                input = item.MenuToRun();
 
-                if (MenuTypes[0] != MenuType.MainMenu && chosenCommand == Menus.QuitToMainItem.Shortcut) {
+                if (!MenuTypes.Contains(MenuType.MainMenu) && input == Menus.QuitToMainItem.Shortcut) {
                     break;
                 }
 
-                if (chosenCommand != Menus.GoBackItem.Shortcut && chosenCommand != Menus.QuitToMainItem.Shortcut) {
+                if (input != Menus.GoBackItem.Shortcut && input != Menus.QuitToMainItem.Shortcut) {
                     Console.ReadKey(true);
                 }
             }
