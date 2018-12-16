@@ -11,9 +11,13 @@ namespace BoardUI {
 
             // Center and print title
             Console.WriteLine(GenCenterTitle(title));
+            Console.WriteLine(GenColumnNumberings());
 
             for (int i = 0; i < boardSize; i++) {
                 Console.WriteLine(border);
+                
+                // Row numbering
+                Console.Write($"{i,4} ");
 
                 for (int j = 0; j < boardSize; j++) {
                     Console.Write("|  ");
@@ -59,8 +63,14 @@ namespace BoardUI {
             var title = GenCenterTitle("Your board") + gap + GenCenterTitle("Enemy's board");
             Console.WriteLine(title);
 
+            var colNumbs = GenColumnNumberings();
+            Console.WriteLine(colNumbs + gap + colNumbs);
+
             for (int i = 0; i < boardSize; i++) {
                 Console.WriteLine(border + gap + border);
+                
+                // Row numbering
+                Console.Write($"{i,4} ");
 
                 // Your board horizontal line
                 for (int j = 0; j < boardSize; j++) {
@@ -92,7 +102,8 @@ namespace BoardUI {
                     Console.Write("  ");
                 }
 
-                Console.Write("|" + gap);
+                // Row numbering
+                Console.Write($"|{gap}{i,4} ");
 
                 // Enemy board horizontal line
                 for (int j = 0; j < boardSize; j++) {
@@ -128,10 +139,21 @@ namespace BoardUI {
             Console.WriteLine(border + gap + border);
         }
 
+        private static string GenColumnNumberings() {
+            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var sb = new StringBuilder();
+            
+            sb.Append("     ");
+            for (int i = 0; i < boardSize; i++) sb.Append($"{i,4}  ");
+            
+            return sb.ToString();
+        }
+        
         private static string GenHorizontalBoardEdge() {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
             var sb = new StringBuilder();
 
+            sb.Append("     ");
             for (int i = 0; i < boardSize; i++) {
                 sb.Append("+-----");
             }
@@ -144,7 +166,7 @@ namespace BoardUI {
             var borderLen = GenHorizontalBoardEdge().Length;
             var sb = new StringBuilder();
 
-            var leftPad = (borderLen - title.Length) / 2;
+            var leftPad = (borderLen - title.Length) / 2 + 5;
             var rightPad = borderLen - title.Length - leftPad;
 
             sb.Append(new string(' ', leftPad));
