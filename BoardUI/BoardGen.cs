@@ -5,6 +5,8 @@ using Domain.DomainRule;
 
 namespace BoardUI {
     public static class BoardGen {
+        public static Func<int, string> MapToBase26 { get; set; }
+        
         public static void GenSingleBoard(Player player, string title) {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
             var border = GenHorizontalBoardEdge();
@@ -15,9 +17,9 @@ namespace BoardUI {
 
             for (int i = 0; i < boardSize; i++) {
                 Console.WriteLine(border);
-                
+
                 // Row numbering
-                Console.Write($"{i,4} ");
+                Console.Write($"{i+1,4} ");
 
                 for (int j = 0; j < boardSize; j++) {
                     Console.Write("|  ");
@@ -68,9 +70,9 @@ namespace BoardUI {
 
             for (int i = 0; i < boardSize; i++) {
                 Console.WriteLine(border + gap + border);
-                
+
                 // Row numbering
-                Console.Write($"{i,4} ");
+                Console.Write($"{i+1,4} ");
 
                 // Your board horizontal line
                 for (int j = 0; j < boardSize; j++) {
@@ -103,7 +105,7 @@ namespace BoardUI {
                 }
 
                 // Row numbering
-                Console.Write($"|{gap}{i,4} ");
+                Console.Write($"|{gap}{i+1,4} ");
 
                 // Enemy board horizontal line
                 for (int j = 0; j < boardSize; j++) {
@@ -142,13 +144,15 @@ namespace BoardUI {
         private static string GenColumnNumberings() {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
             var sb = new StringBuilder();
-            
+
             sb.Append("     ");
-            for (int i = 0; i < boardSize; i++) sb.Append($"{i,4}  ");
-            
+            for (int i = 0; i < boardSize; i++) {
+                sb.Append($"{MapToBase26(i),4}  ");
+            }
+
             return sb.ToString();
         }
-        
+
         private static string GenHorizontalBoardEdge() {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
             var sb = new StringBuilder();
@@ -157,8 +161,9 @@ namespace BoardUI {
             for (int i = 0; i < boardSize; i++) {
                 sb.Append("+-----");
             }
+
             sb.Append("+");
-            
+
             return sb.ToString();
         }
 

@@ -6,6 +6,7 @@ using Domain.DomainRule;
 using SaveSystem;
 using Domain;
 using Domain.Ship;
+using GameSystem;
 
 namespace MenuSystem {
     public static class DynamicMenus {
@@ -49,7 +50,7 @@ namespace MenuSystem {
             }
         }
 
-        public static int[] AttackCoords(Player p1, Player p2) {
+        public static string[] AttackCoords(Player p1, Player p2) {
             var menu = new Menu {
                 Title = "Enter attack coordinates",
                 DisableGoBackItem = true,
@@ -58,7 +59,7 @@ namespace MenuSystem {
                 MenuTypes = new List<MenuType> {MenuType.Input, MenuType.CoordInput},
                 MenuItems = new List<MenuItem> {
                     new MenuItem {
-                        Description = "Input format: <x> <y>"
+                        Description = "Input format: <a..> <1..>"
                     }
                 }
             };
@@ -92,23 +93,11 @@ namespace MenuSystem {
                     continue;
                 }
 
-                if (!int.TryParse(strX, out var x)) {
-                    Console.WriteLine("Non-integer input!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                if (!int.TryParse(strY, out var y)) {
-                    Console.WriteLine("Non-integer input!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                return new[] {x, y};
+                return new[] {strX, strY};
             }
         }
 
-        public static int[] ShipCoords(Player player, Ship ship) {
+        public static string[] ShipCoords(Player player, Ship ship) {
             var menu = new Menu {
                 Title = $"Place size {ship.Size} {ship.Title}",
                 DisableGoBackItem = true,
@@ -116,7 +105,7 @@ namespace MenuSystem {
                 ClearConsole = false,
                 MenuTypes = new List<MenuType> {MenuType.Input, MenuType.ShipCoordInput},
                 MenuItems = new List<MenuItem> {
-                    new MenuItem {Description = "Input format: <x> <y> <direction>"},
+                    new MenuItem {Description = "Input format: <a..> <1..> <direction>"},
                     new MenuItem {Description = "<direction> is right/r or down/d"}
                 }
             };
@@ -153,32 +142,7 @@ namespace MenuSystem {
                     continue;
                 }
 
-                if (!int.TryParse(strX, out var x)) {
-                    Console.WriteLine("Non-integer input!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                if (!int.TryParse(strY, out var y)) {
-                    Console.WriteLine("Non-integer input!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                int? dir = null;
-                if (strDir.Equals("r") || strDir.Equals("right")) {
-                    dir = 0;
-                } else if (strDir.Equals("d") || strDir.Equals("down")) {
-                    dir = 1;
-                }
-
-                if (dir == null) {
-                    Console.WriteLine("Invalid direction!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                return new[] {x, y, (int) dir};
+                return new[] {strX, strY, strDir};
             }
         }
 

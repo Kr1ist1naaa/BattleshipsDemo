@@ -12,15 +12,20 @@ namespace GameSystem {
         public static Func<string, string, string, bool, bool?> YesNoQuitMenu { get; set; }
         public static Func<string, string, bool> YesOrQuitMenu { get; set; }
         public static Func<string, string, string> NameMenu { get; set; }
-        public static Func<Player, Player, int[]> AttackCoordMenu { get; set; }
-        public static Func<Player, Ship, int[]> ShipCoordsMenu { get; set; }
+        public static Func<Player, Player, string[]> AttackCoordMenu { get; set; }
+        public static Func<Player, Ship, string[]> ShipCoordsMenu { get; set; }
+
 
         public static void LoadGame(int gameId) {
             Console.Clear();
             Console.WriteLine("Loading game...");
 
+            // Load and convert game
             var game = GameSaver.Load(gameId);
 
+            // Reset current base mappings
+            BaseConversion.Reset();
+            
             Console.Clear();
             Console.WriteLine("Game loaded!");
             Console.ReadKey(true);
@@ -43,6 +48,10 @@ namespace GameSystem {
         }
 
         public static void NewGame() {
+            // Reset current base mappings
+            BaseConversion.Reset();
+            
+            // Create players
             var players = InitializePlayers();
 
             // User cancelled players creation
@@ -158,8 +167,46 @@ namespace GameSystem {
                                     return false;
                                 }
 
-                                var pos = new Pos(input[0], input[1]);
-                                var dir = (ShipDirection) input[2];
+                                // For the sake of clarity
+                                var strX = input[0];
+                                var strY = input[1];
+                                var strDir = input[2];
+                                
+                                // Convert dir to enum
+                                ShipDirection dir;
+                                if (strDir.Equals("r") || strDir.Equals("right")) {
+                                    dir = ShipDirection.Right;
+                                } else if (strDir.Equals("d") || strDir.Equals("down")) {
+                                    dir = ShipDirection.Down;
+                                } else {
+                                    // Unknown direction specified
+                                    Console.WriteLine("Invalid direction!");
+                                    Console.ReadKey(true);
+                                    continue;
+                                }
+
+                                // Check if x coordinate is valid and alphabetic
+                                if (BaseConversion.MapToBase10(strX) == null) {
+                                    Console.WriteLine("Invalid X coordinate!");
+                                    Console.ReadKey(true);
+                                    continue;
+                                }
+                                
+                                // Check if y coordinate is a valid integer
+                                if (!int.TryParse(strY, out var intY)) {
+                                    Console.WriteLine("Invalid Y coordinate!");
+                                    Console.ReadKey(true);
+                                    continue;
+                                }
+                                
+                                // Convert X coordinate to an integer
+                                var intX = (int) BaseConversion.MapToBase10(strX);
+                                
+                                // Take board orientation and numbering offset into account
+                                var x = intX;
+                                var y = intY - 1;
+
+                                var pos = new Pos(x, y);
 
                                 if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
                                     Console.WriteLine("Invalid position! Try again:");
@@ -332,8 +379,33 @@ namespace GameSystem {
                 if (input == null) {
                     return null;
                 }
+                
+                // For the sake of clarity
+                var strX = input[0];
+                var strY = input[1];
+                
+                // Check if x coordinate is valid and alphabetic
+                if (BaseConversion.MapToBase10(strX) == null) {
+                    Console.WriteLine("Invalid X coordinate!");
+                    Console.ReadKey(true);
+                    continue;
+                }
+                                
+                // Check if y coordinate is a valid integer
+                if (!int.TryParse(strY, out var intY)) {
+                    Console.WriteLine("Invalid Y coordinate!");
+                    Console.ReadKey(true);
+                    continue;
+                }
+                                
+                // Convert X coordinate to an integer
+                var intX = (int) BaseConversion.MapToBase10(strX);
+                                
+                // Take board orientation and numbering offset into account
+                var x = intY - 1;
+                var y = intX;
 
-                var pos = new Pos(input[1], input[0]);
+                var pos = new Pos(x, y);
                 var result = nextPlayer.AttackAtPos(pos);
 
                 if (result == AttackResult.InvalidAttack) {

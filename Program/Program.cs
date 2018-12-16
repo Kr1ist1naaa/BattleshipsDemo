@@ -1,4 +1,5 @@
 ﻿using System;
+using BoardUI;
 
 namespace Program {
     class Program {
@@ -9,6 +10,8 @@ namespace Program {
             GameSystem.GameLogic.YesOrQuitMenu = MenuSystem.DynamicMenus.YesOrQuit;
             GameSystem.GameLogic.AttackCoordMenu = MenuSystem.DynamicMenus.AttackCoords;
             GameSystem.GameLogic.ShipCoordsMenu = MenuSystem.DynamicMenus.ShipCoords;
+
+            BoardGen.MapToBase26 = GameSystem.BaseConversion.MapToBase26;
             
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
