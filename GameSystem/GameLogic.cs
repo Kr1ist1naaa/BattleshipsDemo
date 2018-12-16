@@ -9,12 +9,11 @@ using SaveSystem;
 
 namespace GameSystem {
     public static class GameLogic {
-        public static Func<string, string, string> NameMenu { get; set; }
         public static Func<string, string, string, bool?> YesNoQuitMenu { get; set; }
         public static Func<string, string, bool> YesOrQuitMenu { get; set; }
+        public static Func<string, string, string> NameMenu { get; set; }
         public static Func<Player, Player, int[]> AttackCoordMenu { get; set; }
         public static Func<Player, Ship, int[]> ShipCoordsMenu { get; set; }
-
 
         public static void LoadGame(int gameId) {
             Console.Clear();
@@ -58,7 +57,7 @@ namespace GameSystem {
             }
 
             // Ask to start game
-            const string t = "Game creation";
+            const string t = "Game menu";
             const string o = "Start game";
             var startGame = YesOrQuitMenu(t, o);
             if (!startGame) {

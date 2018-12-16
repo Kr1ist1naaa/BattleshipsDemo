@@ -6,6 +6,6 @@ namespace MenuSystem {
         RulesMenu,
             MainRulesMenu, GeneralRulesMenu, ShipSizeRulesMenu, ShipCountRulesMenu,
         Input,
-            IntInput, NameInput, YesNoInput, CoordInput, ShipCoordInput
+            RuleIntInput, NameInput, YesNoInput, CoordInput, ShipCoordInput
     }
 }

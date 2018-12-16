@@ -77,50 +77,7 @@ namespace MenuSystem {
                 
                 // Current menu contains no shortcuts and is only for inputting a value
                 if (MenuTypes.Contains(MenuType.Input)) {
-                    // Current menu is the rule value input menu
-                    if (MenuTypes.Contains(MenuType.IntInput)) {
-                        // Attempt to parse input as int
-                        if (string.IsNullOrEmpty(rawInput) || !int.TryParse(rawInput, out var value)) {
-                            Console.WriteLine("Value not an integer!");
-                            Console.ReadKey(true);
-                            continue;
-                        }
-                        
-                        // Return the entered valid integer
-                        return value.ToString();
-                    }
-                    
-                    // Current menu is a string input menu
-                    if (MenuTypes.Contains(MenuType.NameInput)) {
-                        // Attempt to parse input
-                        if (string.IsNullOrEmpty(input)) {
-                            Console.WriteLine("Invalid input!");
-                            Console.ReadKey(true);
-                            continue;
-                        }
-                        
-                        // Would normally be const / static readonly
-                        if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(rawInput)) {
-                            Console.WriteLine("Invalid non-alphanumeric characters!");
-                            Console.ReadKey(true);
-                            continue;
-                        }
-
-                        // Return the entered string
-                        return rawInput;
-                    }
-                    
-                    // Current menu is a coordinate input menu
-                    if (MenuTypes.Contains(MenuType.CoordInput)) {
-                        // Return the entered string
-                        return input;
-                    }
-
-                    // Current menu is for placing ships
-                    if (MenuTypes.Contains(MenuType.ShipCoordInput)) {
-                        // Return the entered location string
-                        return rawInput;
-                    }
+                    return rawInput;
                 }
 
                 // Load user-specified or default menuitem

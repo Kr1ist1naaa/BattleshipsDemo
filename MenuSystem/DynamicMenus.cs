@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using BoardUI;
 using Domain.DomainRule;
 using SaveSystem;
@@ -21,10 +22,31 @@ namespace MenuSystem {
                 }
             };
 
-            var input = menu.RunMenu();
-
-            // If user entered go back shortcut
-            return input.ToUpper() == Menus.GoBackItem.Shortcut ? null : input;
+            while (true) {
+                var input = menu.RunMenu();
+                
+                // If user entered go back shortcut
+                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
+                    return null;
+                }
+                
+                // Attempt to parse input
+                if (string.IsNullOrEmpty(input)) {
+                    Console.WriteLine("Invalid input!");
+                    Console.ReadKey(true);
+                    continue;
+                }
+                        
+                // Would normally be const / static readonly
+                if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(input)) {
+                    Console.WriteLine("Invalid non-alphanumeric characters!");
+                    Console.ReadKey(true);
+                    continue;
+                }
+                
+                
+                return input;
+            }
         }
 
         public static int[] AttackCoords(Player p1, Player p2) {
@@ -49,7 +71,7 @@ namespace MenuSystem {
 
                 var input = menu.RunMenu();
 
-                if (input.Equals(Menus.QuitToMainItem.Shortcut)) {
+                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
                     return null;
                 }
 
@@ -107,7 +129,7 @@ namespace MenuSystem {
 
                 var input = menu.RunMenu();
 
-                if (input.Equals(Menus.QuitToMainItem.Shortcut)) {
+                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
                     return null;
                 }
 
@@ -200,7 +222,7 @@ namespace MenuSystem {
 
             var input = menu.RunMenu();
 
-            if (input.Equals(Menus.QuitToMainItem.Shortcut)) {
+            if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
                 return null;
             }
 
@@ -284,7 +306,7 @@ namespace MenuSystem {
 
             var menu = new Menu {
                 Title = $"Change rule {rule.RuleType}",
-                MenuTypes = new List<MenuType> {MenuType.Input, MenuType.IntInput},
+                MenuTypes = new List<MenuType> {MenuType.Input, MenuType.RuleIntInput},
                 MenuItems = new List<MenuItem> {
                     new MenuItem {
                         Description = $"Current value: {rule.Value}"
@@ -303,9 +325,13 @@ namespace MenuSystem {
                 if (input.ToUpper() == Menus.GoBackItem.Shortcut) {
                     return;
                 }
-
-                // This menu is guaranteed to return an integer-like string
-                var value = int.Parse(input);
+                
+                // Attempt to parse input as int
+                if (string.IsNullOrEmpty(input) || !int.TryParse(input, out var value)) {
+                    Console.WriteLine("Value not an integer!");
+                    Console.ReadKey(true);
+                    continue;
+                }
 
                 if (!Rules.ChangeRule(ruleType, value)) {
                     Console.WriteLine("Value not in range!");
