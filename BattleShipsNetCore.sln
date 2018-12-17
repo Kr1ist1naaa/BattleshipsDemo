@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameSystem", "GameSystem\Ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProgram", "WebProgram\WebProgram.csproj", "{7C2BB3B0-0573-4BBA-9D75-47DC137AA094}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		|Any CPU = |Any CPU
@@ -33,5 +35,7 @@ Global
 		{D8CB79F8-B91F-43D4-AFB5-3630728D0324}.|Any CPU.Build.0 = Debug|Any CPU
 		{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}.|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C503D46-47FC-43A9-B5AD-BFCE8E56AB9A}.|Any CPU.Build.0 = Debug|Any CPU
+		{7C2BB3B0-0573-4BBA-9D75-47DC137AA094}.|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C2BB3B0-0573-4BBA-9D75-47DC137AA094}.|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

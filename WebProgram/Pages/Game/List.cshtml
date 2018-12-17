@@ -1,0 +1,45 @@
+@page
+@using SaveSystem
+@model ListModel
+@{
+    ViewData["Title"] = "Game list";
+}
+
+<div class="text-center">
+    <h1 class="display-4 mb-5">Game list</h1>
+    <table class="table mb-3">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Last played</th>
+            <th scope="col">Turn count</th>
+            <th scope="col">Load</th>
+            <th scope="col">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var counter = 1;
+            foreach (var rowData in GameSaver.GetSaveGameList()) {
+                <tr>
+                    <td>
+                        @counter
+                    </td>
+                    <td>
+                        @rowData[2]
+                    </td>
+                    <td>
+                        @rowData[1]
+                    </td>
+                    <td><a href='?action=load&id=@rowData[0]' class='btn btn-sm btn-success'>○</a></td>
+                    <td><a href='?action=delete&id=@rowData[0]' class='btn btn-sm btn-danger'>✕</a></td>
+                </tr>
+                
+                counter++;
+            }
+        }
+        </tbody>
+    </table>
+    
+    <a href="/" class="btn btn-lg btn-secondary">Go back</a>
+</div>
