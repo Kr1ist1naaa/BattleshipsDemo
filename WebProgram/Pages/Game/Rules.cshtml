@@ -1,4 +1,5 @@
 @page
+@using Domain.DomainRule
 @model RulesModel
 @{
     ViewData["Title"] = "Rules";
@@ -6,56 +7,42 @@
 
 <div class="text-center">
     <h1 class="display-4 mb-5">@Model.MainTitle</h1>
-
-    <div class="d-flex justify-content-center mb-3">
-        @{
-            if (Model.IsReset) {
-                <h5>Rules reset to default!</h5>
-            } else if (Model.IsSave) {
-                <h5>Rules saved!</h5>
-            } else if (!Model.HasAction) {
-                <a href="Rules?action=list&type=general" class="btn btn-lg mx-1 btn-secondary">General</a>
-                <a href="Rules?action=list&type=size" class="btn btn-lg mx-1 btn-secondary">Ship sizes</a>
-                <a href="Rules?action=list&type=count" class="btn btn-lg mx-1 btn-secondary">Ship counts</a>
-            }
-        }
-    </div>
-    <div class="mb-3">
-        @{
-            if (Model.GenRulesTable) {
-                <table class="table">
-                    <thead>
+    @if (Model.IsAction) {
+        <div class="d-flex justify-content-center mb-3">
+            <h5>@Model.StatusMsg</h5>
+        </div>
+        <div class="d-flex justify-content-center mb-3">
+            <a href="@Request.Path.Value" class="btn btn-lg mx-1 btn-primary">Ok</a>
+        </div>
+    } else {
+        <form method="POST">
+            <table class="table table-sm mb-3">
+                <thead>
+                <tr>
+                    <th scope="col">Rule</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Min val</th>
+                    <th scope="col">Max val</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var rule in Rules.RuleSet) {
                     <tr>
-                        <th scope="col">Rule</th>
-                        <th scope="col">Min val</th>
-                        <th scope="col">Max val</th>
-                        <th scope="col">Value</th>
+                        <td>@rule.RuleType</td>
+                        <td>
+                            <input class="form-control form-control-sm" type="text" name="@((int) rule.RuleType)" placeholder="@rule.Value">
+                        </td>
+                        <td>@rule.MinVal</td>
+                        <td>@rule.MaxVal</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <td>BoardSize</td>
-                    <td>4</td>
-                    <td>256</td>
-                    <td>
-                        <input class="form-control form-control-sm" type="text" placeholder="10">
-                    </td>
-                    </tbody>
-                </table>
-            }
-        }
-    </div>
-    <div class="d-flex justify-content-center mb-3">
-        @{
-            if (Model.GenRulesTable) {
-                <a href="Rules?action=save&type=@Model.Type" class="btn btn-lg mx-1 btn-success">Save</a>
-                <a href="Rules?action=reset&type=@Model.Type" class="btn btn-lg mx-1 btn-warning">Reset</a>
-                <a href="@Model.BackBtnHref" class="btn btn-lg mx-1 btn-secondary">Cancel</a>
-            } else {
-                if (!Model.IsReset && !Model.IsSave) {
-                    <a href="Rules?action=reset&type=all" class="btn btn-lg mx-1 btn-warning">Reset all</a>
                 }
-                <a href="@Model.BackBtnHref" class="btn btn-lg mx-1 btn-primary">Go back</a>
-            }
-        }
-    </div>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center mb-3">
+                <button type="submit" class="btn btn-lg mx-1 btn-primary">Save</button>
+                <a href="?reset" class="btn btn-lg mx-1 btn-warning">Reset all</a>
+                <a href="@Model.BackBtnHref" class="btn btn-lg mx-1 btn-secondary">Go back</a>
+            </div>
+        </form>
+    }
 </div>
