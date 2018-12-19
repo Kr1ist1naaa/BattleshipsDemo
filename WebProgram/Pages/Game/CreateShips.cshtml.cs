@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebProgram.Pages.Game {
     public class CreateShipsModel : PageModel {
-        public string MainTitle { get; private set; }
+        public string MainTitle { get; private set; } = "Placing ships";
 
         public bool IsAutoplaceQuestion { get; private set; }
         public bool IsCurrentPlayerPlacedAll { get; private set; }
@@ -60,6 +60,7 @@ namespace WebProgram.Pages.Game {
                 
                 if (GameLogic.AutoPlaceShips(Player)) {
                     IsCurrentPlayerPlacedAll = true;
+                    MainTitle = $"Creating ships for {Player.Name}";
                     IsDisplayBoard = true;
                 } else {
                     IsError = true;
@@ -73,8 +74,10 @@ namespace WebProgram.Pages.Game {
             // Place ships manually
             if (placement.Equals("manual")) {
                 // Get, parse and check ship id query param
-                if (!GetShip()) return;
-                
+                if (!GetShip()) {
+                    return;
+                }
+
                 IsDisplayBoard = true;
                 MainTitle = $"Creating ship {ShipId + 1}/{Player.Ships.Count} for {Player.Name}";
             }
@@ -113,6 +116,7 @@ namespace WebProgram.Pages.Game {
             
             StatusMsg = $"{Ship.Type} placed successfully!";
             BackBtnHref = $"?player={PlayerId}&placement=manual&ship={ShipId + 1}";
+            MainTitle = $"Creating ship {ShipId + 1}/{Player.Ships.Count} for {Player.Name}";
             IsDisplayBoard = true;
         }
 
@@ -167,8 +171,23 @@ namespace WebProgram.Pages.Game {
 
         private bool GetShip() {
             if (!Request.Query.TryGetValue("ship", out var strShip) || !int.TryParse(strShip, out var shipId) ||
-                shipId < 0 || shipId >= Player.Ships.Count) {
+                shipId < 0) {
                     
+                IsError = true;
+                StatusMsg = "Invalid ship param!";
+                BackBtnHref = $"?player={PlayerId}&askAutoPlace";
+                return false;
+            }
+            
+            // If player just placed the last ship
+            if (shipId == Player.Ships.Count) {
+                IsCurrentPlayerPlacedAll = true;
+                MainTitle = $"Creating ships for {Player.Name}";
+                return false;
+            } 
+            
+            // Otherwise if user provided invalid ship id
+            if (shipId >= Player.Ships.Count) {
                 IsError = true;
                 StatusMsg = "Invalid ship param!";
                 BackBtnHref = $"?player={PlayerId}&askAutoPlace";
