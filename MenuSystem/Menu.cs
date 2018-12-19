@@ -109,6 +109,7 @@ namespace MenuSystem {
                     if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
                         // Load the game from the database and continue it
                         GameSystem.GameLogic.LoadGame((int) item.GameId);
+                        GameSystem.GameLogic.RunGame();
                         
                         // Return the GoBackItem shortcut to exit the game loading menu
                         return Menus.GoBackItem.Shortcut;

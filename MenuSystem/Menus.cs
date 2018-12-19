@@ -148,7 +148,7 @@ namespace MenuSystem {
                 new MenuItem {
                     IsDefaultChoice = true,
                     Description = "Start game",
-                    ActionToExecute = GameLogic.NewGame,
+                    ActionToExecute = GameLogic.NewCliGame,
                     Shortcut = "A"
                 },
                 new MenuItem {

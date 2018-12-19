@@ -20,6 +20,11 @@ namespace GameSystem {
         public static List<Player> Players;
         public static Game Game;
 
+        public static void RunGame() {
+            GameLoop();
+            AskSaveGame();
+        }
+
         public static void LoadGame(int gameId) {
             Console.Clear();
             Console.WriteLine("Loading game...");
@@ -30,11 +35,6 @@ namespace GameSystem {
             Console.Clear();
             Console.WriteLine("Game loaded!");
             Console.ReadKey(true);
-
-            GameLoop();
-
-            // Ask to save the game
-            AskSaveGame();
         }
 
         public static void DeleteGame(int gameId) {
@@ -48,7 +48,7 @@ namespace GameSystem {
             Console.ReadKey(true);
         }
 
-        public static void NewGame() {
+        public static void NewCliGame() {
             // Create players
             InitializePlayers();
 
@@ -72,10 +72,8 @@ namespace GameSystem {
             }
 
             Game = new Game(Players);
-            GameLoop();
-
-            // Ask to save the game
-            AskSaveGame();
+            
+            RunGame();
         }
 
         private static void AskSaveGame() {

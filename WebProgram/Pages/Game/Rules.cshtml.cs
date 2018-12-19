@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace WebProgram.Pages.Game {
     public class RulesModel : PageModel {
         public string MainTitle { get; } = "Rules for new game";
-        public string BackBtnHref { get; } = "/Game/New";
+        public string BackBtnHref { get; } = "/Game/Create";
+        
         public string StatusMsg { get; private set; } = "[Status message]";
-
         public bool IsStatus { get; private set; }
        
         public void OnPost() {
