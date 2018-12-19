@@ -55,6 +55,15 @@ html {
 }
 
 
+
+.board-box .board-inner:hover {
+  background-color: rgba(255,255,255,0.4);
+}
+
+.board-box .board-inner:active {
+  background-color: rgb(112, 202, 90);
+}
+
 .testColor1 {
   background-color: #555 !important;
 }

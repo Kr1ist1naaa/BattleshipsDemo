@@ -29,7 +29,7 @@
                     var squareSymbol = ship != null ? ship.Symbol.ToString() : $"{x2} {y2}";
                     
                     <div class="board-box @colorClass">
-                        <div class="board-inner @roundedClass"><span class="badge">@squareSymbol</span></div>
+                        <div class="board-inner @roundedClass" x="@x2" y="@y2"><span class="badge">@squareSymbol</span></div>
                     </div>
                 }
             </div>
