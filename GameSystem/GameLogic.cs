@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BoardUI;
 using Domain;
 using Domain.DomainRule;
+using Domain.DomainShip;
 using Domain.Ship;
 using SaveSystem;
 
@@ -15,25 +17,24 @@ namespace GameSystem {
         public static Func<Player, Player, string[]> AttackCoordMenu { get; set; }
         public static Func<Player, Ship, string[]> ShipCoordsMenu { get; set; }
 
+        public static List<Player> Players;
+        public static Game Game;
 
         public static void LoadGame(int gameId) {
             Console.Clear();
             Console.WriteLine("Loading game...");
 
             // Load and convert game
-            var game = GameSaver.Load(gameId);
+            Game = GameSaver.Load(gameId);
 
-            // Reset current base mappings
-            BaseConversion.Reset();
-            
             Console.Clear();
             Console.WriteLine("Game loaded!");
             Console.ReadKey(true);
 
-            GameLoop(game);
+            GameLoop();
 
             // Ask to save the game
-            AskSaveGame(game);
+            AskSaveGame();
         }
 
         public static void DeleteGame(int gameId) {
@@ -48,19 +49,16 @@ namespace GameSystem {
         }
 
         public static void NewGame() {
-            // Reset current base mappings
-            BaseConversion.Reset();
-            
             // Create players
-            var players = InitializePlayers();
+            InitializePlayers();
 
             // User cancelled players creation
-            if (players == null) {
+            if (Players == null) {
                 return;
             }
 
             // Create ships for users
-            if (!InitializeShips(players)) {
+            if (!InitializeShips()) {
                 // User cancelled ship creation
                 return;
             }
@@ -73,22 +71,22 @@ namespace GameSystem {
                 return;
             }
 
-            var game = new Game(players);
-            GameLoop(game);
+            Game = new Game(Players);
+            GameLoop();
 
             // Ask to save the game
-            AskSaveGame(game);
+            AskSaveGame();
         }
 
-        private static void AskSaveGame(Game game) {
+        private static void AskSaveGame() {
             if (YesOrQuitMenu("Game menu", "Save game")) {
                 Console.Clear();
                 Console.WriteLine("Saving game...");
-                
-                if (game.GameId == null) {
-                    GameSaver.Save(game);
+
+                if (Game.GameId == null) {
+                    GameSaver.Save(Game);
                 } else {
-                    GameSaver.OverwriteSave(game);
+                    GameSaver.OverwriteSave(Game);
                 }
 
                 Console.Clear();
@@ -98,7 +96,7 @@ namespace GameSystem {
         }
 
 
-        private static List<Player> InitializePlayers() {
+        private static void InitializePlayers() {
             var playerCount = Rules.GetVal(RuleType.PlayerCount);
             var players = new List<Player>();
 
@@ -110,19 +108,12 @@ namespace GameSystem {
 
                     // User chose to quit the menu
                     if (name == null) {
-                        return null;
+                        return;
                     }
 
                     // Check input validity
-                    if (string.IsNullOrEmpty(name) || name.Trim().Length == 0) {
+                    if (!InputValidator.ValidatePlayerName(name)) {
                         Console.WriteLine("Invalid name!");
-                        Console.ReadKey(true);
-                        continue;
-                    }
-
-                    // Check name availability
-                    if (players.FirstOrDefault(m => m.Name.Equals(name)) != null) {
-                        Console.WriteLine("Name already in use!");
                         Console.ReadKey(true);
                         continue;
                     }
@@ -133,11 +124,11 @@ namespace GameSystem {
                 players.Add(new Player(name));
             }
 
-            return players;
+            Players = players;
         }
 
-        private static bool InitializeShips(IEnumerable<Player> players) {
-            foreach (var player in players) {
+        private static bool InitializeShips() {
+            foreach (var player in Players) {
                 while (true) {
                     // Ask to auto-place ships
                     var t = $"Creating {player.Name}'s ships";
@@ -167,49 +158,10 @@ namespace GameSystem {
                                     return false;
                                 }
 
-                                // For the sake of clarity
-                                var strX = input[0];
-                                var strY = input[1];
-                                var strDir = input[2];
-                                
-                                // Convert dir to enum
-                                ShipDirection dir;
-                                if (strDir.Equals("r") || strDir.Equals("right")) {
-                                    dir = ShipDirection.Right;
-                                } else if (strDir.Equals("d") || strDir.Equals("down")) {
-                                    dir = ShipDirection.Down;
-                                } else {
-                                    // Unknown direction specified
-                                    Console.WriteLine("Invalid direction!");
-                                    Console.ReadKey(true);
-                                    continue;
-                                }
-
-                                // Check if x coordinate is valid and alphabetic
-                                if (BaseConversion.MapToBase10(strX) == null) {
-                                    Console.WriteLine("Invalid X coordinate!");
-                                    Console.ReadKey(true);
-                                    continue;
-                                }
-                                
-                                // Check if y coordinate is a valid integer
-                                if (!int.TryParse(strY, out var intY)) {
-                                    Console.WriteLine("Invalid Y coordinate!");
-                                    Console.ReadKey(true);
-                                    continue;
-                                }
-                                
-                                // Convert X coordinate to an integer
-                                var intX = (int) BaseConversion.MapToBase10(strX);
-                                
-                                // Take board orientation and numbering offset into account
-                                var x = intX;
-                                var y = intY - 1;
-
-                                var pos = new Pos(x, y);
-
-                                if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
-                                    Console.WriteLine("Invalid position! Try again:");
+                                var validLoc = InputValidator.ShipPlacementLoc(player, ship.Size, input[0], input[1],
+                                    input[2], out var pos, out var dir);
+                                if (!validLoc) {
+                                    Console.WriteLine("Invalid location!");
                                     Console.ReadKey(true);
                                     continue;
                                 }
@@ -219,13 +171,13 @@ namespace GameSystem {
                             }
                         }
                     }
-                    
+
                     Console.Clear();
                     BoardGen.GenSingleBoard(player, $"{player.Name}'s board");
                     Console.WriteLine();
 
                     // Ask to re-place the ships
-                    var accept = YesNoQuitMenu("Ship menu", "Accept positions", "Redo placement",false);
+                    var accept = YesNoQuitMenu("Ship menu", "Accept positions", "Redo placement", false);
 
                     // Player requested to quit to main menu
                     if (accept == null) {
@@ -245,7 +197,7 @@ namespace GameSystem {
             return true;
         }
 
-        private static bool AutoPlaceShips(Player player) {
+        public static bool AutoPlaceShips(Player player) {
             const int tryAmount = 64;
             var boardSize = Rules.GetVal(RuleType.BoardSize);
             var random = new Random();
@@ -264,6 +216,7 @@ namespace GameSystem {
                     }
 
                     ship.SetLocation(pos, dir);
+                    ship.IsPlaced = true;
                     break;
                 }
 
@@ -276,10 +229,10 @@ namespace GameSystem {
         }
 
 
-        private static void GameLoop(Game game) {
+        private static void GameLoop() {
             while (true) {
                 // Do the attacks
-                foreach (var player in game.Players) {
+                foreach (var player in Game.Players) {
                     // Loop until first alive player is found
                     if (!player.IsAlive()) {
                         continue;
@@ -290,7 +243,7 @@ namespace GameSystem {
                     Console.ReadKey(true);
 
                     // Find next player in list that is alive
-                    var nextPlayer = FindNextPlayer(game.Players, player);
+                    var nextPlayer = FindNextPlayer(Game.Players, player);
                     var move = Attack(player, nextPlayer);
 
                     // User wants to quit the game
@@ -298,7 +251,7 @@ namespace GameSystem {
                         return;
                     }
 
-                    game.Moves.Add(move);
+                    Game.Moves.Add(move);
 
                     Console.WriteLine($"It was a {move.AttackResult}...");
                     Console.ReadKey(true);
@@ -312,33 +265,33 @@ namespace GameSystem {
                 }
 
                 // Check if there is only one player left and therefore the winner of the game
-                foreach (var player in game.Players) {
+                foreach (var player in Game.Players) {
                     if (!player.IsAlive()) {
                         continue;
                     }
 
-                    if (game.Winner == null) {
-                        game.Winner = player;
+                    if (Game.Winner == null) {
+                        Game.Winner = player;
                     } else {
-                        game.Winner = null;
+                        Game.Winner = null;
                         break;
                     }
                 }
 
-                if (game.Winner != null) {
+                if (Game.Winner != null) {
                     break;
                 }
 
                 Console.Clear();
-                Console.WriteLine($"End of round {game.TurnCount}");
+                Console.WriteLine($"End of round {Game.TurnCount}");
                 Console.ReadKey(true);
 
-                game.TurnCount++;
+                Game.TurnCount++;
             }
 
-            if (game.Winner != null) {
+            if (Game.Winner != null) {
                 Console.Clear();
-                Console.WriteLine($"The winner of the game is {game.Winner.Name} after {game.TurnCount} turns!");
+                Console.WriteLine($"The winner of the game is {Game.Winner.Name} after {Game.TurnCount} turns!");
                 Console.ReadKey(true);
             }
         }
@@ -379,28 +332,28 @@ namespace GameSystem {
                 if (input == null) {
                     return null;
                 }
-                
+
                 // For the sake of clarity
                 var strX = input[0];
                 var strY = input[1];
-                
+
                 // Check if x coordinate is valid and alphabetic
                 if (BaseConversion.MapToBase10(strX) == null) {
                     Console.WriteLine("Invalid X coordinate!");
                     Console.ReadKey(true);
                     continue;
                 }
-                                
+
                 // Check if y coordinate is a valid integer
                 if (!int.TryParse(strY, out var intY)) {
                     Console.WriteLine("Invalid Y coordinate!");
                     Console.ReadKey(true);
                     continue;
                 }
-                                
+
                 // Convert X coordinate to an integer
                 var intX = (int) BaseConversion.MapToBase10(strX);
-                                
+
                 // Take board orientation and numbering offset into account
                 var x = intY - 1;
                 var y = intX;

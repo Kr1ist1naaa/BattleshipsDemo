@@ -1,0 +1,37 @@
+@page
+@using Domain.DomainRule
+@model CreatePlayersModel
+@{
+    ViewData["Title"] = "Create game";
+}
+
+<div class="text-center">
+    <h1 class="display-4 mb-5">Create players</h1>
+    <div class="card custom-card mw-md mx-auto mb-4">
+        <div class="card-header slim-card-edge"></div>
+        <div class="card-body justify-content-center">
+            @if (Model.IsStatus) {
+                if (Model.IsError) {
+                    <div class="custom-text-red mb-2">@Model.StatusMsg</div>
+                    <a href="CreatePlayers" class="btn btn-outline-danger">I'm sorry</a>
+                } else {
+                    <div class="custom-text-green mb-2">@Model.StatusMsg</div>
+                    <a href="CreateShips?player=0&askAutoPlace" class="btn btn-outline-success">Continue</a>
+                }
+            } else {
+                <form method="POST" class="form-group mb-0">
+                    <label>Create players</label>
+
+                    @for (int i = 0; i < Rules.GetVal(RuleType.PlayerCount); i++) {
+                        <input type="text" class="form-control seamless-input mb-2" name="name-@i" placeholder="Player @i's name">
+                    }
+
+                    <small class="form-text text-muted mb-3">We'll never share your data with anyone else.</small>
+                    <button type="submit" class="btn btn-outline-success">Create players</button>
+                </form>
+            }
+        </div>
+        <div class="card-footer slim-card-edge"></div>
+    </div>
+
+</div>

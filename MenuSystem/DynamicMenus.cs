@@ -5,6 +5,7 @@ using BoardUI;
 using Domain.DomainRule;
 using SaveSystem;
 using Domain;
+using Domain.DomainShip;
 using Domain.Ship;
 using GameSystem;
 
@@ -30,22 +31,7 @@ namespace MenuSystem {
                 if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
                     return null;
                 }
-                
-                // Attempt to parse input
-                if (string.IsNullOrEmpty(input)) {
-                    Console.WriteLine("Invalid input!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-                        
-                // Would normally be const / static readonly
-                if (!new Regex("^[a-zA-Z0-9]*$").IsMatch(input)) {
-                    Console.WriteLine("Invalid non-alphanumeric characters!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-                
-                
+
                 return input;
             }
         }

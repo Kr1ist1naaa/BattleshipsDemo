@@ -1,0 +1,38 @@
+@using Domain
+@using Domain.DomainRule
+@model CreateShipsModel
+
+@{
+    var size = Rules.GetVal(RuleType.BoardSize);
+
+    <div class="board-grid m-auto mw-md">
+        @for (int y = 0; y < size; y++) {
+            <div class="board-row d-flex">
+                @for (int x = 0; x < size; x++) {
+                    var roundedClass = "";
+                    if (y == 0 && x == 0) {
+                        roundedClass = "rounded-top-left";
+                    } else if (y == size-1 && x == 0) {
+                        roundedClass = "rounded-bottom-left";
+                    } else if (y == 0 && x == size-1) {
+                        roundedClass = "rounded-top-right";
+                    } else if (y == size-1 && x == size-1) {
+                        roundedClass = "rounded-bottom-right";
+                    }
+
+                    var ship = Model.Player.GetShipAtPosOrNull(new Pos(x, y));
+                    var colorClass = ship != null ? "custom-badge-green" : "";
+
+                    var x2 = GameSystem.BaseConversion.MapToBase26(x);
+                    var y2 = y + 1;
+
+                    var squareSymbol = ship != null ? ship.Symbol.ToString() : $"{x2} {y2}";
+                    
+                    <div class="board-box @colorClass">
+                        <div class="board-inner @roundedClass"><span class="badge">@squareSymbol</span></div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

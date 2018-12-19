@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
 using Domain.DomainRule;
+using Domain.Ship;
 
-namespace Domain.Ship {
+namespace Domain.DomainShip {
     public class Ship {
         public ShipType Type;
         public RuleType SizeRule;
@@ -13,6 +14,7 @@ namespace Domain.Ship {
         public Pos ShipPos;
         public ShipDirection Direction;
         public ShipStatus[] ShipStatuses;
+        public bool IsPlaced;
 
         public Ship(Ship ship) {
             SizeRule = ship.SizeRule;

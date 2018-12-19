@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Domain.DomainShip;
 
 namespace SaveSystem {
     public static class DomainConverter {
@@ -36,12 +37,12 @@ namespace SaveSystem {
             return domainMoves;
         }
 
-        private static List<Domain.Ship.Ship> GetAndConvertShips(DAL.AppDbContext ctx, int playerId) {
+        private static List<Ship> GetAndConvertShips(DAL.AppDbContext ctx, int playerId) {
             var dalShips = ctx.Ships.Where(ship => ship.Player.Id == playerId);
 
-            var domainShips = new List<Domain.Ship.Ship>();
+            var domainShips = new List<Ship>();
             foreach (var dalShip in dalShips) {
-                var domainShip = new Domain.Ship.Ship {
+                var domainShip = new Ship {
                     Title = dalShip.Title,
                     Symbol = dalShip.Symbol,
                     Size = dalShip.Size,

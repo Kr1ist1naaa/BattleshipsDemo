@@ -6,7 +6,7 @@ namespace Domain {
     public class Player {
         public string Name;
         public HashSet<Pos> MovesAgainstThisPlayer;
-        public List<Ship.Ship> Ships;
+        public List<DomainShip.Ship> Ships;
 
         public Player() { }
 
@@ -51,7 +51,7 @@ namespace Domain {
             return ship.AttackAtPos(pos);
         }
 
-        public Ship.Ship GetShipAtPosOrNull(Pos pos) {
+        public DomainShip.Ship GetShipAtPosOrNull(Pos pos) {
             foreach (var ship in Ships) {
                 if (ship.IsAtPos(pos)) {
                     return ship;
@@ -69,8 +69,8 @@ namespace Domain {
 
             // Find ship's furthest point
             var maxPos = new Pos(
-                pos.X + (direction == ShipDirection.Right ? shipSize : 0),
-                pos.Y + (direction == ShipDirection.Right ? 0 : shipSize)
+                pos.X + (direction == ShipDirection.Right ? shipSize - 1 : 0),
+                pos.Y + (direction == ShipDirection.Right ? 0 : shipSize - 1)
             );
 
             // Check if max position is off board

@@ -7,10 +7,10 @@ namespace WebProgram.Pages.Game {
         public string BackBtnHref { get; } = "/Game/New";
         public string StatusMsg { get; private set; } = "[Status message]";
 
-        public bool IsAction { get; private set; }
+        public bool IsStatus { get; private set; }
        
         public void OnPost() {
-            IsAction = true;
+            IsStatus = true;
             StatusMsg = "Rules saved!";
 
             foreach (var key in Request.Form.Keys) {
@@ -30,7 +30,7 @@ namespace WebProgram.Pages.Game {
 
         public void OnGet() {
             if (Request.Query.ContainsKey("reset")) {
-                IsAction = true;
+                IsStatus = true;
                 Rules.ResetAllToDefault();
                 StatusMsg = "Rules reverted to default values!";
             }

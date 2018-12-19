@@ -5,7 +5,7 @@ using Domain.DomainRule;
 
 namespace BoardUI {
     public static class BoardGen {
-        public static Func<int, string> MapToBase26 { get; set; }
+        public static Func<int, string> MapToBase26 { private get; set; }
         
         public static void GenSingleBoard(Player player, string title) {
             var boardSize = Rules.GetVal(RuleType.BoardSize);
@@ -15,16 +15,16 @@ namespace BoardUI {
             Console.WriteLine(GenCenterTitle(title));
             Console.WriteLine(GenColumnNumberings());
 
-            for (int i = 0; i < boardSize; i++) {
+            for (int y = 0; y < boardSize; y++) {
                 Console.WriteLine(border);
 
                 // Row numbering
-                Console.Write($"{i+1,4} ");
+                Console.Write($"{y + 1,4} ");
 
-                for (int j = 0; j < boardSize; j++) {
+                for (int x = 0; x < boardSize; x++) {
                     Console.Write("|  ");
 
-                    var pos = new Pos(j, i);
+                    var pos = new Pos(x, y);
                     var ship = player.GetShipAtPosOrNull(pos);
 
                     if (ship == null) {

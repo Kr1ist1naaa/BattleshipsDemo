@@ -18,39 +18,283 @@ html {
   }
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
 .box-shadow {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
 /* Sticky footer styles
 -------------------------------------------------- */
+
+.board-box-sm {
+  max-height: 5vh;
+  max-width: 5vh;
+}
+
+.board-box {
+  flex: 1 0 auto;
+  position: relative;
+  margin: 2px;
+}
+.board-box:after {
+  content: "";
+  float:left;
+  display: block;
+  padding-top: 100%;
+}
+
+.board-box .board-inner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255,255,255,0.15);
+}
+
+
+.testColor1 {
+  background-color: #555 !important;
+}
+
+.testColor2 {
+  background-color: #111;
+}
+
+
+
+
+/*
+
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ */
+
+
+/*------------------------------------------------------------------------------------------------------------
+// Base HMTL style override
+//----------------------------------------------------------------------------------------------------------*/
+
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  /* Margin bottom by footer height */
+  background-color: #111 !important;
+  color: #ddd !important;
   margin-bottom: 60px;
 }
-.footer {
+
+hr {border-color: #282828}
+
+a {color: #ddd}
+a:hover {color: #bbb}
+
+/*------------------------------------------------------------------------------------------------------------
+// Card styling
+//----------------------------------------------------------------------------------------------------------*/
+
+.card-header,
+.card-footer {background-color: rgba(0,0,0,.2)}
+.custom-card {background-color: #333}
+.slim-card-edge {padding: .1rem .75rem}
+.body-boundaries {max-width: 1200px}
+
+/*------------------------------------------------------------------------------------------------------------
+// Form element styling
+//----------------------------------------------------------------------------------------------------------*/
+
+input.form-control,select.form-control {
+  background-color: #222 !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  color: #ddd !important;
+}
+
+.btn-outline-dark {
+  color: #ddd;
+  border-color: rgba(255,255,255,.1);
+  background-color: rgba(0,0,0,.15);
+}
+
+.btn-outline-dark:hover {
+  background-color: rgba(0,0,0,.2);
+  border-color: rgba(255,255,255,.2);
+}
+
+/* Disable focus borders */
+.btn-outline-dark:focus, .btn-outline-dark.focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0);
+}
+
+.btn-outline-dark:not(:disabled):not(.disabled):active, .btn-outline-dark:not(:disabled):not(.disabled).active,
+.show > .btn-outline-dark.dropdown-toggle {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #333;
+}
+
+/*------------------------------------------------------------------------------------------------------------
+// Navs
+//----------------------------------------------------------------------------------------------------------*/
+
+.navbar {background-color: #333}
+
+footer {
+  padding: 15px;
+  background-color: #333;
   position: absolute;
   bottom: 0;
   width: 100%;
-  white-space: nowrap;
-  /* Set the fixed height of the footer here */
   height: 60px;
-  line-height: 60px; /* Vertically center the text there */
 }
+
+.card-header-tabs .nav-item .nav-link {
+  background-color: rgba(0,0,0,.08);
+  color: #aaa;
+}
+
+.card-header-tabs .nav-item .nav-link:focus {
+  border-color: transparent;
+}
+
+.card-header-tabs .nav-item .nav-link:hover {
+  background-color: rgba(0,0,0,.3);
+  border-color: transparent;
+}
+
+.card-header-tabs .nav-item .nav-link.active {
+  background-color: #333;
+  border-color: transparent;
+  color: #ddd;
+}
+
+.card-header-tabs .nav-item button.nav-link:focus {
+  outline: none !important;
+}
+
+/*------------------------------------------------------------------------------------------------------------
+// Table formatting
+//----------------------------------------------------------------------------------------------------------*/
+
+.data-table {
+  background-color: transparent;
+}
+
+
+.data-table.card {
+  border: 1px solid rgba(255,255,255,.05);
+  background-color: rgba(255,255,255,.1);
+}
+
+.data-table table {
+  margin-bottom: 0;
+}
+
+.data-table .table td {
+  border-top: 0;
+}
+
+.data-table .table thead th {
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  border-top: transparent;
+}
+
+/*------------------------------------------------------------------------------------------------------------
+// Misc
+//----------------------------------------------------------------------------------------------------------*/
+
+.subtext-0 {color: #aaa}
+.subtext-1 {color: #888}
+.subtext-2 {color: #666}
+
+/*------------------------------------------------------------------------------------------------------------
+// Colors
+//----------------------------------------------------------------------------------------------------------*/
+
+/*
+// Badges
+*/
+
+.custom-badge-red {
+  color: #222;
+  background-color: rgb(202, 90, 90);
+}
+.custom-badge-red-ex {
+  color: #222;
+  background-color: rgb(202, 55, 55);
+}
+.custom-badge-red-lo {
+  color: #222;
+  background-color: rgb(192, 146, 146);
+}
+.custom-badge-orange {
+  color: #222;
+  background-color:rgb(202, 163, 90);
+}
+.custom-badge-orange-lo {
+  color: #222;
+  background-color:rgb(192, 185, 146);
+}
+.custom-badge-green {
+  color: #222;
+  background-color: rgb(112, 202, 90);
+}
+.custom-badge-green-ex {
+  color: #222;
+  background-color: rgb(85, 201, 56);
+}
+.custom-badge-green-lo {
+  color: #222;
+  background-color: rgb(155, 192, 146);
+}
+.custom-badge-gray {
+  color: #111;
+  background-color: rgb(100, 100, 100);
+}
+.custom-badge-gray-lo {
+  color: #222;
+  background-color: rgb(161, 161, 161);
+}
+
+/*
+// Text
+*/
+
+.custom-text-red        {color: rgb(202, 90, 90)}
+.custom-text-red-lo     {color: rgb(192, 146, 146)}
+.custom-text-orange     {color: rgb(202, 163, 90)}
+.custom-text-orange-lo  {color: rgb(192, 185, 146)}
+.custom-text-green      {color: rgb(112, 202, 90)}
+.custom-text-green-lo   {color: rgb(155, 192, 146)}
+.custom-text-gray       {color: rgb(100, 100, 100)}
+.custom-text-gray-lo    {color: rgb(161, 161, 161)}
+.paragraph-text         {color: #bbb}
+
+pre {
+  color: inherit;
+  background-color: rgba(255,255,255,.1);
+}
+
+/*------------------------------------------------------------------------------------------------------------
+// Manual Bootstrap
+//----------------------------------------------------------------------------------------------------------*/
+
+.mw-xl {max-width: 1200px}
+.mw-lg {max-width: 992px}
+.mw-md {max-width: 768px}
+.mw-sm {max-width: 576px}
+
+.min-input {
+  width: inherit !important;
+}
+
+.seamless-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rounded-top-right    {border-top-right-radius:     .25rem !important;}
+.rounded-top-left     {border-top-left-radius:      .25rem !important;}
+.rounded-bottom-right {border-bottom-right-radius:  .25rem !important;}
+.rounded-bottom-left  {border-bottom-left-radius:   .25rem !important;}

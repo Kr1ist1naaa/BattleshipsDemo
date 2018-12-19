@@ -6,6 +6,14 @@ namespace GameSystem {
     public static class BaseConversion {
         private static readonly Dictionary<int, string> ConversionDictionary = new Dictionary<int, string>();
 
+        static BaseConversion() {
+            // Create entries according to max board size rule
+            for (int i = 0; i < Rules.GetRule(RuleType.BoardSize).MaxVal; i++) {
+                ConversionDictionary.Add(i, ToBase26(i + 1));
+            }
+        }
+        
+
         public static string MapToBase26(int index) {
             if (!ConversionDictionary.Keys.Contains(index)) {
                 return null;
@@ -22,14 +30,6 @@ namespace GameSystem {
             }
             
             return ConversionDictionary.FirstOrDefault(m => m.Value == index).Key;
-        }
-
-        public static void Reset() {
-            ConversionDictionary.Clear();
-
-            for (int i = 0; i < Rules.GetVal(RuleType.BoardSize); i++) {
-                ConversionDictionary.Add(i, ToBase26(i + 1));
-            }
         }
 
         private static string ToBase26(int number) {

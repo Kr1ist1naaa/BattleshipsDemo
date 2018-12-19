@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Domain.DomainRule;
+using Domain.DomainShip;
 
 namespace SaveSystem {
     public static class DalConverter {
@@ -65,7 +66,7 @@ namespace SaveSystem {
             return dalMoves;
         }
 
-        private static List<DAL.Ship> ConvertShips(DAL.Player player, List<Domain.Ship.Ship> domainShips) {
+        private static List<DAL.Ship> ConvertShips(DAL.Player player, List<Ship> domainShips) {
             var dalShips = new List<DAL.Ship>();
 
             // Convert all Domain ships to DAL ship objects

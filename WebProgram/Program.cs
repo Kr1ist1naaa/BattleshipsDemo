@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Domain;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace WebProgram {
     public class Program {
         public static void Main(string[] args) {
+            GameSystem.GameLogic.Players = new List<Player> {
+                new Player("player1"),
+                new Player("dan")
+            };
+            
             CreateWebHostBuilder(args).Build().Run();
         }
 
