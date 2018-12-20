@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Initializers\Initializers.csproj" />
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
       <ProjectReference Include="..\SaveSystem\SaveSystem.csproj" />
     </ItemGroup>
