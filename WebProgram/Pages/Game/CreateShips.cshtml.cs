@@ -25,6 +25,13 @@ namespace WebProgram.Pages.Game {
         public Ship Ship { get; private set; }
 
         public void OnGet() {
+            if (ActiveGame.Players == null || ActiveGame.Players.Count == 0) {
+                IsError = true;
+                StatusMsg = "You're not supposed to be here!";
+                BackBtnHref = "/";
+                return;
+            }
+            
             // Get, parse and check player id query param
             if (!GetPlayer()) {
                 return;
@@ -33,6 +40,7 @@ namespace WebProgram.Pages.Game {
             if (Request.Query.ContainsKey("askAutoPlace")) {
                 GameSystem.Logic.PlayerLogic.ResetShips(Player);
                 IsAutoplaceQuestion = true;
+                IsDisplayBoard = true;
                 MainTitle = $"Creating ships for {Player.Name}";
                 return;
             }

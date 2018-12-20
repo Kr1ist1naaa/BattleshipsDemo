@@ -10,26 +10,41 @@
     <div class="card custom-card mw-md mx-auto mb-4">
         <div class="card-header slim-card-edge"></div>
         <div class="card-body justify-content-center">
-            @if (Model.IsStatus) {
-                if (Model.IsError) {
-                    <div class="custom-text-red mb-2">@Model.StatusMsg</div>
-                    <a href="CreatePlayers" class="btn btn-outline-danger">I'm sorry</a>
-                } else {
-                    <div class="custom-text-green mb-2">@Model.StatusMsg</div>
-                    <a href="CreateShips?player=0&askAutoPlace" class="btn btn-outline-success">Continue</a>
-                }
-            } else {
-                <form method="POST" class="form-group mb-0">
-                    <label>Create players</label>
+            <form method="POST" class="form-group mb-0">
+                <div class="row">
+                    @for (int j = 0; j < GameSystem.ActiveGame.GetRuleVal(RuleType.PlayerCount); j++) {
+                        var player = j < GameSystem.ActiveGame.Players?.Count ? GameSystem.ActiveGame.Players[j] : null;
 
-                    @for (int i = 0; i < GameSystem.ActiveGame.GetRuleVal(RuleType.PlayerCount); i++) {
-                        <input type="text" class="form-control seamless-input mb-2" name="name-@i" placeholder="Player @i's name">
+                        <div class="col-6 mb-2">
+                            <input type="text" class="form-control" name="name-@j" placeholder="Player @j's name" value="@player?.Name">
+                        </div>
                     }
+                </div>
+                <small class="form-text text-muted mb-3">We'll never share your data with anyone else.</small>
 
-                    <small class="form-text text-muted mb-3">We'll never share your data with anyone else.</small>
+
+                @if (Model.IsStatus) {
+                    if (Model.IsError) {
+                        <div class="custom-text-red mb-2">@Model.StatusMsg</div>
+                    } else {
+                        <div class="custom-text-green mb-2">@Model.StatusMsg</div>
+                    }
+                    
+                    <a href="Create" class="btn btn-outline-secondary">Back</a>
+                    <button type="submit" class="btn btn-outline-warning">Recreate</button>
+
+                    if (!Model.IsError) {
+                        <a href="CreateShips?player=0&askAutoPlace" class="btn btn-outline-success">Continue</a>
+                    }
+                } else {
+                    <a href="Create" class="btn btn-outline-secondary">Back</a>
                     <button type="submit" class="btn btn-outline-success">Create players</button>
-                </form>
-            }
+                }
+
+
+
+            </form>
+
         </div>
         <div class="card-footer slim-card-edge"></div>
     </div>

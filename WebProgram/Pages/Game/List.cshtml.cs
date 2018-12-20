@@ -42,7 +42,7 @@ namespace WebProgram.Pages.Game {
                 IsStatus = true;
                 StatusMsg = "Game loaded!";
                 OkBtnText = "Start game";
-                BackBtnHref = "StartGame";
+                BackBtnHref = "Play";
             }
         }
     }

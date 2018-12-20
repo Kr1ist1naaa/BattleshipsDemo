@@ -11,6 +11,8 @@ namespace WebProgram.Pages.Game {
         public string StatusMsg { get; private set; }
 
         public void OnGet() {
+            // Reset current players
+            ActiveGame.Players = null;
         }
 
         public void OnPost() {
