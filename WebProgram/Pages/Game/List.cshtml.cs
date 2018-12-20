@@ -1,3 +1,4 @@
+using GameSystem;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SaveSystem;
 
@@ -38,6 +39,8 @@ namespace WebProgram.Pages.Game {
             } else if (Action.Equals("load")) {
                 // Load game from database into active static context
                 GameSaver.Load(int.Parse(Id));
+                
+                ActiveGame.CyclePlayers();
                 
                 IsStatus = true;
                 StatusMsg = "Game loaded!";

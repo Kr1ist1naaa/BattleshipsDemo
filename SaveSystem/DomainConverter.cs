@@ -4,12 +4,12 @@ using Domain;
 
 namespace SaveSystem {
     public static class DomainConverter {
-        public static List<Domain.Player> GetAndConvertPlayers(DAL.AppDbContext ctx, int gameId) {
+        public static List<Player> GetAndConvertPlayers(DAL.AppDbContext ctx, int gameId) {
             var dalPlayers = ctx.Players.Where(player => player.Game.Id == gameId);
 
-            var domainPlayers = new List<Domain.Player>();
+            var domainPlayers = new List<Player>();
             foreach (var dalPlayer in dalPlayers) {
-                var domainPlayer = new Domain.Player {
+                var domainPlayer = new Player {
                     Name = dalPlayer.Name,
                     MovesAgainstThisPlayer = GetAndConvertMovesAgainstPlayer(ctx, dalPlayer.Id),
                     Ships = GetAndConvertShips(ctx, dalPlayer.Id)
@@ -21,12 +21,12 @@ namespace SaveSystem {
             return domainPlayers;
         }
 
-        private static HashSet<Domain.Pos> GetAndConvertMovesAgainstPlayer(DAL.AppDbContext ctx, int playerId) {
+        private static HashSet<Pos> GetAndConvertMovesAgainstPlayer(DAL.AppDbContext ctx, int playerId) {
             var dalMoves = ctx.MovesAgainstPlayers.Where(move => move.Player.Id == playerId);
 
-            var domainMoves = new HashSet<Domain.Pos>();
+            var domainMoves = new HashSet<Pos>();
             foreach (var dalMove in dalMoves) {
-                var domainMove = new Domain.Pos {
+                var domainMove = new Pos {
                     X = dalMove.X,
                     Y = dalMove.Y
                 };
@@ -48,10 +48,11 @@ namespace SaveSystem {
                     Size = dalShip.Size,
                     Direction = (ShipDirection) dalShip.Direction,
                     ShipStatuses = GetAndConvertShipStatus(ctx, dalShip.Id),
-                    ShipPos = new Domain.Pos {
+                    ShipPos = new Pos {
                         X = dalShip.X,
                         Y = dalShip.Y
-                    }
+                    },
+                    IsPlaced = true
                 };
 
                 domainShips.Add(domainShip);
@@ -71,17 +72,17 @@ namespace SaveSystem {
             return domainStatuses;
         }
 
-        public static List<Domain.Move> GetAndConvertMoves(DAL.AppDbContext ctx, int gameId,
-            List<Domain.Player> players) {
+        public static List<Move> GetAndConvertMoves(DAL.AppDbContext ctx, int gameId,
+            List<Player> players) {
             var dalMoves = ctx.Moves.Where(move => move.Game.Id == gameId);
 
-            var domainMoves = new List<Domain.Move>();
+            var domainMoves = new List<Move>();
             foreach (var dalMove in dalMoves) {
-                var domainMove = new Domain.Move {
+                var domainMove = new Move {
                     FromPlayer = players.FirstOrDefault(player => player.Name.Equals(dalMove.FromPlayer.Name)),
                     ToPlayer = players.FirstOrDefault(player => player.Name.Equals(dalMove.ToPlayer.Name)),
-                    AttackResult = (Domain.AttackResult) dalMove.MoveResult,
-                    Pos = new Domain.Pos {
+                    AttackResult = (AttackResult) dalMove.MoveResult,
+                    Pos = new Pos {
                         X = dalMove.X,
                         Y = dalMove.Y
                     }

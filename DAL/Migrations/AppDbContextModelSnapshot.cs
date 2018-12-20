@@ -24,7 +24,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("Date");
 
-                    b.Property<int>("TurnCount");
+                    b.Property<int>("RoundCounter");
 
                     b.Property<string>("Winner");
 

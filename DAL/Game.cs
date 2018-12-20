@@ -11,6 +11,6 @@ namespace DAL {
         public List<Player> Players { get; set; }
         
         public string Winner { get; set; }
-        public int TurnCount { get; set; }
+        public int RoundCounter { get; set; }
     }
 }

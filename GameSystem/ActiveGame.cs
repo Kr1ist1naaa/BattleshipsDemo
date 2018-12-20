@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain;
@@ -5,34 +6,132 @@ using GameSystem.Logic;
 
 namespace GameSystem {
     public static class ActiveGame {
-        public static readonly HashSet<Rule> RuleSet = RuleLogic.GenDefaultRuleSet();
-        public static readonly List<Move> Moves = new List<Move>();
+        public static HashSet<Rule> RuleSet = RuleLogic.GenDefaultRuleSet();
+        public static List<Move> Moves;
         public static List<Player> Players;
+        public static int RoundCounter;
+        public static int? GameId;
+        
         public static Player Winner;
-        public static int TurnCount;
-        public static int? GameId = null;
+        public static Player CurrentPlayer;
+        public static Player NextPlayer;
 
-        public static bool ChangeRule(RuleType? type, int ruleValue) {
-            var baseRule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
+        static ActiveGame() {
+            Init();
+        }
 
-            if (baseRule == null) {
+        public static void Init() {
+            Moves = new List<Move>();
+            Winner = null;
+            CurrentPlayer = null;
+            NextPlayer = null;
+            GameId = null;
+            Players = null;
+            RoundCounter = 0;
+        }
+
+        public static bool InitPlayerPointers() {
+            // No players defined yet
+            if (Players == null || Players.Count < 2) {
                 return false;
             }
-
-            if (ruleValue > baseRule.MaxVal || ruleValue < baseRule.MinVal) {
-                return false;
-            }
-
-            baseRule.Value = ruleValue;
+            
+            // First run, set default values and return
+            CurrentPlayer = Players[0];
+            NextPlayer = Players[1];
+            
             return true;
         }
         
-        public static int GetRuleVal(RuleType? type) {
-            return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type)).Value;
+        public static bool CyclePlayers() {
+            // No players defined yet
+            if (Players == null || Players.Count < 2) {
+                return false;
+            }
+
+            // Cycle the players
+            CurrentPlayer = NextPlayer;
+            NextPlayer = GameLogic.FindNextPlayer(Players, CurrentPlayer);
+
+            // If a round has completed
+            if (CurrentPlayer == Players[0]) {
+                RoundCounter++;
+            }
+
+            return true;
+        }
+        
+        public static bool TrySetWinner() {
+            Player winner = null;
+            
+            // Check if there is only one player left and therefore the winner of the game
+            foreach (var player in Players) {
+                if (!PlayerLogic.IsAlive(player)) {
+                    continue;
+                }
+
+                if (winner == null) {
+                    winner = player;
+                } else {
+                    winner = null;
+                    break;
+                }
+            }
+
+            // More than 1 player alive, no winner
+            if (winner == null) {
+                return false;
+            } 
+            
+            // 1 winner alive
+            Winner = winner;
+            return true;
         }
 
-        public static Rule GetRule(RuleType? type) {
-            return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
+        public static bool TryChangeRule(RuleType type, int ruleValue) {
+            if (RuleSet == null) {
+                throw new Exception("Rules not initalized for game!");
+            }
+            
+            // Get rule
+            var rule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
+
+            // No match, couldn't change
+            if (rule == null) {
+                throw new Exception("Rule not found!");
+            }
+
+            // Out of range
+            if (ruleValue > rule.MaxVal || ruleValue < rule.MinVal) {
+                return false;
+            }
+
+            rule.Value = ruleValue;
+            return true;
+        }
+        
+        public static int GetRuleVal(RuleType type) {
+            // Get rule
+            var rule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
+            
+            // No match
+            if (rule == null) {
+                throw new Exception("Rule not found!");
+            }
+            
+            return rule.Value;
+        }
+
+        public static Rule GetRule(RuleType type) {
+            // Get rule
+            var rule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
+            
+            // No match
+            if (rule == null) {
+                throw new Exception("Rule not found!");
+            }
+            
+            return rule;
         }
 
         public static void ResetGeneralRules() {

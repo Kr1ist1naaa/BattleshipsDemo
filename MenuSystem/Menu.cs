@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Domain;
+using GameSystem;
 
 namespace MenuSystem {
     public class Menu {
@@ -108,8 +110,8 @@ namespace MenuSystem {
                     // Current menu is game loading menu
                     if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
                         // Load the game from the database and continue it
-                        GameSystem.ConsoleGame.LoadGame((int) item.GameId);
-                        GameSystem.ConsoleGame.RunGame();
+                        ConsoleGame.LoadGame((int) item.GameId);
+                        ConsoleGame.RunGame();
                         
                         // Return the GoBackItem shortcut to exit the game loading menu
                         return MenuInitializers.GoBackItem.Shortcut;
@@ -118,7 +120,7 @@ namespace MenuSystem {
                     // Current menu is game deleting menu
                     if (MenuTypes.Contains(MenuType.DeleteGameMenu) && item.GameId != null) {
                         // Delete the game from the database
-                        GameSystem.ConsoleGame.DeleteGame((int) item.GameId);
+                        ConsoleGame.DeleteGame((int) item.GameId);
                         
                         // Return the GoBackItem shortcut to exit the game deletion menu
                         return MenuInitializers.GoBackItem.Shortcut;
@@ -126,6 +128,9 @@ namespace MenuSystem {
                     
                     // Current menu is new game menu
                     if (MenuTypes.Contains(MenuType.NewGameMenu)) {
+                        // Reset current game to initial state
+                        ActiveGame.Init();
+                        
                         // Start new game
                         if (item.ActionToExecute != null) {
                             item.ActionToExecute();
@@ -154,7 +159,7 @@ namespace MenuSystem {
 
                     // Current menu is the main rules menu
                     if (item.RuleTypeToChange != null) {
-                        DynamicMenus.ChangeRuleValue(item.RuleTypeToChange);
+                        DynamicMenus.ChangeRuleValue((RuleType) item.RuleTypeToChange);
                         continue;
                     }
                 }

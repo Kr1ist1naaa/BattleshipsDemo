@@ -38,6 +38,17 @@ namespace GameSystem.Logic {
         public static Player FindNextPlayer(IReadOnlyList<Player> players, Player player) {
             var playerCount = ActiveGame.GetRuleVal(RuleType.PlayerCount);
             Player nextPlayer = null;
+            
+            if (player == null) {
+                foreach (var tmpPlayer in players) {
+                    if (PlayerLogic.IsAlive(tmpPlayer)) {
+                        return tmpPlayer;
+                    }
+                }
+                
+                // No more players alive but user requested next player
+                throw new NullReferenceException(nameof(nextPlayer));
+            }
 
             for (int i = 0; i < playerCount; i++) {
                 // Find current player's index
@@ -45,6 +56,7 @@ namespace GameSystem.Logic {
                     continue;
                 }
 
+                // Find next alive player
                 for (int j = 1; j < playerCount; j++) {
                     var tmpPlayer = players[i + j - (i + j < playerCount ? 0 : playerCount)];
 
@@ -54,12 +66,22 @@ namespace GameSystem.Logic {
                 }
             }
 
-            // Should not run
+            // If player is the only player left (and the winner), return itself
             if (nextPlayer == null) {
-                throw new NullReferenceException(nameof(nextPlayer));
+                return player;
             }
 
             return nextPlayer;
+        }
+        
+        public static bool IsAllPlayersPlacedAllShips() {
+            foreach (var player in ActiveGame.Players) {
+                if (!PlayerLogic.IsPlacedAllShips(player)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

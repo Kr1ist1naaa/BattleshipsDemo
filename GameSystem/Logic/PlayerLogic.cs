@@ -40,7 +40,7 @@ namespace GameSystem.Logic {
         }
 
         public static void ResetShips(Player player) {
-            player.Ships = ShipLogic.GenDefaultShipList();
+            player.Ships = ShipLogic.GenGameShipList();
         }
 
         public static Ship GetShipOrNull(Player player, Pos pos) {
@@ -72,6 +72,16 @@ namespace GameSystem.Logic {
             }
 
             return false;
+        }
+
+        public static bool IsPlacedAllShips(Player player) {
+            foreach (var ship in player.Ships) {
+                if (!ship.IsPlaced) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

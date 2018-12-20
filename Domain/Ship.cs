@@ -56,7 +56,7 @@ namespace Domain {
         public override int GetHashCode() {
             var hash = 3;
 
-            if (Symbol != null) hash = 53 * hash + Symbol.GetHashCode();
+            hash = 53 * hash + Symbol.GetHashCode();
 
             return hash;
         }

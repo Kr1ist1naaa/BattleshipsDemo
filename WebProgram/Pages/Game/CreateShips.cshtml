@@ -11,7 +11,9 @@
         <div class="card-header slim-card-edge"></div>
         <div class="card-body text-center">
 
-            @if (Model.IsAllPlayerPlacedAll) {
+            @if (Model.IsInvalidAccess) {
+                <partial name="_NotAllowed"/>
+            } else if (Model.IsAllPlayerPlacedAll) {
                 <div class="custom-text-green mb-4">All players have placed their ships!</div>
                 
                 <div class="row">

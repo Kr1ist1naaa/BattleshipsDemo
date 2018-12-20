@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebProgram.Pages.Game {
     public class CreateShipsModel : PageModel {
-        public string MainTitle { get; private set; } = "Placing ships";
+        public string MainTitle { get; private set; } = "Creating ships";
 
+        public bool IsInvalidAccess { get; private set; }
         public bool IsAutoplaceQuestion { get; private set; }
         public bool IsCurrentPlayerPlacedAll { get; private set; }
         public bool IsAllPlayerPlacedAll { get; private set; }
@@ -19,16 +20,13 @@ namespace WebProgram.Pages.Game {
         public int PlayerId { get; private set; }
         public int ShipId { get; private set; }
         public int NextPlayerId { get; private set; }
-        public int NextShipId { get; private set; }
 
-        public Domain.Player Player { get; private set; }
+        public Player Player { get; private set; }
         public Ship Ship { get; private set; }
 
         public void OnGet() {
             if (ActiveGame.Players == null || ActiveGame.Players.Count == 0) {
-                IsError = true;
-                StatusMsg = "You're not supposed to be here!";
-                BackBtnHref = "/";
+                IsInvalidAccess = true;
                 return;
             }
             
@@ -129,18 +127,15 @@ namespace WebProgram.Pages.Game {
 
         private bool GetPlayer() {
             if (!Request.Query.TryGetValue("player", out var strPlayerId) || !int.TryParse(strPlayerId, out var pId) || pId < 0) {
-                IsError = true;
-                StatusMsg = "Invalid player param!";
-                BackBtnHref = "?player=0&askAutoPlace";
+                IsInvalidAccess = true;
                 return false;
             }
 
+            // Current player index is more than max index
             if (pId >= ActiveGame.Players.Count) {
                 // Check if all users have placed their ships
                 if (!CheckIfShipsPlaced(ActiveGame.Players.Count)) {
-                    IsError = true;
-                    StatusMsg = "Invalid player order 2!";
-                    BackBtnHref = "?player=0&askAutoPlace";
+                    IsInvalidAccess = true;
                     return false;
                 }
                 

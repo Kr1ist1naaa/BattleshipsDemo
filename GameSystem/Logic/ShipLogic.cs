@@ -74,7 +74,7 @@ namespace GameSystem.Logic {
             return true;
         }
         
-        public static List<Ship> GenDefaultShipList() {
+        public static List<Ship> GenGameShipList() {
             var ships = new List<Ship>();
 
             // Generate list of ships based on their specs

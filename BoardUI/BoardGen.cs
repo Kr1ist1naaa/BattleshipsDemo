@@ -7,7 +7,7 @@ namespace BoardUI {
         public static Func<int, string> MapToBase26 { private get; set; }
         public static Func<Player, Pos, Ship> GetShipOrNull { private get; set; }
         public static Func<Ship, bool> IsShipDestroyed { private get; set; }
-        public static Func<RuleType?, int> GetRuleVal { private get; set; }
+        public static Func<RuleType, int> GetRuleVal { private get; set; }
         
         
         public static void GenSingleBoard(Player player, string title) {

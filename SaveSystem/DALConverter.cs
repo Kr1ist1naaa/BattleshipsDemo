@@ -10,7 +10,7 @@ namespace SaveSystem {
             var dalGame = new DAL.Game {
                 Date = DateTime.Now.ToString(CultureInfo.CurrentCulture),
                 Winner = GameSystem.ActiveGame.Winner?.Name,
-                TurnCount = GameSystem.ActiveGame.TurnCount,
+                RoundCounter = GameSystem.ActiveGame.RoundCounter,
                 Moves = null,
                 Players = null,
                 Rules = null
@@ -18,17 +18,17 @@ namespace SaveSystem {
 
             // Because we need to point to the game
             dalGame.Rules = ConvertRules(dalGame);
-            dalGame.Players = ConvertPlayers(dalGame, GameSystem.ActiveGame.Players);
+            dalGame.Players = ConvertPlayers(dalGame);
             dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, GameSystem.ActiveGame.Moves);
 
             return dalGame;
         }
 
-        private static List<DAL.Player> ConvertPlayers(DAL.Game game, List<Domain.Player> domainPlayers) {
+        private static List<DAL.Player> ConvertPlayers(DAL.Game game) {
             var dalPlayers = new List<DAL.Player>();
 
             // Convert all Domain players to DAL player objects
-            foreach (var domainPlayer in domainPlayers) {
+            foreach (var domainPlayer in GameSystem.ActiveGame.Players) {
                 var dalPlayer = new DAL.Player {
                     Name = domainPlayer.Name,
                     MovesAgainstThisPlayer = null,
@@ -47,7 +47,7 @@ namespace SaveSystem {
         }
 
         private static HashSet<DAL.MovesAgainstPlayer> ConvertMovesAgainstPlayer(DAL.Player player,
-            HashSet<Domain.Pos> domainMoves) {
+            HashSet<Pos> domainMoves) {
             var dalMoves = new HashSet<DAL.MovesAgainstPlayer>();
 
             // Convert all Domain positions to DAL position objects
@@ -106,8 +106,7 @@ namespace SaveSystem {
             return dalStatuses;
         }
 
-        private static List<DAL.Move> ConvertMoves(DAL.Game game, List<DAL.Player> dalPlayers,
-            List<Domain.Move> domainMoves) {
+        private static List<DAL.Move> ConvertMoves(DAL.Game game, List<DAL.Player> dalPlayers, List<Move> domainMoves) {
             var dalMoves = new List<DAL.Move>();
 
             // Convert all Domain players to DAL player objects

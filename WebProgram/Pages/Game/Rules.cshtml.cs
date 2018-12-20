@@ -1,5 +1,6 @@
-using System;
 using Domain;
+using GameSystem;
+using GameSystem.Logic;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebProgram.Pages.Game {
@@ -10,6 +11,7 @@ namespace WebProgram.Pages.Game {
         public bool IsDisplayContinue { get; private set; }
        
         public void OnPost() {
+            // Overwrite current rules
             foreach (var key in Request.Form.Keys) {
                 // Get value for current key
                 Request.Form.TryGetValue(key, out var strVal);
@@ -31,7 +33,7 @@ namespace WebProgram.Pages.Game {
                 }
 
                 // Update static rule context
-                GameSystem.ActiveGame.ChangeRule((RuleType) intKey, intVal);
+                ActiveGame.TryChangeRule((RuleType) intKey, intVal);
             }
 
             IsStatus = true;
@@ -44,7 +46,7 @@ namespace WebProgram.Pages.Game {
                 IsStatus = true;
                 StatusMsg = "Rules reverted to default values!";
                 IsDisplayContinue = true;
-                GameSystem.ActiveGame.ResetAllRules();
+                ActiveGame.ResetAllRules();
             }
         }
     }

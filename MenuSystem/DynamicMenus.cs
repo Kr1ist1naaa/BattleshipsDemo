@@ -249,7 +249,7 @@ namespace MenuSystem {
             menu.RunMenu();
         }
 
-        public static void ChangeRuleValue(RuleType? ruleType) {
+        public static void ChangeRuleValue(RuleType ruleType) {
             var rule = ActiveGame.GetRule(ruleType);
 
             var menu = new Menu {
@@ -281,7 +281,7 @@ namespace MenuSystem {
                     continue;
                 }
 
-                if (!ActiveGame.ChangeRule(ruleType, value)) {
+                if (!ActiveGame.TryChangeRule(ruleType, value)) {
                     Console.WriteLine("Value not in range!");
                     Console.ReadKey(true);
                     continue;

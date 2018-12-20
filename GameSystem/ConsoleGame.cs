@@ -14,14 +14,23 @@ namespace GameSystem {
         public static Func<Player, Ship, string[]> ShipCoordsMenu { private get; set; }
 
         // SaveSystem functions
-        public static Action<int> Load { private get; set; }
-        public static Action<int> Delete { private get; set; }
-        public static Action Save { private get; set; }
-        public static Action OverwriteSave { private get; set; }
+        public static Action<int> GameLoader { private get; set; }
+        public static Action<int> GameDeleter { private get; set; }
+        public static Action GameSaver { private get; set; }
 
         public static void RunGame() {
             GameLoop();
-            AskSaveGame();
+            
+            if (YesOrQuitMenu("Game menu", "Save game")) {
+                Console.Clear();
+                Console.WriteLine("Saving game...");
+
+                GameSaver();
+
+                Console.Clear();
+                Console.WriteLine("Game saved!");
+                Console.ReadKey(true);
+            }
         }
 
         public static void LoadGame(int gameId) {
@@ -29,7 +38,7 @@ namespace GameSystem {
             Console.WriteLine("Loading game...");
 
             // Load and convert game
-            Load(gameId);
+            GameLoader(gameId);
 
             Console.Clear();
             Console.WriteLine("Game loaded!");
@@ -40,7 +49,7 @@ namespace GameSystem {
             Console.Clear();
             Console.WriteLine("Deleting game...");
 
-            Delete(gameId);
+            GameDeleter(gameId);
 
             Console.Clear();
             Console.WriteLine("Game deleted!");
@@ -48,10 +57,13 @@ namespace GameSystem {
         }
 
         public static void NewGame() {
+            // Reset current game to initial state
+            ActiveGame.Init();
+            
             // Create players
-            ActiveGame.Players = InitializePlayers();
+            InitializePlayers();
 
-            // User cancelled players creation
+            // User cancelled players creation and wants to exit
             if (ActiveGame.Players == null) {
                 return;
             }
@@ -70,27 +82,9 @@ namespace GameSystem {
             RunGame();
         }
 
-        private static void AskSaveGame() {
-            if (YesOrQuitMenu("Game menu", "Save game")) {
-                Console.Clear();
-                Console.WriteLine("Saving game...");
-
-                if (ActiveGame.GameId == null) {
-                    Save();
-                } else {
-                    OverwriteSave();
-                }
-
-                Console.Clear();
-                Console.WriteLine("Game saved!");
-                Console.ReadKey(true);
-            }
-        }
-
-
-        private static List<Player> InitializePlayers() {
+        private static void InitializePlayers() {
             var playerCount = ActiveGame.GetRuleVal(RuleType.PlayerCount);
-            var players = new List<Player>();
+            ActiveGame.Players = new List<Player>();
 
             for (var i = 0; i < playerCount; i++) {
                 string name;
@@ -100,7 +94,7 @@ namespace GameSystem {
 
                     // User chose to quit the menu
                     if (name == null) {
-                        return null;
+                        return;
                     }
 
                     // Check input validity
@@ -113,10 +107,10 @@ namespace GameSystem {
                     break;
                 }
 
-                players.Add(new Player(name, ShipLogic.GenDefaultShipList()));
+                // Generate ships for the player based on current rules
+                var ships = ShipLogic.GenGameShipList();
+                ActiveGame.Players.Add(new Player(name, ships));
             }
-
-            return players;
         }
 
         private static bool InitializeShips() {
@@ -124,9 +118,7 @@ namespace GameSystem {
                 while (true) {
                     // Ask to auto-place ships
                     var t = $"Creating {player.Name}'s ships";
-                    const string o1 = "Automatically place ships";
-                    const string o2 = "Manually place ships";
-                    var autoPlaceShips = YesNoQuitMenu(t, o1, o2, true);
+                    var autoPlaceShips = YesNoQuitMenu(t, "Automatically place ships", "Manually place ships", true);
 
                     // Player requested to quit to main menu
                     if (autoPlaceShips == null) {
@@ -244,16 +236,16 @@ namespace GameSystem {
                 }
 
                 Console.Clear();
-                Console.WriteLine($"End of round {ActiveGame.TurnCount}");
+                Console.WriteLine($"End of round {ActiveGame.RoundCounter}");
                 Console.ReadKey(true);
 
-                ActiveGame.TurnCount++;
+                ActiveGame.RoundCounter++;
             }
 
             if (ActiveGame.Winner != null) {
                 Console.Clear();
                 Console.WriteLine(
-                    $"The winner of the game is {ActiveGame.Winner.Name} after {ActiveGame.TurnCount} turns!");
+                    $"The winner of the game is {ActiveGame.Winner.Name} after {ActiveGame.RoundCounter} turns!");
                 Console.ReadKey(true);
             }
         }

@@ -11,10 +11,9 @@ namespace Program {
             GameSystem.ConsoleGame.ShipCoordsMenu = MenuSystem.DynamicMenus.ShipCoords;
             
             // Tie SaveSystem functions 
-            GameSystem.ConsoleGame.Save = SaveSystem.GameSaver.Save;
-            GameSystem.ConsoleGame.Load = SaveSystem.GameSaver.Load;
-            GameSystem.ConsoleGame.Delete = SaveSystem.GameSaver.Delete;
-            GameSystem.ConsoleGame.OverwriteSave = SaveSystem.GameSaver.OverwriteSave;
+            GameSystem.ConsoleGame.GameSaver = SaveSystem.GameSaver.Save;
+            GameSystem.ConsoleGame.GameLoader = SaveSystem.GameSaver.Load;
+            GameSystem.ConsoleGame.GameDeleter = SaveSystem.GameSaver.Delete;
 
             BoardUI.BoardGen.GetShipOrNull = GameSystem.Logic.PlayerLogic.GetShipOrNull;
             BoardUI.BoardGen.IsShipDestroyed = GameSystem.Logic.ShipLogic.IsDestroyed;

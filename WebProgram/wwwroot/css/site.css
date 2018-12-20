@@ -265,6 +265,10 @@ footer {
   color: #222;
   background-color: rgb(161, 161, 161);
 }
+.custom-badge-black {
+  color: #ddd;
+  background-color: #222;
+}
 
 /*
 // Text

@@ -1,46 +1,136 @@
 @page
+@using Domain
+@using GameSystem
+@using GameSystem.Logic
 @model PlayModel
 @{
     ViewData["Title"] = "Play";
 }
 
 <div class="text-center">
-    <h1 class="display-4 mb-5">[Player] is attacking [Player]</h1>
+    <h1 class="display-4 mb-5">@Model.MainTitle</h1>
 
     <div class="card custom-card mw-md mx-auto mb-4">
         <div class="card-header slim-card-edge"></div>
         <div class="card-body text-center">
-            
-            <form method="POST">
-                <div class="row mb-2">
-                    <div class="col-3">
-                        <input class="form-control min-input" name="x" type="text" placeholder="X">
-                    </div>
-                    <div class="col-3">
-                        <input class="form-control min-input" name="y" type="text" placeholder="Y">
-                    </div>
-                    <div class="col-6">
-                        <button type="submit" class="btn btn-block btn-outline-success">Attack</button>
-                    </div>
-                </div>
 
-            </form>
+            @if (Model.IsInvalidAccess) {
+                <partial name="_NotAllowed"/>
+            } else if (Model.IsError) {
+                <div class="custom-text-red mb-2">@Model.StatusMsg</div>
+                <a href="Play" class="btn btn-outline-danger">I'm sorry</a>
+            } else if (Model.IsDisplaySave) {
+                <div class="custom-text-green mb-2">@Model.StatusMsg</div>
+                <a href="/" class="btn btn-outline-secondary">Exit</a>
+                <a href="?save" class="btn btn-outline-secondary">Save</a>
+                <a href="Play" class="btn btn-outline-success">Next player</a>
+            } else if (Model.IsStatus) {
+                <div class="custom-text-green mb-2">@Model.StatusMsg</div>
+                <a href="/" class="btn btn-outline-secondary">Exit</a>
+                <a href="Play" class="btn btn-outline-success">Next player</a>
+            } else if (Model.IsWinner) {
+                <div class="custom-text-green mb-2">@Model.StatusMsg</div>
+                <a href="?save" class="btn btn-outline-secondary">Save</a>
+                <a href="/" class="btn btn-outline-success">Exit</a>
+            } else {
+                <form method="POST">
+                    <div class="row mb-2">
+                        <div class="col-3">
+                            <input class="form-control min-input" name="x" type="text" placeholder="X">
+                        </div>
+                        <div class="col-3">
+                            <input class="form-control min-input" name="y" type="text" placeholder="Y">
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-block btn-outline-success">Attack</button>
+                        </div>
+                    </div>
+
+                </form>
+            }
 
         </div>
         <div class="card-footer slim-card-edge"></div>
     </div>
 
+    @if (Model.IsDisplayBoards) {
+        <div class="row">
+            <div class="col-lg mb-3">
+                <div>Enemy board</div>
+                @{
+                    var boardSize = ActiveGame.GetRuleVal(RuleType.BoardSize);
+                    
+                    <div class="board-grid m-auto mw-md">
+                        @for (int y = 0; y < boardSize; y++) {
+                            <div class="board-row d-flex">
+                                @for (int x = 0; x < boardSize; x++) {
+                                    var pos = new Pos(x, y);
+                                    var ship = PlayerLogic.GetShipOrNull(ActiveGame.NextPlayer, pos);
+                                    var colorClass = "";
 
-    <div class="row">
-        <div class="col-md mb-3">
-            <div>Your board</div>
-            <partial name="_DoubleBoard"/>
+                                    if (ship != null) {
+                                        if (ShipLogic.IsDestroyed(ship)) {
+                                            colorClass = "custom-badge-gray";
+                                        } else if (ActiveGame.NextPlayer.MovesAgainstThisPlayer.Contains(pos)) {
+                                            colorClass = "custom-badge-red";
+                                        }
+                                    } else if (ActiveGame.NextPlayer.MovesAgainstThisPlayer.Contains(pos)) {
+                                        colorClass = "custom-badge-orange";
+                                    }
+
+                                    var x2 = BaseConversion.MapToBase26(x);
+                                    var y2 = y + 1;
+
+                                    <div class="board-box @colorClass">
+                                        <div class="board-inner @Model.GetRoundClass(boardSize, x, y)" x="@x2" y="@y2"></div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg mb-3">
+                <div>Your board</div>
+                @{
+                    <div class="board-grid m-auto mw-md">
+                        @for (int y = 0; y < boardSize; y++) {
+                            <div class="board-row d-flex">
+                                @for (int x = 0; x < boardSize; x++) {
+
+                                    var pos = new Pos(x, y);
+                                    var ship = PlayerLogic.GetShipOrNull(ActiveGame.CurrentPlayer, pos);
+                                    var colorClass = "";
+                                    
+                                    if (ship != null) {
+                                        if (ShipLogic.IsDestroyed(ship)) {
+                                            colorClass = "custom-badge-gray";
+                                        } else if (ActiveGame.CurrentPlayer.MovesAgainstThisPlayer.Contains(pos)) {
+                                            colorClass = "custom-badge-red";
+                                        } else {
+                                            colorClass = "custom-badge-green";
+                                        }
+                                    } else if (ActiveGame.CurrentPlayer.MovesAgainstThisPlayer.Contains(pos)) {
+                                        colorClass = "custom-badge-orange";
+                                    }
+                                    
+                                    
+                                    var squareSymbol = ship?.Symbol.ToString();
+
+                                    <div class="board-box @colorClass">
+                                        <div class="board-inner @Model.GetRoundClass(boardSize, x, y)">
+                                            <span class="badge">@squareSymbol</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
         </div>
-        <div class="col-md mb-3">
-            <div>Enemy board</div>
-            <partial name="_DoubleBoard"/>
-        </div>
-    </div>
+    }
 
 
 </div>

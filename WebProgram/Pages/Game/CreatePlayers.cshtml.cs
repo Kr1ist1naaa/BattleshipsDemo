@@ -8,9 +8,15 @@ namespace WebProgram.Pages.Game {
     public class CreatePlayersModel : PageModel {
         public bool IsStatus { get; private set; }
         public bool IsError { get; private set; }
+        public bool IsInvalidAccess { get; private set; }
         public string StatusMsg { get; private set; }
 
         public void OnGet() {
+            if (ActiveGame.RuleSet == null) {
+                IsInvalidAccess = true;
+                return;
+            }
+            
             // Reset current players
             ActiveGame.Players = null;
         }
@@ -37,7 +43,7 @@ namespace WebProgram.Pages.Game {
                     return;
                 }
 
-                ActiveGame.Players.Add(new Player(name, ShipLogic.GenDefaultShipList()));
+                ActiveGame.Players.Add(new Player(name, ShipLogic.GenGameShipList()));
             }
 
             StatusMsg = "Players created!";
