@@ -1,41 +1,41 @@
 using System.Collections.Generic;
-using Domain.DomainRule;
+using Domain;
 using GameSystem;
 
 namespace MenuSystem {
-    public static class Menus {
+    public static class MenuInitializers {
         private static readonly Menu ShipsSizeRulesMenu = new Menu {
             Title = "Ship size rules",
             MenuTypes = new List<MenuType> {MenuType.RulesMenu, MenuType.ShipSizeRulesMenu},
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     Description = "Reset to default",
-                    ActionToExecute = Rules.ResetShipSizesToDefault,
+                    ActionToExecute = ActiveGame.ResetShipSizeRules,
                     IsResetRules = true,
                     Shortcut = "A"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.SizeCarrier).Description,
+                    Description = ActiveGame.GetRule(RuleType.SizeCarrier).Description,
                     RuleTypeToChange = RuleType.SizeCarrier,
                     Shortcut = "B"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.SizeBattleship).Description,
+                    Description = ActiveGame.GetRule(RuleType.SizeBattleship).Description,
                     RuleTypeToChange = RuleType.SizeBattleship,
                     Shortcut = "C"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.SizeSubmarine).Description,
+                    Description = ActiveGame.GetRule(RuleType.SizeSubmarine).Description,
                     RuleTypeToChange = RuleType.SizeSubmarine,
                     Shortcut = "D"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.SizeCruiser).Description,
+                    Description = ActiveGame.GetRule(RuleType.SizeCruiser).Description,
                     RuleTypeToChange = RuleType.SizeCruiser,
                     Shortcut = "E"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.SizePatrol).Description,
+                    Description = ActiveGame.GetRule(RuleType.SizePatrol).Description,
                     RuleTypeToChange = RuleType.SizePatrol,
                     Shortcut = "F"
                 }
@@ -48,32 +48,32 @@ namespace MenuSystem {
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     Description = "Reset to default",
-                    ActionToExecute = Rules.ResetShipCountsToDefault,
+                    ActionToExecute = ActiveGame.ResetShipCountRules,
                     IsResetRules = true,
                     Shortcut = "A"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.CountCarrier).Description,
+                    Description = ActiveGame.GetRule(RuleType.CountCarrier).Description,
                     RuleTypeToChange = RuleType.CountCarrier,
                     Shortcut = "B"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.CountBattleship).Description,
+                    Description = ActiveGame.GetRule(RuleType.CountBattleship).Description,
                     RuleTypeToChange = RuleType.CountBattleship,
                     Shortcut = "C"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.CountSubmarine).Description,
+                    Description = ActiveGame.GetRule(RuleType.CountSubmarine).Description,
                     RuleTypeToChange = RuleType.CountSubmarine,
                     Shortcut = "D"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.CountCruiser).Description,
+                    Description = ActiveGame.GetRule(RuleType.CountCruiser).Description,
                     RuleTypeToChange = RuleType.CountCruiser,
                     Shortcut = "E"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.CountPatrol).Description,
+                    Description = ActiveGame.GetRule(RuleType.CountPatrol).Description,
                     RuleTypeToChange = RuleType.CountPatrol,
                     Shortcut = "F"
                 }
@@ -86,22 +86,22 @@ namespace MenuSystem {
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     Description = "Reset to default",
-                    ActionToExecute = Rules.ResetGeneralToDefault,
+                    ActionToExecute = ActiveGame.ResetGeneralRules,
                     IsResetRules = true,
                     Shortcut = "A"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.PlayerCount).Description,
+                    Description = ActiveGame.GetRule(RuleType.PlayerCount).Description,
                     RuleTypeToChange = RuleType.PlayerCount,
                     Shortcut = "B"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.BoardSize).Description,
+                    Description = ActiveGame.GetRule(RuleType.BoardSize).Description,
                     RuleTypeToChange = RuleType.BoardSize,
                     Shortcut = "C"
                 },
                 new MenuItem {
-                    Description = Rules.GetRule(RuleType.ShipPadding).Description,
+                    Description = ActiveGame.GetRule(RuleType.ShipPadding).Description,
                     RuleTypeToChange = RuleType.ShipPadding,
                     Shortcut = "D"
                 }
@@ -114,7 +114,7 @@ namespace MenuSystem {
             MenuItems = new List<MenuItem> {
                 new MenuItem {
                     Description = "Reset everything to default",
-                    ActionToExecute = Rules.ResetAllToDefault,
+                    ActionToExecute = ActiveGame.ResetAllRules,
                     IsResetRules = true,
                     Shortcut = "A"
                 },
@@ -148,7 +148,7 @@ namespace MenuSystem {
                 new MenuItem {
                     IsDefaultChoice = true,
                     Description = "Start game",
-                    ActionToExecute = GameLogic.NewCliGame,
+                    ActionToExecute = ConsoleGame.NewGame,
                     Shortcut = "A"
                 },
                 new MenuItem {
@@ -167,7 +167,7 @@ namespace MenuSystem {
                     IsDefaultChoice = true,
                     Description = "New Game",
                     MenuToRun = NewGameMenu.RunMenu,
-                    ActionToExecute = Rules.ResetAllToDefault,
+                    ActionToExecute = ActiveGame.ResetAllRules,
                     Shortcut = "A"
                 },
                 new MenuItem {

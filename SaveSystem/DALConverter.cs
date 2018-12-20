@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Domain.DomainRule;
-using Domain.DomainShip;
+using Domain;
 
 namespace SaveSystem {
     public static class DalConverter {
-        public static DAL.Game ConvertGame(Domain.Game domainGame) {
+        public static DAL.Game ConvertGame() {
             var dalGame = new DAL.Game {
                 Date = DateTime.Now.ToString(CultureInfo.CurrentCulture),
-                Winner = domainGame.Winner?.Name,
-                TurnCount = domainGame.TurnCount,
+                Winner = GameSystem.ActiveGame.Winner?.Name,
+                TurnCount = GameSystem.ActiveGame.TurnCount,
                 Moves = null,
                 Players = null,
                 Rules = null
@@ -19,8 +18,8 @@ namespace SaveSystem {
 
             // Because we need to point to the game
             dalGame.Rules = ConvertRules(dalGame);
-            dalGame.Players = ConvertPlayers(dalGame, domainGame.Players);
-            dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, domainGame.Moves);
+            dalGame.Players = ConvertPlayers(dalGame, GameSystem.ActiveGame.Players);
+            dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, GameSystem.ActiveGame.Moves);
 
             return dalGame;
         }
@@ -43,7 +42,6 @@ namespace SaveSystem {
 
                 dalPlayers.Add(dalPlayer);
             }
-
 
             return dalPlayers;
         }
@@ -91,7 +89,7 @@ namespace SaveSystem {
         }
 
         private static List<DAL.ShipStatus> ConvertShipStatus(DAL.Ship dalShip,
-            Domain.Ship.ShipStatus[] domainShipStatuses) {
+            ShipStatus[] domainShipStatuses) {
             var dalStatuses = new List<DAL.ShipStatus>();
 
             // Convert all Domain Ship status blocks to DAL ship status blocks
@@ -132,7 +130,7 @@ namespace SaveSystem {
         private static HashSet<DAL.Rule> ConvertRules(DAL.Game game) {
             var dalRules = new HashSet<DAL.Rule>();
 
-            foreach (var domainRule in Rules.RuleSet) {
+            foreach (var domainRule in GameSystem.ActiveGame.RuleSet) {
                 var dalRule = new DAL.Rule {
                     Game = game,
                     RuleType = (int) domainRule.RuleType,

@@ -1,17 +1,25 @@
 ﻿using System;
-using BoardUI;
 
 namespace Program {
     class Program {
         static void Main(string[] args) {
             // Give GameSystem access to MenuSystem's menus
-            GameSystem.GameLogic.NameMenu = MenuSystem.DynamicMenus.NameInput;
-            GameSystem.GameLogic.YesNoQuitMenu = MenuSystem.DynamicMenus.YesOrNoOrQuit;
-            GameSystem.GameLogic.YesOrQuitMenu = MenuSystem.DynamicMenus.YesOrQuit;
-            GameSystem.GameLogic.AttackCoordMenu = MenuSystem.DynamicMenus.AttackCoords;
-            GameSystem.GameLogic.ShipCoordsMenu = MenuSystem.DynamicMenus.ShipCoords;
+            GameSystem.ConsoleGame.NameMenu = MenuSystem.DynamicMenus.NameInput;
+            GameSystem.ConsoleGame.YesNoQuitMenu = MenuSystem.DynamicMenus.YesOrNoOrQuit;
+            GameSystem.ConsoleGame.YesOrQuitMenu = MenuSystem.DynamicMenus.YesOrQuit;
+            GameSystem.ConsoleGame.AttackCoordMenu = MenuSystem.DynamicMenus.AttackCoords;
+            GameSystem.ConsoleGame.ShipCoordsMenu = MenuSystem.DynamicMenus.ShipCoords;
+            
+            // Tie SaveSystem functions 
+            GameSystem.ConsoleGame.Save = SaveSystem.GameSaver.Save;
+            GameSystem.ConsoleGame.Load = SaveSystem.GameSaver.Load;
+            GameSystem.ConsoleGame.Delete = SaveSystem.GameSaver.Delete;
+            GameSystem.ConsoleGame.OverwriteSave = SaveSystem.GameSaver.OverwriteSave;
 
-            BoardGen.MapToBase26 = GameSystem.BaseConversion.MapToBase26;
+            BoardUI.BoardGen.GetShipOrNull = GameSystem.Logic.PlayerLogic.GetShipOrNull;
+            BoardUI.BoardGen.IsShipDestroyed = GameSystem.Logic.ShipLogic.IsDestroyed;
+            BoardUI.BoardGen.MapToBase26 = GameSystem.BaseConversion.MapToBase26;
+            BoardUI.BoardGen.GetRuleVal = GameSystem.ActiveGame.GetRuleVal;
             
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
@@ -22,7 +30,7 @@ namespace Program {
             Console.ReadKey(true);
             
             // Run
-            MenuSystem.Menus.MainMenu.RunMenu();
+            MenuSystem.MenuInitializers.MainMenu.RunMenu();
         }
     }
 }

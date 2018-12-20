@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Domain;
 using GameSystem;
+using GameSystem.Logic;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Player = Domain.Player;
 
 namespace WebProgram.Pages.Game {
     public class CreatePlayersModel : PageModel {
@@ -14,7 +15,7 @@ namespace WebProgram.Pages.Game {
 
         public void OnPost() {
             IsStatus = true;
-            GameLogic.Players = new List<Player>();
+            ActiveGame.Players = new List<Player>();
             
             // Loop through each form param
             foreach (var key in Request.Form.Keys) {
@@ -28,13 +29,13 @@ namespace WebProgram.Pages.Game {
                 var name = names.ToString();
                 
                 // Check input validity
-                if (!InputValidator.ValidatePlayerName(name)) {
+                if (!InputValidator.CheckValidPlayerName(name)) {
                     IsError = true;
                     StatusMsg = "Invalid player name!";
                     return;
                 }
 
-                GameLogic.Players.Add(new Player(name));
+                ActiveGame.Players.Add(new Player(name, ShipLogic.GenDefaultShipList()));
             }
 
             StatusMsg = "Players created!";

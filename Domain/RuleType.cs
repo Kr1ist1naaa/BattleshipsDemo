@@ -1,4 +1,4 @@
-namespace Domain.DomainRule {
+namespace Domain {
     public enum RuleType {
         BoardSize, PlayerCount, ShipPadding,
         SizeCarrier, SizeBattleship, SizeSubmarine, SizeCruiser, SizePatrol,

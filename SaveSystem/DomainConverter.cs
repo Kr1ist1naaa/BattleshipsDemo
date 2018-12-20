@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Domain.DomainShip;
+using Domain;
 
 namespace SaveSystem {
     public static class DomainConverter {
@@ -46,7 +46,7 @@ namespace SaveSystem {
                     Title = dalShip.Title,
                     Symbol = dalShip.Symbol,
                     Size = dalShip.Size,
-                    Direction = (Domain.Ship.ShipDirection) dalShip.Direction,
+                    Direction = (ShipDirection) dalShip.Direction,
                     ShipStatuses = GetAndConvertShipStatus(ctx, dalShip.Id),
                     ShipPos = new Domain.Pos {
                         X = dalShip.X,
@@ -60,12 +60,12 @@ namespace SaveSystem {
             return domainShips;
         }
 
-        private static Domain.Ship.ShipStatus[] GetAndConvertShipStatus(DAL.AppDbContext ctx, int shipId) {
+        private static ShipStatus[] GetAndConvertShipStatus(DAL.AppDbContext ctx, int shipId) {
             var dalStatuses = ctx.ShipStatuses.Where(status => status.Ship.Id == shipId);
 
-            var domainStatuses = new Domain.Ship.ShipStatus[dalStatuses.Count()];
+            var domainStatuses = new ShipStatus[dalStatuses.Count()];
             foreach (var dalStatus in dalStatuses) {
-                domainStatuses[dalStatus.Offset] = (Domain.Ship.ShipStatus) dalStatus.Status;
+                domainStatuses[dalStatus.Offset] = (ShipStatus) dalStatus.Status;
             }
 
             return domainStatuses;

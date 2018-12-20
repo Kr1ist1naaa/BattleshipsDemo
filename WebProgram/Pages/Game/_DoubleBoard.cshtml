@@ -1,10 +1,8 @@
 @using Domain
-@using GameSystem
-@using GameSystem.Logic
-@model CreateShipsModel
+@model PlayModel
 
 @{
-    var size = ActiveGame.GetRuleVal(RuleType.BoardSize);
+    var size = GameSystem.ActiveGame.GetRuleVal(RuleType.BoardSize);
 
     <div class="board-grid m-auto mw-md">
         @for (int y = 0; y < size; y++) {
@@ -21,16 +19,11 @@
                         roundedClass = "rounded-bottom-right";
                     }
 
-                    var ship = PlayerLogic.GetShipOrNull(Model.Player, new Pos(x, y));
-                    var colorClass = ship != null ? "custom-badge-green" : "";
-
-                    var x2 = BaseConversion.MapToBase26(x);
+                    var x2 = GameSystem.BaseConversion.MapToBase26(x);
                     var y2 = y + 1;
 
-                    var squareSymbol = ship != null ? ship.Symbol.ToString() : $"{x2} {y2}";
-                    
-                    <div class="board-box @colorClass">
-                        <div class="board-inner @roundedClass" x="@x2" y="@y2"><span class="badge">@squareSymbol</span></div>
+                    <div class="board-box">
+                        <div class="board-inner @roundedClass" x="@x2" y="@y2"><span class="badge">@x2 @y2</span></div>
                     </div>
                 }
             </div>

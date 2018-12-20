@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Domain.DomainRule;
+using Domain;
 
 namespace GameSystem {
     public static class BaseConversion {
@@ -8,7 +8,7 @@ namespace GameSystem {
 
         static BaseConversion() {
             // Create entries according to max board size rule
-            for (int i = 0; i < Rules.GetRule(RuleType.BoardSize).MaxVal; i++) {
+            for (int i = 0; i < ActiveGame.GetRule(RuleType.BoardSize).MaxVal; i++) {
                 ConversionDictionary.Add(i, ToBase26(i + 1));
             }
         }

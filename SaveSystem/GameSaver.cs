@@ -1,22 +1,20 @@
 ﻿using System.Linq;
 using DAL;
 using Domain;
-using Domain.DomainRule;
-using Game = Domain.Game;
 
 namespace SaveSystem {
     public static class GameSaver {
-        public static void Save(Game domainGame) {
+        public static void Save() {
             using (var ctx = new AppDbContext()) {
-                var dalGame = DalConverter.ConvertGame(domainGame);
+                var dalGame = DalConverter.ConvertGame();
                 ctx.Games.Add(dalGame);
                 ctx.SaveChanges();
 
-                domainGame.GameId = ctx.Games.Last().Id;
+                GameSystem.ActiveGame.GameId = ctx.Games.Last().Id;
             }
         }
 
-        public static Game Load(int gameId) {
+        public static void Load(int gameId) {
             using (var ctx = new AppDbContext()) {
                 var dalGame = ctx.Games.Find(gameId);
 
@@ -24,23 +22,19 @@ namespace SaveSystem {
                 var domainPlayers = DomainConverter.GetAndConvertPlayers(ctx, gameId);
                 var domainMoves = DomainConverter.GetAndConvertMoves(ctx, gameId, domainPlayers);
 
-                // Build game
-                var domainGame = new Game {
-                    Winner = domainPlayers.FirstOrDefault(player => player.Name.Equals(dalGame.Winner)),
-                    TurnCount = dalGame.TurnCount,
-                    Moves = domainMoves,
-                    Players = domainPlayers,
-                    GameId = dalGame.Id
-                };
+                // Load game data into static context
+                GameSystem.ActiveGame.Winner =
+                    domainPlayers.FirstOrDefault(player => player.Name.Equals(dalGame.Winner));
+                GameSystem.ActiveGame.TurnCount = dalGame.TurnCount;
+                GameSystem.ActiveGame.Moves.AddRange(domainMoves);
+                GameSystem.ActiveGame.Players = domainPlayers;
+                GameSystem.ActiveGame.GameId = dalGame.Id;
 
-                // Load rules into static context
-                Rules.ResetAllToDefault();
+                // Load rule values into static context
                 var dalRules = ctx.Rules.Where(rule => rule.Game.Id == gameId);
                 foreach (var dalRule in dalRules) {
-                    Rules.ChangeRule((RuleType) dalRule.RuleType, dalRule.Value);
+                    GameSystem.ActiveGame.ChangeRule((RuleType) dalRule.RuleType, dalRule.Value);
                 }
-
-                return domainGame;
             }
         }
 
@@ -76,13 +70,13 @@ namespace SaveSystem {
             }
         }
 
-        public static void OverwriteSave(Game domainGame) {
-            if (domainGame.GameId == null) {
+        public static void OverwriteSave() {
+            if (GameSystem.ActiveGame.GameId == null) {
                 return;
             }
 
-            Delete((int) domainGame.GameId);
-            Save(domainGame);
+            Delete((int) GameSystem.ActiveGame.GameId);
+            Save();
         }
 
         public static string[][] GetSaveGameList() {

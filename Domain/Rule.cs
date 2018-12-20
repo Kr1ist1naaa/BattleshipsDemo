@@ -1,4 +1,4 @@
-namespace Domain.DomainRule {
+namespace Domain {
     public class Rule {
         public string Description;
         public int Value, MinVal, MaxVal;

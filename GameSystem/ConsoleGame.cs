@@ -1,24 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using BoardUI;
 using Domain;
-using Domain.DomainRule;
-using Domain.DomainShip;
-using Domain.Ship;
-using SaveSystem;
+using GameSystem.Logic;
 
 namespace GameSystem {
-    public static class GameLogic {
-        public static Func<string, string, string, bool, bool?> YesNoQuitMenu { get; set; }
-        public static Func<string, string, bool> YesOrQuitMenu { get; set; }
-        public static Func<string, string, string> NameMenu { get; set; }
-        public static Func<Player, Player, string[]> AttackCoordMenu { get; set; }
-        public static Func<Player, Ship, string[]> ShipCoordsMenu { get; set; }
+    public static class ConsoleGame {
+        // MenuSystem functions
+        public static Func<string, string, string, bool, bool?> YesNoQuitMenu { private get; set; }
+        public static Func<string, string, bool> YesOrQuitMenu { private get; set; }
+        public static Func<string, string, string> NameMenu { private get; set; }
+        public static Func<Player, Player, string[]> AttackCoordMenu { private get; set; }
+        public static Func<Player, Ship, string[]> ShipCoordsMenu { private get; set; }
 
-        public static List<Player> Players;
-        public static Game Game;
+        // SaveSystem functions
+        public static Action<int> Load { private get; set; }
+        public static Action<int> Delete { private get; set; }
+        public static Action Save { private get; set; }
+        public static Action OverwriteSave { private get; set; }
 
         public static void RunGame() {
             GameLoop();
@@ -30,7 +29,7 @@ namespace GameSystem {
             Console.WriteLine("Loading game...");
 
             // Load and convert game
-            Game = GameSaver.Load(gameId);
+            Load(gameId);
 
             Console.Clear();
             Console.WriteLine("Game loaded!");
@@ -41,19 +40,19 @@ namespace GameSystem {
             Console.Clear();
             Console.WriteLine("Deleting game...");
 
-            GameSaver.Delete(gameId);
+            Delete(gameId);
 
             Console.Clear();
             Console.WriteLine("Game deleted!");
             Console.ReadKey(true);
         }
 
-        public static void NewCliGame() {
+        public static void NewGame() {
             // Create players
-            InitializePlayers();
+            ActiveGame.Players = InitializePlayers();
 
             // User cancelled players creation
-            if (Players == null) {
+            if (ActiveGame.Players == null) {
                 return;
             }
 
@@ -64,15 +63,10 @@ namespace GameSystem {
             }
 
             // Ask to start game
-            const string t = "Game menu";
-            const string o = "Start game";
-            var startGame = YesOrQuitMenu(t, o);
-            if (!startGame) {
+            if (!YesOrQuitMenu("Game menu", "Start game")) {
                 return;
             }
 
-            Game = new Game(Players);
-            
             RunGame();
         }
 
@@ -81,10 +75,10 @@ namespace GameSystem {
                 Console.Clear();
                 Console.WriteLine("Saving game...");
 
-                if (Game.GameId == null) {
-                    GameSaver.Save(Game);
+                if (ActiveGame.GameId == null) {
+                    Save();
                 } else {
-                    GameSaver.OverwriteSave(Game);
+                    OverwriteSave();
                 }
 
                 Console.Clear();
@@ -94,8 +88,8 @@ namespace GameSystem {
         }
 
 
-        private static void InitializePlayers() {
-            var playerCount = Rules.GetVal(RuleType.PlayerCount);
+        private static List<Player> InitializePlayers() {
+            var playerCount = ActiveGame.GetRuleVal(RuleType.PlayerCount);
             var players = new List<Player>();
 
             for (var i = 0; i < playerCount; i++) {
@@ -106,11 +100,11 @@ namespace GameSystem {
 
                     // User chose to quit the menu
                     if (name == null) {
-                        return;
+                        return null;
                     }
 
                     // Check input validity
-                    if (!InputValidator.ValidatePlayerName(name)) {
+                    if (!InputValidator.CheckValidPlayerName(name)) {
                         Console.WriteLine("Invalid name!");
                         Console.ReadKey(true);
                         continue;
@@ -119,14 +113,14 @@ namespace GameSystem {
                     break;
                 }
 
-                players.Add(new Player(name));
+                players.Add(new Player(name, ShipLogic.GenDefaultShipList()));
             }
 
-            Players = players;
+            return players;
         }
 
         private static bool InitializeShips() {
-            foreach (var player in Players) {
+            foreach (var player in ActiveGame.Players) {
                 while (true) {
                     // Ask to auto-place ships
                     var t = $"Creating {player.Name}'s ships";
@@ -140,8 +134,8 @@ namespace GameSystem {
                     }
 
                     if ((bool) autoPlaceShips) {
-                        if (!AutoPlaceShips(player)) {
-                            player.ResetShips();
+                        if (!GameLogic.AutoPlaceShips(player)) {
+                            PlayerLogic.ResetShips(player);
                             Console.WriteLine("Could not place ships...");
                             Console.ReadKey(true);
                         }
@@ -156,8 +150,8 @@ namespace GameSystem {
                                     return false;
                                 }
 
-                                var validLoc = InputValidator.ShipPlacementLoc(player, ship.Size, input[0], input[1],
-                                    input[2], out var pos, out var dir);
+                                var validLoc = InputValidator.CheckValidShipPlacementLoc(player, ship.Size, input[0],
+                                    input[1], input[2], out var pos, out var dir);
                                 if (!validLoc) {
                                     Console.WriteLine("Invalid location!");
                                     Console.ReadKey(true);
@@ -183,7 +177,7 @@ namespace GameSystem {
                     }
 
                     if (!(bool) accept) {
-                        player.ResetShips();
+                        PlayerLogic.ResetShips(player);
                         continue;
                     }
 
@@ -195,44 +189,13 @@ namespace GameSystem {
             return true;
         }
 
-        public static bool AutoPlaceShips(Player player) {
-            const int tryAmount = 64;
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
-            var random = new Random();
-
-            foreach (var ship in player.Ships) {
-                var placementCount = 0;
-
-                // Attempt to place ship at X different locations
-                while (placementCount < tryAmount) {
-                    var pos = new Pos(random.Next(0, boardSize), random.Next(0, boardSize));
-                    var dir = random.Next(0, 2) == 1 ? ShipDirection.Right : ShipDirection.Down;
-
-                    if (!player.CheckIfValidPlacementPos(pos, ship.Size, dir)) {
-                        placementCount++;
-                        continue;
-                    }
-
-                    ship.SetLocation(pos, dir);
-                    ship.IsPlaced = true;
-                    break;
-                }
-
-                if (placementCount >= tryAmount) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
 
         private static void GameLoop() {
             while (true) {
                 // Do the attacks
-                foreach (var player in Game.Players) {
+                foreach (var player in ActiveGame.Players) {
                     // Loop until first alive player is found
-                    if (!player.IsAlive()) {
+                    if (!PlayerLogic.IsAlive(player)) {
                         continue;
                     }
 
@@ -241,7 +204,7 @@ namespace GameSystem {
                     Console.ReadKey(true);
 
                     // Find next player in list that is alive
-                    var nextPlayer = FindNextPlayer(Game.Players, player);
+                    var nextPlayer = GameLogic.FindNextPlayer(ActiveGame.Players, player);
                     var move = Attack(player, nextPlayer);
 
                     // User wants to quit the game
@@ -249,13 +212,13 @@ namespace GameSystem {
                         return;
                     }
 
-                    Game.Moves.Add(move);
+                    ActiveGame.Moves.Add(move);
 
                     Console.WriteLine($"It was a {move.AttackResult}...");
                     Console.ReadKey(true);
 
                     // Check if target player is out of the game (all ships have been destroyed)
-                    if (!nextPlayer.IsAlive()) {
+                    if (!PlayerLogic.IsAlive(nextPlayer)) {
                         Console.Clear();
                         Console.WriteLine($"{player.Name} knocked {nextPlayer.Name} out of the game!");
                         Console.ReadKey(true);
@@ -263,62 +226,36 @@ namespace GameSystem {
                 }
 
                 // Check if there is only one player left and therefore the winner of the game
-                foreach (var player in Game.Players) {
-                    if (!player.IsAlive()) {
+                foreach (var player in ActiveGame.Players) {
+                    if (!PlayerLogic.IsAlive(player)) {
                         continue;
                     }
 
-                    if (Game.Winner == null) {
-                        Game.Winner = player;
+                    if (ActiveGame.Winner == null) {
+                        ActiveGame.Winner = player;
                     } else {
-                        Game.Winner = null;
+                        ActiveGame.Winner = null;
                         break;
                     }
                 }
 
-                if (Game.Winner != null) {
+                if (ActiveGame.Winner != null) {
                     break;
                 }
 
                 Console.Clear();
-                Console.WriteLine($"End of round {Game.TurnCount}");
+                Console.WriteLine($"End of round {ActiveGame.TurnCount}");
                 Console.ReadKey(true);
 
-                Game.TurnCount++;
+                ActiveGame.TurnCount++;
             }
 
-            if (Game.Winner != null) {
+            if (ActiveGame.Winner != null) {
                 Console.Clear();
-                Console.WriteLine($"The winner of the game is {Game.Winner.Name} after {Game.TurnCount} turns!");
+                Console.WriteLine(
+                    $"The winner of the game is {ActiveGame.Winner.Name} after {ActiveGame.TurnCount} turns!");
                 Console.ReadKey(true);
             }
-        }
-
-        private static Player FindNextPlayer(IReadOnlyList<Player> players, Player player) {
-            var playerCount = Rules.GetVal(RuleType.PlayerCount);
-            Player nextPlayer = null;
-
-            for (int i = 0; i < playerCount; i++) {
-                // Find current player's index
-                if (players[i] != player) {
-                    continue;
-                }
-
-                for (int j = 1; j < playerCount; j++) {
-                    var tmpPlayer = players[i + j - (i + j < playerCount ? 0 : playerCount)];
-
-                    if (tmpPlayer.IsAlive()) {
-                        nextPlayer = tmpPlayer;
-                    }
-                }
-            }
-
-            // Should not run
-            if (nextPlayer == null) {
-                throw new NullReferenceException(nameof(nextPlayer));
-            }
-
-            return nextPlayer;
         }
 
         private static Move Attack(Player player, Player nextPlayer) {
@@ -331,46 +268,17 @@ namespace GameSystem {
                     return null;
                 }
 
-                // For the sake of clarity
-                var strX = input[0];
-                var strY = input[1];
-
-                // Check if x coordinate is valid and alphabetic
-                if (BaseConversion.MapToBase10(strX) == null) {
-                    Console.WriteLine("Invalid X coordinate!");
+                // Check if the specified location can be attacked
+                if (!InputValidator.CheckValidAttackLocation(nextPlayer, input[0], input[1], out var pos)) {
+                    Console.WriteLine("Invalid attack location!");
                     Console.ReadKey(true);
                     continue;
                 }
 
-                // Check if y coordinate is a valid integer
-                if (!int.TryParse(strY, out var intY)) {
-                    Console.WriteLine("Invalid Y coordinate!");
-                    Console.ReadKey(true);
-                    continue;
-                }
+                // Make the attack
+                var result = PlayerLogic.AttackPlayer(nextPlayer, pos);
 
-                // Convert X coordinate to an integer
-                var intX = (int) BaseConversion.MapToBase10(strX);
-
-                // Take board orientation and numbering offset into account
-                var x = intY - 1;
-                var y = intX;
-
-                var pos = new Pos(x, y);
-                var result = nextPlayer.AttackAtPos(pos);
-
-                if (result == AttackResult.InvalidAttack) {
-                    Console.WriteLine("Invalid position!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
-                if (result == AttackResult.DuplicateAttack) {
-                    Console.WriteLine("Already attacked there!");
-                    Console.ReadKey(true);
-                    continue;
-                }
-
+                // Return whatever
                 return new Move(player, nextPlayer, pos, result);
             }
         }

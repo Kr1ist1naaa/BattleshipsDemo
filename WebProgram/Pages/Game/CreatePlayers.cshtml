@@ -1,5 +1,5 @@
 @page
-@using Domain.DomainRule
+@using Domain
 @model CreatePlayersModel
 @{
     ViewData["Title"] = "Create game";
@@ -22,7 +22,7 @@
                 <form method="POST" class="form-group mb-0">
                     <label>Create players</label>
 
-                    @for (int i = 0; i < Rules.GetVal(RuleType.PlayerCount); i++) {
+                    @for (int i = 0; i < GameSystem.ActiveGame.GetRuleVal(RuleType.PlayerCount); i++) {
                         <input type="text" class="form-control seamless-input mb-2" name="name-@i" placeholder="Player @i's name">
                     }
 

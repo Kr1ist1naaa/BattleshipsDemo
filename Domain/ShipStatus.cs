@@ -1,4 +1,4 @@
-namespace Domain.Ship {
+namespace Domain {
     public enum ShipStatus {
         Ok, Hit
     }

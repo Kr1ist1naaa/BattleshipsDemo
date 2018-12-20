@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BoardUI;
-using Domain.DomainRule;
 using SaveSystem;
 using Domain;
-using Domain.DomainShip;
-using Domain.Ship;
 using GameSystem;
 
 namespace MenuSystem {
@@ -28,7 +25,7 @@ namespace MenuSystem {
                 var input = menu.RunMenu();
                 
                 // If user entered go back shortcut
-                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
+                if (input.ToUpper().Equals(MenuInitializers.QuitToMainItem.Shortcut)) {
                     return null;
                 }
 
@@ -58,7 +55,7 @@ namespace MenuSystem {
 
                 var input = menu.RunMenu();
 
-                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
+                if (input.ToUpper().Equals(MenuInitializers.QuitToMainItem.Shortcut)) {
                     return null;
                 }
 
@@ -104,7 +101,7 @@ namespace MenuSystem {
 
                 var input = menu.RunMenu();
 
-                if (input.ToUpper().Equals(Menus.QuitToMainItem.Shortcut)) {
+                if (input.ToUpper().Equals(MenuInitializers.QuitToMainItem.Shortcut)) {
                     return null;
                 }
 
@@ -173,7 +170,7 @@ namespace MenuSystem {
 
             var input = menu.RunMenu().ToUpper();
 
-            if (input.Equals(Menus.QuitToMainItem.Shortcut)) {
+            if (input.Equals(MenuInitializers.QuitToMainItem.Shortcut)) {
                 return null;
             }
 
@@ -253,7 +250,7 @@ namespace MenuSystem {
         }
 
         public static void ChangeRuleValue(RuleType? ruleType) {
-            var rule = Rules.GetRule(ruleType);
+            var rule = ActiveGame.GetRule(ruleType);
 
             var menu = new Menu {
                 Title = $"Change rule {rule.RuleType}",
@@ -273,7 +270,7 @@ namespace MenuSystem {
                 var input = menu.RunMenu();
 
                 // User entered exit shortcut
-                if (input.ToUpper() == Menus.GoBackItem.Shortcut) {
+                if (input.ToUpper() == MenuInitializers.GoBackItem.Shortcut) {
                     return;
                 }
                 
@@ -284,7 +281,7 @@ namespace MenuSystem {
                     continue;
                 }
 
-                if (!Rules.ChangeRule(ruleType, value)) {
+                if (!ActiveGame.ChangeRule(ruleType, value)) {
                     Console.WriteLine("Value not in range!");
                     Console.ReadKey(true);
                     continue;
@@ -300,7 +297,7 @@ namespace MenuSystem {
             Console.Clear();
             Console.WriteLine("The active rules are:");
 
-            foreach (var rule in Rules.RuleSet) {
+            foreach (var rule in ActiveGame.RuleSet) {
                 Console.Write($"  - {rule.RuleType,-16}: ");
 
                 Console.ForegroundColor = ConsoleColor.Green;

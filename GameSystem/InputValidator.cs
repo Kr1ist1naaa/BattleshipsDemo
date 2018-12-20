@@ -1,12 +1,11 @@
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Domain;
-using Domain.Ship;
+using GameSystem.Logic;
 
 namespace GameSystem {
     public static class InputValidator {
-        public static bool ShipPlacementLoc(Player player, int shipSize, string strX, string strY,
+        public static bool CheckValidShipPlacementLoc(Domain.Player player, int shipSize, string strX, string strY,
             string strDir, out Pos pos, out ShipDirection dir) {
             pos = null;
             dir = ShipDirection.Down;
@@ -36,19 +35,12 @@ namespace GameSystem {
             var x = intX;
             var y = intY - 1;
             
-            Console.WriteLine(x);
-            Console.WriteLine(y);
-
             pos = new Pos(x, y);
 
-            if (!player.CheckIfValidPlacementPos(pos, shipSize, dir)) {
-                return false;
-            }
-
-            return true;
+            return PlayerLogic.CheckValidShipPlacementPos(player, pos, shipSize, dir);
         }
         
-        public static bool ValidatePlayerName(string name) {
+        public static bool CheckValidPlayerName(string name) {
             // Check input validity
             if (string.IsNullOrEmpty(name) || name.Trim().Length < 3) {
                 return false;
@@ -60,10 +52,41 @@ namespace GameSystem {
             }
 
             // Check name availability
-            if (GameLogic.Players?.FirstOrDefault(m => m.Name.Equals(name)) != null) {
+            if (ActiveGame.Players?.FirstOrDefault(m => m.Name.Equals(name)) != null) {
                 return false;
             }
 
+            return true;
+        }
+
+        public static bool CheckValidAttackLocation(Player player, string strX, string strY, out Pos pos) {
+            pos = null;
+            
+            // Check if x coordinate is valid and alphabetic
+            if (BaseConversion.MapToBase10(strX) == null) {
+                return false;
+            }
+
+            // Check if y coordinate is a valid integer
+            if (!int.TryParse(strY, out var intY)) {
+                return false;
+            }
+
+            // Convert X coordinate to an integer
+            var intX = (int) BaseConversion.MapToBase10(strX);
+            pos = new Pos(intX, intY - 1);
+            
+            // Out of bounds
+            if (!PlayerLogic.CheckIfPosInBoard(pos)) {
+                return false;
+            }
+
+            // Duplicate attack
+            if (player.MovesAgainstThisPlayer.Contains(pos)) {
+                return false;
+            }
+
+            // Location is within board and has not been attacked before
             return true;
         }
     }

@@ -42,14 +42,14 @@ namespace MenuSystem {
 
             if (!DisableGoBackItem) {
                 if (MenuTypes.Contains(MenuType.MainMenu)) {
-                    Console.WriteLine(Menus.ExitProgramItem);
+                    Console.WriteLine(MenuInitializers.ExitProgramItem);
                 } else {
-                    Console.WriteLine(Menus.GoBackItem);
+                    Console.WriteLine(MenuInitializers.GoBackItem);
                 }
             }
 
             if (DisplayQuitToMainMenu) {
-                Console.WriteLine(Menus.QuitToMainItem);
+                Console.WriteLine(MenuInitializers.QuitToMainItem);
             }
 
             Console.Write("> ");
@@ -65,12 +65,12 @@ namespace MenuSystem {
                 input = rawInput?.ToUpper();
                 
                 // Quit to main menu
-                if (DisplayQuitToMainMenu && input == Menus.QuitToMainItem.Shortcut) {
+                if (DisplayQuitToMainMenu && input == MenuInitializers.QuitToMainItem.Shortcut) {
                     break;
                 }
 
                 // Go back
-                if (!DisableGoBackItem && input == Menus.GoBackItem.Shortcut) {
+                if (!DisableGoBackItem && input == MenuInitializers.GoBackItem.Shortcut) {
                     break;
                 }
                 
@@ -108,20 +108,20 @@ namespace MenuSystem {
                     // Current menu is game loading menu
                     if (MenuTypes.Contains(MenuType.LoadGameMenu) && item.GameId != null) {
                         // Load the game from the database and continue it
-                        GameSystem.GameLogic.LoadGame((int) item.GameId);
-                        GameSystem.GameLogic.RunGame();
+                        GameSystem.ConsoleGame.LoadGame((int) item.GameId);
+                        GameSystem.ConsoleGame.RunGame();
                         
                         // Return the GoBackItem shortcut to exit the game loading menu
-                        return Menus.GoBackItem.Shortcut;
+                        return MenuInitializers.GoBackItem.Shortcut;
                     }
 
                     // Current menu is game deleting menu
                     if (MenuTypes.Contains(MenuType.DeleteGameMenu) && item.GameId != null) {
                         // Delete the game from the database
-                        GameSystem.GameLogic.DeleteGame((int) item.GameId);
+                        GameSystem.ConsoleGame.DeleteGame((int) item.GameId);
                         
                         // Return the GoBackItem shortcut to exit the game deletion menu
-                        return Menus.GoBackItem.Shortcut;
+                        return MenuInitializers.GoBackItem.Shortcut;
                     }
                     
                     // Current menu is new game menu
@@ -131,7 +131,7 @@ namespace MenuSystem {
                             item.ActionToExecute();
 
                             // Return the GoBackItem shortcut to exit the menu
-                            return Menus.GoBackItem.Shortcut;
+                            return MenuInitializers.GoBackItem.Shortcut;
                         }
                     }
                 }
@@ -177,11 +177,11 @@ namespace MenuSystem {
                 // everything should be ok now, lets run it!
                 input = item.MenuToRun();
 
-                if (!MenuTypes.Contains(MenuType.MainMenu) && input == Menus.QuitToMainItem.Shortcut) {
+                if (!MenuTypes.Contains(MenuType.MainMenu) && input == MenuInitializers.QuitToMainItem.Shortcut) {
                     break;
                 }
 
-                if (input != Menus.GoBackItem.Shortcut && input != Menus.QuitToMainItem.Shortcut) {
+                if (input != MenuInitializers.GoBackItem.Shortcut && input != MenuInitializers.QuitToMainItem.Shortcut) {
                     Console.ReadKey(true);
                 }
             }

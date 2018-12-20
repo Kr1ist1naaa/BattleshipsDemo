@@ -36,7 +36,9 @@ namespace WebProgram.Pages.Game {
                 StatusMsg = "Game deleted!";
                 BackBtnHref = "List";
             } else if (Action.Equals("load")) {
-                GameSystem.GameLogic.Game = GameSaver.Load(int.Parse(Id));
+                // Load game from database into active static context
+                GameSaver.Load(int.Parse(Id));
+                
                 IsStatus = true;
                 StatusMsg = "Game loaded!";
                 OkBtnText = "Start game";

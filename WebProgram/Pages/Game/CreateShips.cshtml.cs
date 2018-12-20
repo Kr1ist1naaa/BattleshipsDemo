@@ -1,5 +1,4 @@
 using Domain;
-using Domain.DomainShip;
 using GameSystem;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -22,7 +21,7 @@ namespace WebProgram.Pages.Game {
         public int NextPlayerId { get; private set; }
         public int NextShipId { get; private set; }
 
-        public Player Player { get; private set; }
+        public Domain.Player Player { get; private set; }
         public Ship Ship { get; private set; }
 
         public void OnGet() {
@@ -32,7 +31,7 @@ namespace WebProgram.Pages.Game {
             }
 
             if (Request.Query.ContainsKey("askAutoPlace")) {
-                Player.ResetShips();
+                GameSystem.Logic.PlayerLogic.ResetShips(Player);
                 IsAutoplaceQuestion = true;
                 MainTitle = $"Creating ships for {Player.Name}";
                 return;
@@ -56,9 +55,9 @@ namespace WebProgram.Pages.Game {
 
             // Attempt to place the ships automatically
             if (placement.Equals("auto")) {
-                Player.ResetShips();
+                GameSystem.Logic.PlayerLogic.ResetShips(Player);
                 
-                if (GameLogic.AutoPlaceShips(Player)) {
+                if (GameSystem.Logic.GameLogic.AutoPlaceShips(Player)) {
                     IsCurrentPlayerPlacedAll = true;
                     MainTitle = $"Creating ships for {Player.Name}";
                     IsDisplayBoard = true;
@@ -104,7 +103,7 @@ namespace WebProgram.Pages.Game {
             }
 
             // Check if it's a valid placement spot
-            if (!InputValidator.ShipPlacementLoc(Player, Ship.Size, sX, sY, sDir, out var pos, out var dir)) {
+            if (!InputValidator.CheckValidShipPlacementLoc(Player, Ship.Size, sX, sY, sDir, out var pos, out var dir)) {
                 IsError = true;
                 StatusMsg = "Invalid location";
                 BackBtnHref = $"?player={PlayerId}&placement=manual&ship={ShipId}";
@@ -128,9 +127,9 @@ namespace WebProgram.Pages.Game {
                 return false;
             }
 
-            if (pId >= GameLogic.Players.Count) {
+            if (pId >= ActiveGame.Players.Count) {
                 // Check if all users have placed their ships
-                if (!CheckIfShipsPlaced(GameLogic.Players.Count)) {
+                if (!CheckIfShipsPlaced(ActiveGame.Players.Count)) {
                     IsError = true;
                     StatusMsg = "Invalid player order 2!";
                     BackBtnHref = "?player=0&askAutoPlace";
@@ -142,7 +141,7 @@ namespace WebProgram.Pages.Game {
             }
             
             PlayerId = pId;
-            Player = GameLogic.Players[PlayerId];
+            Player = ActiveGame.Players[PlayerId];
             NextPlayerId = PlayerId + 1;
 
             // Check if all previous users placed their ships
@@ -159,7 +158,7 @@ namespace WebProgram.Pages.Game {
         private static bool CheckIfShipsPlaced(int id) {
             // Check if all previous users placed their ships
             for (int j = 0; j < id; j++) {
-                foreach (var ship in GameLogic.Players[j].Ships) {
+                foreach (var ship in ActiveGame.Players[j].Ships) {
                     if (!ship.IsPlaced) {
                         return false;
                     }

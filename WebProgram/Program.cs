@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
-using Domain;
+using GameSystem.Logic;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Player = Domain.Player;
 
 namespace WebProgram {
     public class Program {
         public static void Main(string[] args) {
-            GameSystem.GameLogic.Players = new List<Player> {
-                new Player("player1"),
-                new Player("dan")
+            GameSystem.ActiveGame.Players = new List<Player> {
+                new Player("player1", ShipLogic.GenDefaultShipList()),
+                new Player("dan", ShipLogic.GenDefaultShipList())
             };
             
             CreateWebHostBuilder(args).Build().Run();

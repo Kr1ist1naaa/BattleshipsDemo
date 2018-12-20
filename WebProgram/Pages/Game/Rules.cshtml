@@ -1,5 +1,4 @@
 @page
-@using Domain.DomainRule
 @model RulesModel
 @{
     ViewData["Title"] = "Rules";
@@ -28,7 +27,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var rule in Rules.RuleSet) {
+                            @foreach (var rule in GameSystem.ActiveGame.RuleSet) {
                                 <tr>
                                     <td>@rule.RuleType</td>
                                     <td>

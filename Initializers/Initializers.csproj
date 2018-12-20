@@ -5,9 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DAL\DAL.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
-      <ProjectReference Include="..\GameSystem\GameSystem.csproj" />
+      <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
     </ItemGroup>
 
 </Project>

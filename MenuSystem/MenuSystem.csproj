@@ -7,6 +7,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\GameSystem\GameSystem.csproj" />
+      <ProjectReference Include="..\SaveSystem\SaveSystem.csproj" />
     </ItemGroup>
 
 </Project>

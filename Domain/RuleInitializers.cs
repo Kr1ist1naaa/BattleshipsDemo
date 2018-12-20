@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Domain.DomainRule {
-    public static class Rules {
-        private static readonly HashSet<Rule> DefaultRuleSet = new HashSet<Rule> {
+namespace Domain {
+    public static class RuleInitializers {
+        public static readonly HashSet<Rule> DefaultRuleSet = new HashSet<Rule> {
             new Rule {
                 RuleType = RuleType.BoardSize,
                 Description = "Set size of board",
@@ -96,90 +95,27 @@ namespace Domain.DomainRule {
                 MaxVal = 64
             }
         };
-
-        public static readonly HashSet<Rule> RuleSet = new HashSet<Rule>();
-
-        static Rules() {
-            // Create a set of base rules upon initialization 
-            ResetAllToDefault();
-        }
-
-        private static void ResetRules(ICollection<RuleType> rules) {
-            // Go through all default rules
-            foreach (var rule in DefaultRuleSet) {
-                // If the default rule matches the current one, replace it
-                if (rules.Contains(rule.RuleType)) {
-                    RuleSet.Remove(rule);
-                    RuleSet.Add(new Rule(rule));
-                }
-            }
-        }
-
-        public static void ResetAllToDefault() {
-            var removeRules = new HashSet<RuleType>();
-
-            foreach (var rule in DefaultRuleSet) {
-                removeRules.Add(rule.RuleType);
-            }
-
-            ResetRules(removeRules);
-        }
-
-        public static void ResetGeneralToDefault() {
-            var removeRules = new HashSet<RuleType> {
-                RuleType.BoardSize,
-                RuleType.ShipPadding,
-                RuleType.PlayerCount
-            };
-
-            ResetRules(removeRules);
-        }
-
-        public static void ResetShipSizesToDefault() {
-            var removeRules = new HashSet<RuleType> {
-                RuleType.SizeCarrier,
-                RuleType.SizeBattleship,
-                RuleType.SizeSubmarine,
-                RuleType.SizeCruiser,
-                RuleType.SizePatrol
-            };
-
-            ResetRules(removeRules);
-        }
-
-        public static void ResetShipCountsToDefault() {
-            var removeRules = new HashSet<RuleType> {
-                RuleType.CountCarrier,
-                RuleType.CountBattleship,
-                RuleType.CountSubmarine,
-                RuleType.CountCruiser,
-                RuleType.CountPatrol
-            };
-
-            ResetRules(removeRules);
-        }
-
-        public static bool ChangeRule(RuleType? type, int ruleValue) {
-            var baseRule = RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
-
-            if (baseRule == null) {
-                return false;
-            }
-
-            if (ruleValue > baseRule.MaxVal || ruleValue < baseRule.MinVal) {
-                return false;
-            }
-
-            baseRule.Value = ruleValue;
-            return true;
-        }
-
-        public static int GetVal(RuleType? type) {
-            return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type)).Value;
-        }
-
-        public static Rule GetRule(RuleType? type) {
-            return RuleSet.FirstOrDefault(m => m.RuleType.Equals(type));
-        }
+        
+        public static readonly HashSet<RuleType> GeneralRules = new HashSet<RuleType> {
+            RuleType.BoardSize,
+            RuleType.ShipPadding,
+            RuleType.PlayerCount
+        };
+        
+        public static readonly HashSet<RuleType> ShipSizeRules = new HashSet<RuleType> {
+            RuleType.SizeCarrier,
+            RuleType.SizeBattleship,
+            RuleType.SizeSubmarine,
+            RuleType.SizeCruiser,
+            RuleType.SizePatrol
+        };
+        
+        public static readonly HashSet<RuleType> ShipCountRules = new HashSet<RuleType> {
+            RuleType.CountCarrier,
+            RuleType.CountBattleship,
+            RuleType.CountSubmarine,
+            RuleType.CountCruiser,
+            RuleType.CountPatrol
+        };
     }
 }

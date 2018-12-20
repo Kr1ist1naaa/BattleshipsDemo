@@ -1,0 +1,46 @@
+@page
+@model PlayModel
+@{
+    ViewData["Title"] = "Play";
+}
+
+<div class="text-center">
+    <h1 class="display-4 mb-5">[Player] is attacking [Player]</h1>
+
+    <div class="card custom-card mw-md mx-auto mb-4">
+        <div class="card-header slim-card-edge"></div>
+        <div class="card-body text-center">
+            
+            <form method="POST">
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <input class="form-control min-input" name="x" type="text" placeholder="X">
+                    </div>
+                    <div class="col-3">
+                        <input class="form-control min-input" name="y" type="text" placeholder="Y">
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-block btn-outline-success">Attack</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+        <div class="card-footer slim-card-edge"></div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md mb-3">
+            <div>Your board</div>
+            <partial name="_DoubleBoard"/>
+        </div>
+        <div class="col-md mb-3">
+            <div>Enemy board</div>
+            <partial name="_DoubleBoard"/>
+        </div>
+    </div>
+
+
+</div>

@@ -1,4 +1,4 @@
-using Domain.DomainRule;
+using Domain;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebProgram.Pages.Game {
@@ -24,15 +24,15 @@ namespace WebProgram.Pages.Game {
                 if (!int.TryParse(strVal, out var intVal)) continue;
 
                 // Update static rule context
-                Rules.ChangeRule((RuleType) intKey, intVal);
+                GameSystem.ActiveGame.ChangeRule((RuleType) intKey, intVal);
             }
         }
 
         public void OnGet() {
             if (Request.Query.ContainsKey("reset")) {
                 IsStatus = true;
-                Rules.ResetAllToDefault();
                 StatusMsg = "Rules reverted to default values!";
+                GameSystem.ActiveGame.ResetAllRules();
             }
         }
     }

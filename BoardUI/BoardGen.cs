@@ -1,14 +1,17 @@
 using System;
 using System.Text;
 using Domain;
-using Domain.DomainRule;
 
 namespace BoardUI {
     public static class BoardGen {
         public static Func<int, string> MapToBase26 { private get; set; }
+        public static Func<Player, Pos, Ship> GetShipOrNull { private get; set; }
+        public static Func<Ship, bool> IsShipDestroyed { private get; set; }
+        public static Func<RuleType?, int> GetRuleVal { private get; set; }
+        
         
         public static void GenSingleBoard(Player player, string title) {
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var boardSize = GetRuleVal(RuleType.BoardSize);
             var border = GenHorizontalBoardEdge();
 
             // Center and print title
@@ -25,13 +28,13 @@ namespace BoardUI {
                     Console.Write("|  ");
 
                     var pos = new Pos(x, y);
-                    var ship = player.GetShipAtPosOrNull(pos);
+                    var ship = GetShipOrNull(player, pos);
 
                     if (ship == null) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(player.MovesAgainstThisPlayer.Contains(pos) ? "." : " ");
                         Console.ResetColor();
-                    } else if (ship.IsDestroyed()) {
+                    } else if (IsShipDestroyed(ship)) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(ship.Symbol.ToString());
                         Console.ResetColor();
@@ -57,7 +60,7 @@ namespace BoardUI {
         }
 
         public static void GenTwoBoards(Player player, Player nextPlayer) {
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var boardSize = GetRuleVal(RuleType.BoardSize);
             const string gap = "     ";
             var border = GenHorizontalBoardEdge();
 
@@ -68,24 +71,24 @@ namespace BoardUI {
             var colNumbs = GenColumnNumberings();
             Console.WriteLine(colNumbs + gap + colNumbs);
 
-            for (int i = 0; i < boardSize; i++) {
+            for (int y = 0; y < boardSize; y++) {
                 Console.WriteLine(border + gap + border);
 
                 // Row numbering
-                Console.Write($"{i+1,4} ");
+                Console.Write($"{y+1,4} ");
 
                 // Your board horizontal line
-                for (int j = 0; j < boardSize; j++) {
+                for (int x = 0; x < boardSize; x++) {
                     Console.Write("|  ");
 
-                    var pos = new Pos(i, j);
-                    var ship = player.GetShipAtPosOrNull(pos);
+                    var pos = new Pos(x, y);
+                    var ship = GetShipOrNull(player, pos);
 
                     if (ship == null) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(player.MovesAgainstThisPlayer.Contains(pos) ? "." : " ");
                         Console.ResetColor();
-                    } else if (ship.IsDestroyed()) {
+                    } else if (IsShipDestroyed(ship)) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(ship.Symbol.ToString());
                         Console.ResetColor();
@@ -105,20 +108,20 @@ namespace BoardUI {
                 }
 
                 // Row numbering
-                Console.Write($"|{gap}{i+1,4} ");
+                Console.Write($"|{gap}{y+1,4} ");
 
                 // Enemy board horizontal line
-                for (int j = 0; j < boardSize; j++) {
+                for (int x = 0; x < boardSize; x++) {
                     Console.Write("|  ");
 
-                    var pos = new Pos(i, j);
-                    var ship = nextPlayer.GetShipAtPosOrNull(pos);
+                    var pos = new Pos(x, y);
+                    var ship = GetShipOrNull(nextPlayer, pos);
 
                     if (ship == null) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(nextPlayer.MovesAgainstThisPlayer.Contains(pos) ? "." : " ");
                         Console.ResetColor();
-                    } else if (ship.IsDestroyed()) {
+                    } else if (IsShipDestroyed(ship)) {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.Write(ship.Symbol.ToString());
                         Console.ResetColor();
@@ -142,7 +145,7 @@ namespace BoardUI {
         }
 
         private static string GenColumnNumberings() {
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var boardSize = GetRuleVal(RuleType.BoardSize);
             var sb = new StringBuilder();
 
             sb.Append("     ");
@@ -154,7 +157,7 @@ namespace BoardUI {
         }
 
         private static string GenHorizontalBoardEdge() {
-            var boardSize = Rules.GetVal(RuleType.BoardSize);
+            var boardSize = GetRuleVal(RuleType.BoardSize);
             var sb = new StringBuilder();
 
             sb.Append("     ");
