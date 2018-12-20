@@ -34,14 +34,14 @@
                             <div class="custom-text-green mb-2">@Model.StatusMsg</div>
                         }
 
-                        <a href="Create" class="btn btn-outline-secondary">Back</a>
+                        <a href="Rules?persist" class="btn btn-outline-secondary">Back</a>
                         <button type="submit" class="btn btn-outline-warning">Recreate</button>
 
                         if (!Model.IsError) {
                             <a href="CreateShips?player=0&askAutoPlace" class="btn btn-outline-success">Continue</a>
                         }
                     } else {
-                        <a href="Create" class="btn btn-outline-secondary">Back</a>
+                        <a href="Rules?persist" class="btn btn-outline-secondary">Back</a>
                         <button type="submit" class="btn btn-outline-success">Create players</button>
                     }
                 </form>

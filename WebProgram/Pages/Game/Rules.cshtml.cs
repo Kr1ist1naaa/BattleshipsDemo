@@ -42,11 +42,14 @@ namespace WebProgram.Pages.Game {
         }
 
         public void OnGet() {
+            if (!Request.Query.ContainsKey("persist")) {
+                ActiveGame.ResetAllRules();
+            }
+            
             if (Request.Query.ContainsKey("reset")) {
                 IsStatus = true;
                 StatusMsg = "Rules reverted to default values!";
                 IsDisplayContinue = true;
-                ActiveGame.ResetAllRules();
             }
         }
     }
