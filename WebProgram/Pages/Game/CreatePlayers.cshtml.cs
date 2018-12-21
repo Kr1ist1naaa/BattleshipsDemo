@@ -25,6 +25,9 @@ namespace WebProgram.Pages.Game {
             IsStatus = true;
             ActiveGame.Players = new List<Player>();
             
+            // Reset last game state
+            ActiveGame.Init();
+            
             // Loop through each form param
             foreach (var key in Request.Form.Keys) {
                 // Only check names
@@ -45,6 +48,9 @@ namespace WebProgram.Pages.Game {
 
                 ActiveGame.Players.Add(new Player(name, ShipLogic.GenGameShipList()));
             }
+            
+            // Set pointers
+            ActiveGame.InitPlayerPointers();
 
             StatusMsg = "Players created!";
         }

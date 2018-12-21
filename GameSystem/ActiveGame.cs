@@ -26,7 +26,7 @@ namespace GameSystem {
             CurrentPlayer = null;
             NextPlayer = null;
             GameId = null;
-            Players = null;
+            Players = new List<Player>();
             RoundCounter = 0;
         }
 
