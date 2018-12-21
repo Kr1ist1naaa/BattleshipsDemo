@@ -184,6 +184,11 @@ namespace GameSystem {
 
         private static void GameLoop() {
             while (true) {
+                // Check for any winners
+                if (ActiveGame.TrySetWinner()) {
+                    break;
+                }
+                
                 // Do the attacks
                 foreach (var player in ActiveGame.Players) {
                     // Loop until first alive player is found
@@ -215,24 +220,6 @@ namespace GameSystem {
                         Console.WriteLine($"{player.Name} knocked {nextPlayer.Name} out of the game!");
                         Console.ReadKey(true);
                     }
-                }
-
-                // Check if there is only one player left and therefore the winner of the game
-                foreach (var player in ActiveGame.Players) {
-                    if (!PlayerLogic.IsAlive(player)) {
-                        continue;
-                    }
-
-                    if (ActiveGame.Winner == null) {
-                        ActiveGame.Winner = player;
-                    } else {
-                        ActiveGame.Winner = null;
-                        break;
-                    }
-                }
-
-                if (ActiveGame.Winner != null) {
-                    break;
                 }
 
                 Console.Clear();
