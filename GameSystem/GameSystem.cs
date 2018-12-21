@@ -1,16 +1,67 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BoardUI;
 using Domain;
-using Domain.Rule;
+using Domain.DomainRule;
 using Domain.Ship;
+using SaveSystem;
 
 namespace GameSystem {
-    public static class Game {
+    public static class GameSystem {
         public static void LoadGame() {
-            // Todo: this
+            Console.Clear();
+            Console.WriteLine("Loading game list...");
+
+            var saves = GameSaver.GetSaveGameList();
+            
+            Console.Clear();
+            Console.WriteLine("Saves:");
+            
+            var indexMappings = new Dictionary<int, int>();
+            var counter = 1;
+            
+            foreach (var save in saves) {
+                Console.Write("  - [");
+                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($"{counter}");
+                Console.ResetColor();
+                
+                Console.WriteLine($"] {save[2]} (turn {save[1],3})");
+                
+                int.TryParse(save[0], out var saveId);
+                indexMappings.Add(counter, saveId);
+                
+                counter++;
+            }
+
+            int? gameIndex;
+            
+            while (true) {
+                gameIndex = AskNumericInputOrCancel("Enter game number to load: ");
+                if (gameIndex == null) {
+                    return;
+                }
+
+                if (indexMappings.ContainsKey((int) gameIndex)) {
+                    break;
+                }
+
+                Console.WriteLine("  - Invalid game number");
+            }
+
+            var game = GameSaver.Load(indexMappings[(int)gameIndex]);
+            
+            Console.Clear();
+            Console.WriteLine("Game loaded!");
+            Console.ReadKey(true);
+            
+            GameLoop(game);
+        }
+
+        private static void ReplayGame() {
+            // todo: this
         }
 
         public static void NewGame() {
@@ -44,8 +95,12 @@ namespace GameSystem {
                 Console.ReadKey(true);
                 return;
             }
+            
+            Console.Clear();
+            Console.WriteLine("Starting game...");
+            Console.ReadKey(true);
 
-            var game = new BaseGame(players);
+            var game = new Domain.Game(players);
             GameLoop(game);
         }
 
@@ -79,6 +134,30 @@ namespace GameSystem {
             return (bool) input;
         }
 
+        private static int? AskNumericInputOrCancel(string question, int indent = 2) {
+            while (true) {
+                Console.Write(question);
+
+                var input = Console.ReadLine()?.ToLower().Trim();
+                
+                switch (input) {
+                    case "x":
+                    case "q":
+                    case "quit":
+                    case "exit":
+                        return null;
+                }
+                
+                if (!int.TryParse(input, out var newValue)) {
+                    Console.Write(new string(' ', indent));
+                    Console.WriteLine("- Invalid input!");
+                    continue;
+                }
+
+                return newValue;
+            }
+        }
+        
         private static List<Player> InitializePlayers() {
             var playerCount = Rules.GetVal(RuleType.PlayerCount);
             var players = new List<Player>();
@@ -205,11 +284,7 @@ namespace GameSystem {
             }
         }
 
-        private static void GameLoop(BaseGame game) {
-            Console.Clear();
-            Console.WriteLine("Starting game...");
-            Console.ReadKey(true);
-
+        private static void GameLoop(Domain.Game game) {
             while (true) {
                 // Do the attacks
                 foreach (var player in game.Players) {
@@ -268,7 +343,12 @@ namespace GameSystem {
                     Console.Clear();
             
                     if (AskYesNoQuestion("Save game (y/n): ")) {
-                        SaveSystem.GameSaver.OverwriteSave(0, game);
+                        if (game.GameId == null) {
+                            GameSaver.Save(game);
+                        } else {
+                            GameSaver.OverwriteSave(game);
+                        }
+
                         Console.Clear();
                         Console.WriteLine("Game saved...");
                         Console.ReadKey(true);
@@ -318,11 +398,15 @@ namespace GameSystem {
             Pos pos;
 
             while (true) {
-                Console.Write("  - x: ");
-                int.TryParse(Console.ReadLine(), out var posX);
-
-                Console.Write("  - y: ");
-                int.TryParse(Console.ReadLine(), out var posY);
+                var posX = AskNumericInputOrCancel("  - x: ", 4);
+                if (posX == null) {
+                    return null;
+                }
+                
+                var posY = AskNumericInputOrCancel("  - y: ", 4);
+                if (posY == null) {
+                    return null;
+                }
 
                 pos = new Pos(posX, posY);
                 result = targetPlayer.AttackAtPos(pos);

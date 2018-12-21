@@ -1,20 +1,19 @@
-
-namespace Domain.Rule {
-    public class BaseRule {
+namespace Domain.DomainRule {
+    public class Rule {
         public string Description;
         public int Value, MinVal, MaxVal;
         public RuleType RuleType;
-        
+
         public override bool Equals(object obj) {
             if (obj == null) {
                 return false;
             }
 
-            if (typeof(BaseRule) != obj.GetType()) {
+            if (typeof(Rule) != obj.GetType()) {
                 return false;
             }
 
-            var other = (BaseRule) obj;
+            var other = (Rule) obj;
 
             if (RuleType != other.RuleType) {
                 return false;
@@ -31,14 +30,14 @@ namespace Domain.Rule {
             return hash;
         }
 
-        public BaseRule(BaseRule oldRule) {
+        public Rule(Rule oldRule) {
             Description = oldRule.Description;
             Value = oldRule.Value;
             MinVal = oldRule.MinVal;
             MaxVal = oldRule.MaxVal;
             RuleType = oldRule.RuleType;
         }
-        
-        public BaseRule() {}
+
+        public Rule() { }
     }
 }

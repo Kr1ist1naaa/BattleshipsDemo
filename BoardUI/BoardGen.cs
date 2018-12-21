@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using Domain;
-using Domain.Rule;
+using Domain.DomainRule;
 
 namespace BoardUI {
     public static class BoardGen {

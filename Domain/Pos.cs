@@ -3,11 +3,16 @@ namespace Domain {
         public int X;
         public int Y;
 
-        public Pos () {}
-        
+        public Pos() { }
+
         public Pos(int x, int y) {
             X = x;
             Y = y;
+        }
+
+        public Pos(int? x, int? y) {
+            X = (int) x;
+            Y = (int) y;
         }
 
         public Pos(Pos pos) {

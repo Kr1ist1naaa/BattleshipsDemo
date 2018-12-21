@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Domain.Rule;
+using Domain.DomainRule;
 
 namespace MenuSystem {
     public class MenuItem {

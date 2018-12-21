@@ -2,9 +2,8 @@ using System.Collections.Generic;
 
 namespace DAL {
     public class Game {
-        public int GameId { get; set; }
+        public int Id { get; set; }
         
-        public string SaveName { get; set; }
         public string Date { get; set; }
         
         public List<Move> Moves { get; set; }

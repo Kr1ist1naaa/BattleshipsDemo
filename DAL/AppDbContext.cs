@@ -3,11 +3,24 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL {
     public class AppDbContext : DbContext {
         public DbSet<Game> Games { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<Ship> Ships { get; set; }
+        public DbSet<Move> Moves { get; set; }
+        public DbSet<MovesAgainstPlayer> MovesAgainstPlayers { get; set; }
+        public DbSet<Rule> Rules { get; set; }
+        public DbSet<ShipStatus> ShipStatuses { get; set; }
+
+        public AppDbContext() { }
+
+        public AppDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder
-                .UseMySQL("server=localhost;database=test;user=root;password=root");
+            if (!optionsBuilder.IsConfigured) {
+                optionsBuilder.UseMySql(
+                    "server=localhost;database=test;user=root;password=root");
+            }
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder) { }
     }
 }

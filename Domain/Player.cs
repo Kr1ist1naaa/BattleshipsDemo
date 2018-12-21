@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using Domain.Rule;
+using Domain.DomainRule;
 using Domain.Ship;
 
 namespace Domain {
     public class Player {
         public string Name;
         public HashSet<Pos> MovesAgainstThisPlayer;
-        public List<BaseShip> Ships;
+        public List<Ship.Ship> Ships;
 
         public Player() { }
 
@@ -47,7 +47,7 @@ namespace Domain {
             return ship.AttackAtPos(pos);
         }
 
-        public BaseShip GetShipAtPosOrNull(Pos pos) {
+        public Ship.Ship GetShipAtPosOrNull(Pos pos) {
             foreach (var ship in Ships) {
                 if (ship.IsAtPos(pos)) {
                     return ship;

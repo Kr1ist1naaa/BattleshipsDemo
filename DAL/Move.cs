@@ -1,12 +1,12 @@
 namespace DAL {
     public class Move {
-        public int MoveId { get; set; }
-        
-        public string FromPlayer { get; set; }
-        public string ToPlayer { get; set; }
-        public int AttackResult { get; set; }
-        
-        public int GameId { get; set; }
+        public int Id { get; set; }
         public Game Game { get; set; }
+        public Player FromPlayer { get; set; }
+        public Player ToPlayer { get; set; }
+        
+        public int MoveResult { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 }

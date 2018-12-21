@@ -1,49 +1,39 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
+﻿using System.Linq;
 using DAL;
 using Domain;
+using Game = Domain.Game;
 
 namespace SaveSystem {
     public static class GameSaver {
         private static readonly AppDbContext Ctx = new AppDbContext();
-        
-        public static void Save(BaseGame domainGame) {
-            // Convert Domain game to DAL game object
-            var dalGame = new Game {
-                Date = DateTime.Now.ToString(CultureInfo.CurrentCulture),
-                Winner = domainGame.Winner.Name,
-                TurnCount = domainGame.TurnCount,
-                Moves = DalConverter.ConvertMoves(domainGame.Moves),
-                Players = DalConverter.ConvertPlayers(domainGame.Players)
-            };
 
+        public static void Save(Game domainGame) {
+            var dalGame = DalConverter.ConvertGame(domainGame);
             Ctx.Games.Add(dalGame);
             Ctx.SaveChanges();
-        }
-        
-        public static BaseGame Load(int index) {
-            var dalGame = Ctx.Games.Find(index);
-            if (dalGame == null) {
-                return null;
-            }
 
-            var domainPlayers = DomainConverter.ConvertPlayers(dalGame.Players);
-            var domainWinner = domainPlayers.FirstOrDefault(m => m.Name.Equals(dalGame.Winner));
-            var domainMoves = DomainConverter.ConvertMoves(dalGame.Moves, domainPlayers);
-            
-            var domainGame = new BaseGame {
-                Winner = domainWinner,
+            domainGame.GameId = Ctx.Games.Last().Id;
+        }
+
+        public static Game Load(int gameId) {
+            var dalGame = Ctx.Games.Find(gameId);
+
+            var domainPlayers = DomainConverter.GetAndConvertPlayers(Ctx, gameId);
+            var domainMoves = DomainConverter.GetAndConvertMoves(Ctx, gameId, domainPlayers);
+
+            var domainGame = new Game {
+                Winner = domainPlayers.FirstOrDefault(player => player.Name.Equals(dalGame.Winner)),
                 TurnCount = dalGame.TurnCount,
                 Moves = domainMoves,
-                Players = domainPlayers
+                Players = domainPlayers,
+                GameId = dalGame.Id
             };
-            
+
             return domainGame;
         }
 
         public static bool DeleteSaveGame(int index) {
-            Game save;
+            DAL.Game save;
 
             // Find game by index, assign to var and check if it returned null
             if ((save = Ctx.Games.Find(index)) == null) {
@@ -54,27 +44,31 @@ namespace SaveSystem {
             if (Ctx.Games.Remove(save) != null) {
                 return false;
             }
-            
+
             Ctx.SaveChanges();
 
             return true;
         }
-        
-        public static void OverwriteSave(int index, BaseGame domainGame) {
-            DeleteSaveGame(index);
+
+        public static void OverwriteSave(Game domainGame) {
+            if (domainGame.GameId == null) {
+                return;
+            }
+
+            DeleteSaveGame((int) domainGame.GameId);
             Save(domainGame);
         }
-        
+
         public static string[][] GetSaveGameList() {
             var saveGames = Ctx.Games.Select(
-                m => new string[] {
-                    m.GameId.ToString(), 
+                m => new[] {
+                    m.Id.ToString(),
+                    m.TurnCount.ToString(),
                     m.Date
                 }
             );
-            
+
             return saveGames.ToArray();
         }
-
     }
 }

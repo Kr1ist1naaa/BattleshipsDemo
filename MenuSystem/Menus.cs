@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Domain.Rule;
+using Domain.DomainRule;
 using GameSystem;
 
 namespace MenuSystem {
@@ -139,12 +139,12 @@ namespace MenuSystem {
                 new MenuItem {
                     IsDefaultChoice = true,
                     Description = "New Game",
-                    ActionToExecute = Game.NewGame,
+                    ActionToExecute = GameSystem.GameSystem.NewGame,
                     Shortcut = "A"
                 },
                 new MenuItem {
                     Description = "Load game",
-                    ActionToExecute = Game.LoadGame,
+                    ActionToExecute = GameSystem.GameSystem.LoadGame,
                     Shortcut = "B"
                 }
             }

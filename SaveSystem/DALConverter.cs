@@ -1,19 +1,40 @@
+using System;
 using System.Collections.Generic;
-using DAL;
-using Domain.Ship;
+using System.Globalization;
+using System.Linq;
 
 namespace SaveSystem {
     public static class DalConverter {
-        public static List<Player> ConvertPlayers(List<Domain.Player> domainPlayers) {
-            var dalPlayers = new List<Player>();
+        public static DAL.Game ConvertGame(Domain.Game domainGame) {
+            var dalGame = new DAL.Game {
+                Date = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+                Winner = domainGame.Winner?.Name,
+                TurnCount = domainGame.TurnCount,
+                Moves = null,
+                Players = null
+            };
+
+            dalGame.Players = ConvertPlayers(dalGame, domainGame.Players);
+            dalGame.Moves = ConvertMoves(dalGame, dalGame.Players, domainGame.Moves);
+
+            return dalGame;
+        }
+
+        private static List<DAL.Player> ConvertPlayers(DAL.Game game, List<Domain.Player> domainPlayers) {
+            var dalPlayers = new List<DAL.Player>();
 
             // Convert all Domain players to DAL player objects
             foreach (var domainPlayer in domainPlayers) {
-                var dalPlayer = new Player {
+                var dalPlayer = new DAL.Player {
                     Name = domainPlayer.Name,
-                    MovesAgainstThisPlayer = ConvertPositions(domainPlayer.MovesAgainstThisPlayer),
-                    Ships = ConvertShips(domainPlayer.Ships)
+                    MovesAgainstThisPlayer = null,
+                    Ships = null,
+                    Game = game
                 };
+
+                dalPlayer.MovesAgainstThisPlayer =
+                    ConvertMovesAgainstPlayer(dalPlayer, domainPlayer.MovesAgainstThisPlayer);
+                dalPlayer.Ships = ConvertShips(dalPlayer, domainPlayer.Ships);
 
                 dalPlayers.Add(dalPlayer);
             }
@@ -22,38 +43,41 @@ namespace SaveSystem {
             return dalPlayers;
         }
 
-        private static HashSet<Pos> ConvertPositions(HashSet<Domain.Pos> domainMoves) {
-            var dalPositions = new HashSet<Pos>();
+        private static HashSet<DAL.MovesAgainstPlayer> ConvertMovesAgainstPlayer(DAL.Player player,
+            HashSet<Domain.Pos> domainMoves) {
+            var dalMoves = new HashSet<DAL.MovesAgainstPlayer>();
 
             // Convert all Domain positions to DAL position objects
-            foreach (var domainPos in domainMoves) {
-                var dalPos = new Pos {
-                    X = domainPos.X,
-                    Y = domainPos.Y
+            foreach (var domainMove in domainMoves) {
+                var dalMove = new DAL.MovesAgainstPlayer {
+                    Player = player,
+                    X = domainMove.X,
+                    Y = domainMove.Y
                 };
 
-                dalPositions.Add(dalPos);
+                dalMoves.Add(dalMove);
             }
 
-            return dalPositions;
+            return dalMoves;
         }
 
-        private static List<Ship> ConvertShips(List<BaseShip> domainShips) {
-            var dalShips = new List<Ship>();
+        private static List<DAL.Ship> ConvertShips(DAL.Player player, List<Domain.Ship.Ship> domainShips) {
+            var dalShips = new List<DAL.Ship>();
 
             // Convert all Domain ships to DAL ship objects
             foreach (var domainShip in domainShips) {
-                var dalShip = new Ship {
+                var dalShip = new DAL.Ship {
+                    Player = player,
                     Title = domainShip.Title,
                     Symbol = domainShip.Symbol,
                     Size = domainShip.Size,
                     Direction = (int) domainShip.Direction,
-                    ShipStatuses = ConvertShipStatus(domainShip.ShipStatuses),
-                    Position = new Pos {
-                        X = domainShip.ShipPos.X,
-                        Y = domainShip.ShipPos.Y
-                    }
+                    ShipStatuses = null,
+                    X = domainShip.ShipPos.X,
+                    Y = domainShip.ShipPos.Y
                 };
+
+                dalShip.ShipStatuses = ConvertShipStatus(dalShip, domainShip.ShipStatuses);
 
                 dalShips.Add(dalShip);
             }
@@ -61,26 +85,37 @@ namespace SaveSystem {
             return dalShips;
         }
 
-        private static int[] ConvertShipStatus(ShipStatus[] domainShipStatuses) {
-            var dalStatuses = new int[domainShipStatuses.Length];
+        private static List<DAL.ShipStatus> ConvertShipStatus(DAL.Ship dalShip,
+            Domain.Ship.ShipStatus[] domainShipStatuses) {
+            var dalStatuses = new List<DAL.ShipStatus>();
 
             // Convert all Domain Ship status blocks to DAL ship status blocks
             for (int i = 0; i < domainShipStatuses.Length; i++) {
-                dalStatuses[i] = (int) domainShipStatuses[i];
+                var dalStatus = new DAL.ShipStatus {
+                    Ship = dalShip,
+                    Status = (int) domainShipStatuses[i],
+                    Offset = i
+                };
+
+                dalStatuses.Add(dalStatus);
             }
 
             return dalStatuses;
         }
 
-        public static List<Move> ConvertMoves(List<Domain.Move> domainMoves) {
-            var dalMoves = new List<Move>();
+        private static List<DAL.Move> ConvertMoves(DAL.Game game, List<DAL.Player> dalPlayers,
+            List<Domain.Move> domainMoves) {
+            var dalMoves = new List<DAL.Move>();
 
             // Convert all Domain players to DAL player objects
             foreach (var domainMove in domainMoves) {
-                var dalMove = new Move {
-                    FromPlayer = domainMove.FromPlayer.Name,
-                    ToPlayer = domainMove.ToPlayer.Name,
-                    AttackResult = (int) domainMove.AttackResult
+                var dalMove = new DAL.Move {
+                    Game = game,
+                    FromPlayer = dalPlayers.FirstOrDefault(player => player.Name.Equals(domainMove.FromPlayer.Name)),
+                    ToPlayer = dalPlayers.FirstOrDefault(player => player.Name.Equals(domainMove.ToPlayer.Name)),
+                    MoveResult = (int) domainMove.AttackResult,
+                    X = domainMove.Pos.X,
+                    Y = domainMove.Pos.Y
                 };
 
                 dalMoves.Add(dalMove);

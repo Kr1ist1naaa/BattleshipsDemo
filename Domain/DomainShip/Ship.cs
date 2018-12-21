@@ -1,46 +1,46 @@
 using System;
 using System.Linq;
-using Domain.Rule;
+using Domain.DomainRule;
 
 namespace Domain.Ship {
-    public class BaseShip {
+    public class Ship {
         public ShipType Type;
         public RuleType SizeRule;
         public string Title;
         public char Symbol;
         public int Size;
-        
+
         public Pos ShipPos;
         public ShipDirection Direction;
         public ShipStatus[] ShipStatuses;
 
-        public BaseShip(BaseShip baseShip) {
-            SizeRule = baseShip.SizeRule;
-            Symbol = baseShip.Symbol;
-            Title = baseShip.Title;
-            Size = baseShip.Size;
-            Type = baseShip.Type;
-            
+        public Ship(Ship ship) {
+            SizeRule = ship.SizeRule;
+            Symbol = ship.Symbol;
+            Title = ship.Title;
+            Size = ship.Size;
+            Type = ship.Type;
+
             CreateShipStatusBlocks();
         }
-        
-        public BaseShip() {}
-        
+
+        public Ship() { }
+
         public override bool Equals(object obj) {
             if (obj == null) {
                 return false;
             }
 
-            if (typeof(BaseShip) != obj.GetType()) {
+            if (typeof(Ship) != obj.GetType()) {
                 return false;
             }
 
-            var other = (BaseShip) obj;
+            var other = (Ship) obj;
 
             if (Type != other.Type) {
                 return false;
             }
-            
+
             if (Symbol != other.Symbol) {
                 return false;
             }
@@ -55,8 +55,8 @@ namespace Domain.Ship {
 
             return hash;
         }
-        
-        
+
+
         public void SetLocation(Pos pos, ShipDirection direction) {
             Direction = direction;
             ShipPos = new Pos(pos);
@@ -76,8 +76,8 @@ namespace Domain.Ship {
                 for (int i = 0; i < Size; i++) {
                     var shipPosX = ShipPos.X + (Direction == ShipDirection.Right ? i : 0);
                     var shipPosY = ShipPos.Y + (Direction == ShipDirection.Right ? 0 : i);
-                    
-                    if (shipPosX >= newPosOffsetX - padding && shipPosX <= newPosOffsetX + padding && 
+
+                    if (shipPosX >= newPosOffsetX - padding && shipPosX <= newPosOffsetX + padding &&
                         shipPosY >= newPosOffsetY - padding && shipPosY <= newPosOffsetY + padding) {
                         return true;
                     }
@@ -110,7 +110,7 @@ namespace Domain.Ship {
                 // Should be checked beforehand
                 throw new ArgumentException(nameof(pos));
             }
-            
+
             // Depending on the direction of the ship, set the local status tracker to hit
             if (Direction == ShipDirection.Right) {
                 ShipStatuses[pos.X - ShipPos.X] = ShipStatus.Hit;
