@@ -80,7 +80,8 @@ namespace SaveSystem {
                     m => new[] {
                         m.Id.ToString(),
                         m.RoundCounter.ToString(),
-                        m.Date
+                        m.Date,
+                        m.Winner
                     }
                 );
 

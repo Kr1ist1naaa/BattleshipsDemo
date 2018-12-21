@@ -16,8 +16,7 @@ namespace DAL {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             if (!optionsBuilder.IsConfigured) {
-                optionsBuilder.UseMySql(
-                    "server=localhost;database=test;user=root;password=root");
+                optionsBuilder.UseMySql("server=localhost;database=test;user=root;password=root");
             }
         }
 

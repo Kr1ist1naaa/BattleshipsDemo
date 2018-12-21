@@ -21,6 +21,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Last played</th>
                             <th scope="col">Turn count</th>
+                            <th scope="col">Winner</th>
                             <th scope="col">Load</th>
                             <th scope="col">Delete</th>
                         </tr>
@@ -38,6 +39,9 @@
                                     </td>
                                     <td>
                                         @rowData[1]
+                                    </td>
+                                    <td>
+                                        @(rowData[3] ?? "-")
                                     </td>
                                     <td><a href='?action=load&id=@rowData[0]' class='btn btn-sm btn-outline-success'>○</a></td>
                                     <td><a href='?action=delete&id=@rowData[0]' class='btn btn-sm btn-outline-danger'>✕</a></td>

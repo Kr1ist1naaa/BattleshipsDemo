@@ -196,10 +196,11 @@ namespace MenuSystem {
                 int.TryParse(save[0], out var gameId);
                 var saveTime = save[2];
                 var turnCount = save[1];
+                var winner = save[3] ?? "-";
 
                 // Create a menuitem for the save game
                 var menuItem = new MenuItem {
-                    Description = $"{saveTime} (turn {turnCount,3})",
+                    Description = $"{saveTime} (turn {turnCount,3}) Winner: {winner}",
                     GameId = gameId,
                     Shortcut = counter.ToString()
                 };
